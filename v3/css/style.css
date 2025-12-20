@@ -1,37 +1,53 @@
 
-body { font-family: Arial; margin:0; background:#f6f7f8; }
-.topbar { padding:12px; background:#fff; }
-.container { padding:16px; }
-input { width:100%; padding:12px; margin:8px 0; border-radius:10px; border:1px solid #ddd; }
-.cards { display:grid; gap:12px; }
-.card { background:#fff; padding:16px; border-radius:14px; }
-
-#radarBadge {
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  margin:0;
+  background:#f8fafc;
+  color:#0f172a;
+}
+.top {
+  padding:1rem;
+  background:#dcfce7;
+}
+.container { padding:1rem; }
+.search-box input {
+  width:100%;
+  padding:0.8rem;
+  margin-bottom:0.6rem;
+  border-radius:12px;
+  border:1px solid #ccc;
+}
+.offers {
+  display:grid;
+  gap:1rem;
+}
+.card {
+  background:white;
+  border-radius:16px;
+  padding:1rem;
+}
+.radar-bubble {
   position:fixed;
   bottom:20px;
   right:20px;
-  background:#2ecc71;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:50px;
-  display:none;
+  background:#22c55e;
+  color:white;
+  padding:0.7rem 1rem;
+  border-radius:999px;
   animation:pulse 1.5s infinite;
-  font-weight:bold;
 }
-
-@keyframes pulse {
-  0%{opacity:1;}
-  50%{opacity:.5;}
-  100%{opacity:1;}
-}
-
-#matchModal {
+.hidden { display:none; }
+.match-bar {
   position:fixed;
   bottom:0;
   left:0;
   right:0;
-  background:#fff;
-  padding:20px;
-  display:none;
-  box-shadow:0 -4px 20px rgba(0,0,0,.2);
+  background:white;
+  border-top:2px solid #22c55e;
+  padding:1rem;
+}
+@keyframes pulse {
+  0% { opacity:1; }
+  50% { opacity:.5; }
+  100% { opacity:1; }
 }
