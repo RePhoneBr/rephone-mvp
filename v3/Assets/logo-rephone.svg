@@ -1,9 +1,0 @@
-
-<svg width="280" height="90" viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .name { font-family: Inter, Arial, sans-serif; font-size: 46px; font-weight: 800; fill: #15803d; }
-    .slogan { font-family: Inter, Arial, sans-serif; font-size: 16px; fill: #64748b; }
-  </style>
-  <text x="0" y="52" class="name">RePhone</text>
-  <text x="0" y="78" class="slogan">A melhor oferta, do jeito certo.</text>
-</svg>
