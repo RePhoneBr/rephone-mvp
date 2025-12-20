@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>RePhone — A melhor oferta, do jeito certo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="RePhone: você define quanto quer pagar. A plataforma encontra os anúncios mais compatíveis com segurança." />
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container topbar">
+      <a class="brand" href="#">
+        <img src="assets/logo-rephone.svg" alt="RePhone" class="brand-logo" />
+        <div class="brand-text">
+          <div class="brand-name">RePhone</div>
+          <div class="brand-tagline">A melhor oferta, do jeito certo.</div>
+        </div>
+      </a>
+
+      <div class="search-wrap" role="search">
+        <input class="search" id="searchInput" placeholder="Buscar celular ou modelo" autocomplete="off" />
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>A melhor oferta, do jeito certo.</h1>
+        <p class="lead">Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
+
+        <div class="price-box" aria-label="Definir valor máximo">
+          <label class="price-label" for="priceInput">Quanto você quer pagar?</label>
+          <div class="price-row">
+            <span class="currency">R$</span>
+            <input id="priceInput" class="price-input" inputmode="decimal" placeholder="1500 ou 1.500,00" aria-describedby="priceHint" />
+          </div>
+          <div class="price-hint" id="priceHint">Dica: digite <strong>1500</strong>, <strong>1.500</strong> ou <strong>1.500,00</strong> — a RePhone padroniza ao sair do campo.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container section-head">
+        <h2>Ofertas em destaque</h2>
+        <div class="loading" id="loadingLabel" aria-live="polite">Carregando ofertas...</div>
+      </div>
+
+      <div class="container">
+        <div class="filters" role="tablist" aria-label="Filtros de ofertas">
+          <button class="chip active" data-filter="all" type="button">Todos</button>
+          <button class="chip" data-filter="near" type="button">Perto</button>
+          <button class="chip" data-filter="verified" type="button">Vendedor verificado</button>
+          <button class="chip" data-filter="delivery" type="button">Entrega</button>
+        </div>
+
+        <div class="grid" id="offersGrid" aria-label="Lista de ofertas"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barra do MATCH (fixa) -->
+  <div class="matchbar" id="matchBar" aria-live="polite" aria-hidden="true">
+    <div class="matchbar-inner">
+      <div class="matchbar-left">
+        <div class="matchbar-title" id="matchTitle">Buscando MATCH…</div>
+        <div class="matchbar-sub" id="matchSub">Comparando preço, distância e segurança</div>
+        <div class="matchbar-progress" aria-hidden="true"><span></span></div>
+      </div>
+      <button class="matchbar-btn" id="matchBtn" type="button" disabled>Ver MATCH</button>
+    </div>
+  </div>
+
+  <!-- Modal do MATCH -->
+  <div class="modal-backdrop" id="matchModalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="matchModalTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-kicker">MATCH RePhone</div>
+          <h3 id="matchModalTitle">Encontramos uma oferta para você</h3>
+        </div>
+        <button class="icon-btn" id="closeMatchModal" type="button" aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="modal-body" id="matchModalBody"></div>
+
+      <div class="modal-actions">
+        <a class="btn btn-ghost" href="#priceInput" id="adjustPrice">Ajustar valor</a>
+        <a class="btn btn-primary" href="#" id="openOfferLink">Abrir anúncio</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>RePhone © — A melhor oferta, do jeito certo.</span>
+    </div>
+  </footer>
+
+  <script src="js/app.js?v=4"></script>
+</body>
+</html>
