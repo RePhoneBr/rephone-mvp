@@ -1,164 +1,74 @@
-// RePhone V3 - Demo (static)
-// - Valor em BRL: digitação livre (sem travar cursor) + formata no blur
-// - MATCH: suspense mais longo com etapas + quando encontra, remove o item da lista (exclusivo)
+// RePhone V3 — Correções:
+// 1) Campo de valor: NÃO formata durante a digitação (não trava / não pula cursor). Formata só no blur.
+// 2) MATCH: suspense com etapas + duração maior.
+// 3) Ao encontrar MATCH: oculta o anúncio correspondente na lista (exclusivo).
 
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-/**
- * IMPORTANTE:
- * Agora as imagens são LOCAIS. Baixe e coloque em:
- * v3/assets/products/
- * com estes nomes (webp/png):
- * - iphone-13-128.webp
- * - iphone-12-64.webp
- * - galaxy-s23-256.webp
- * - iphone-14-pro-256.webp
- * - iphone-11-64.webp
- * - moto-g84-256.webp
- */
 const offers = [
-  {
-    id: "iphone13-128",
-    title: "iPhone 13 • 128GB",
-    price: 2900.00,
-    condition: "Seminovo",
-    city: "Aracruz/ES",
-    distanceKm: 3,
-    distanceLabel: "Muito perto",
-    verified: true,
-    rating: 4.9,
-    sales: 312,
-    since: 2021,
-    delivery: true,
-    match: 92,
-    compatibility: "Alta compatibilidade",
-    image: "assets/products/iphone-13-128.webp"
-  },
-  {
-    id: "iphone12-64",
-    title: "iPhone 12 • 64GB",
-    price: 2500.00,
-    condition: "Seminovo",
-    city: "Vitória/ES",
-    distanceKm: 48,
-    distanceLabel: "Longe",
-    verified: false,
-    rating: 4.2,
-    sales: 18,
-    since: 2024,
-    delivery: false,
-    match: 71,
-    compatibility: "Boa compatibilidade",
-    image: "assets/products/iphone-12-64.webp"
-  },
-  {
-    id: "galaxy-s23-256",
-    title: "Galaxy S23 • 256GB",
-    price: 3499.00,
-    condition: "Novo",
-    city: "Linhares/ES",
-    distanceKm: 78,
-    distanceLabel: "Longe",
-    verified: true,
-    rating: 4.7,
-    sales: 89,
-    since: 2022,
-    delivery: true,
-    match: 84,
-    compatibility: "Entrega disponível",
-    image: "assets/products/galaxy-s23-256.webp"
-  },
-  {
-    id: "iphone14pro-256",
-    title: "iPhone 14 Pro • 256GB",
-    price: 5290.00,
-    condition: "Seminovo",
-    city: "Rio de Janeiro/RJ",
-    distanceKm: 410,
-    distanceLabel: "Muito longe",
-    verified: false,
-    rating: 4.0,
-    sales: 7,
-    since: 2025,
-    delivery: true,
-    match: 58,
-    compatibility: "Premium",
-    image: "assets/products/iphone-14-pro-256.webp"
-  },
-  {
-    id: "iphone11-64",
-    title: "iPhone 11 • 64GB",
-    price: 1890.00,
-    condition: "Usado",
-    city: "Serra/ES",
-    distanceKm: 55,
-    distanceLabel: "Longe",
-    verified: true,
-    rating: 4.6,
-    sales: 41,
-    since: 2023,
-    delivery: true,
-    match: 66,
-    compatibility: "Bom custo-benefício",
-    image: "assets/products/iphone-11-64.webp"
-  },
-  {
-    id: "moto-g84-256",
-    title: "Moto G84 • 256GB",
-    price: 1499.00,
-    condition: "Novo",
-    city: "Aracruz/ES",
-    distanceKm: 6,
-    distanceLabel: "Perto",
-    verified: true,
-    rating: 4.8,
-    sales: 204,
-    since: 2020,
-    delivery: true,
-    match: 73,
-    compatibility: "Entrega local",
-    image: "assets/products/moto-g84-256.webp"
-  }
+  { id:"iphone13-128", title:"iPhone 13 • 128GB", price:2900.00, condition:"Seminovo", city:"Aracruz/ES", distanceKm:3,  distanceLabel:"Muito perto", verified:true,  rating:4.9, sales:312, since:2021, delivery:true,  match:92, compatibility:"Alta compatibilidade", image:"assets/products/iphone-13-128.webp" },
+  { id:"iphone12-64",  title:"iPhone 12 • 64GB",  price:2500.00, condition:"Seminovo", city:"Vitória/ES", distanceKm:48, distanceLabel:"Longe",      verified:false, rating:4.2, sales:18,  since:2024, delivery:false, match:71, compatibility:"Boa compatibilidade", image:"assets/products/iphone-12-64.webp" },
+  { id:"galaxy-s23-256", title:"Galaxy S23 • 256GB", price:3499.00, condition:"Novo", city:"Linhares/ES", distanceKm:78, distanceLabel:"Longe", verified:true, rating:4.7, sales:89, since:2022, delivery:true, match:84, compatibility:"Entrega disponível", image:"assets/products/galaxy-s23-256.webp" },
+  { id:"iphone14pro-256", title:"iPhone 14 Pro • 256GB", price:5290.00, condition:"Seminovo", city:"Rio de Janeiro/RJ", distanceKm:410, distanceLabel:"Muito longe", verified:false, rating:4.0, sales:7, since:2025, delivery:true, match:58, compatibility:"Premium", image:"assets/products/iphone-14-pro-256.webp" },
+  { id:"iphone11-64", title:"iPhone 11 • 64GB", price:1890.00, condition:"Usado", city:"Serra/ES", distanceKm:55, distanceLabel:"Longe", verified:true, rating:4.6, sales:41, since:2023, delivery:true, match:66, compatibility:"Bom custo-benefício", image:"assets/products/iphone-11-64.webp" },
+  { id:"moto-g84-256", title:"Moto G84 • 256GB", price:1499.00, condition:"Novo", city:"Aracruz/ES", distanceKm:6, distanceLabel:"Perto", verified:true, rating:4.8, sales:204, since:2020, delivery:true, match:73, compatibility:"Entrega local", image:"assets/products/moto-g84-256.webp" },
 ];
 
+// ===== Util BRL =====
 function formatBRL(value){
   return new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL" }).format(value);
 }
 
-/**
- * Aceita: 1500 | 1.500 | 1.500,00 | R$ 1.500,00 | 1500,5
- * Regra: vírgula decimal; ponto milhar.
- */
+// Aceita: 2500 | 2.500 | 2.500,00 | R$ 2.500,00
 function parseBRLToNumber(raw){
-  const s0 = String(raw || "").trim();
-  if(!s0) return null;
-
-  let s = s0.replace(/[^0-9.,]/g, "");
+  if(raw === null || raw === undefined) return null;
+  let s = String(raw).trim();
   if(!s) return null;
 
+  // remove tudo exceto dígitos, ponto e vírgula
+  s = s.replace(/[^0-9.,]/g, "");
+  if(!s) return null;
+
+  // Se tem vírgula, vírgula é decimal e ponto é milhar
   if(s.includes(",")){
-    s = s.replace(/\./g, "").replace(",", ".");
-  } else if ((s.match(/\./g) || []).length === 1){
-    const [a,b] = s.split(".");
-    if((b || "").length === 2) s = a + "." + b;
-    else s = a + b; // milhar
+    s = s.replace(/\./g, ""); // remove milhares
+    s = s.replace(",", "."); // decimal
   } else {
-    s = s.replace(/\./g, "");
+    // sem vírgula
+    const dots = (s.match(/\./g) || []).length;
+    if(dots === 1){
+      const parts = s.split(".");
+      const last = parts[1] || "";
+      // se tiver 2 dígitos após o ponto, trata como decimal (1500.50)
+      if(last.length === 2){
+        s = parts[0] + "." + last;
+      } else {
+        // senão, ponto é milhar
+        s = parts[0] + last;
+      }
+    } else if(dots > 1){
+      // muitos pontos => milhares
+      s = s.replace(/\./g, "");
+    }
   }
 
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }
 
-// ===== UI: cards =====
+function formatPtNumber(n){
+  return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+}
+
+// ===== Render / Filters =====
 const offersGrid = $("#offersGrid");
 const loadingLabel = $("#loadingLabel");
 
 let activeFilter = "all";
 let activeQuery = "";
 
-// item oculto (o que virou match)
+// Quando existe MATCH, removemos esse item do grid (exclusivo)
 let hiddenOfferId = null;
 
 function passesFilter(offer){
@@ -169,8 +79,7 @@ function passesFilter(offer){
 }
 function passesSearch(offer){
   if(!activeQuery) return true;
-  const q = activeQuery;
-  return offer.title.toLowerCase().includes(q) || offer.city.toLowerCase().includes(q);
+  return offer.title.toLowerCase().includes(activeQuery) || offer.city.toLowerCase().includes(activeQuery);
 }
 
 function buildCard(offer){
@@ -178,15 +87,11 @@ function buildCard(offer){
     ? '<span class="pill good">Verificado</span>'
     : '<span class="pill warn">Verificação pendente</span>';
 
-  const distPill = offer.distanceLabel === "Muito perto"
-    ? '<span class="pill good">Muito perto • ' + offer.distanceKm + 'km</span>'
-    : (offer.distanceLabel === "Perto"
-      ? '<span class="pill good">Perto • ' + offer.distanceKm + 'km</span>'
-      : (offer.distanceLabel === "Muito longe"
-        ? '<span class="pill neutral">Muito longe • ' + offer.distanceKm + 'km</span>'
-        : '<span class="pill neutral">Longe • ' + offer.distanceKm + 'km</span>'
-      )
-    );
+  const distPill =
+    offer.distanceLabel === "Muito perto" ? `<span class="pill good">Muito perto • ${offer.distanceKm}km</span>` :
+    offer.distanceLabel === "Perto" ? `<span class="pill good">Perto • ${offer.distanceKm}km</span>` :
+    offer.distanceLabel === "Muito longe" ? `<span class="pill neutral">Muito longe • ${offer.distanceKm}km</span>` :
+    `<span class="pill neutral">Longe • ${offer.distanceKm}km</span>`;
 
   const deliveryPill = offer.delivery ? '<span class="pill good">Entrega</span>' : '<span class="pill neutral">Retirada</span>';
 
@@ -200,9 +105,7 @@ function buildCard(offer){
         <div class="price">${formatBRL(offer.price)}</div>
 
         <div class="meta">
-          <span>${offer.condition}</span>
-          <span>•</span>
-          <span>${offer.city}</span>
+          <span>${offer.condition}</span><span>•</span><span>${offer.city}</span>
         </div>
 
         <div class="meta">
@@ -223,7 +126,7 @@ function buildCard(offer){
 function render(){
   const visible = offers
     .filter(o => passesFilter(o) && passesSearch(o))
-    .filter(o => o.id !== hiddenOfferId); // <-- exclusividade do MATCH
+    .filter(o => o.id !== hiddenOfferId);
 
   offersGrid.innerHTML = visible.map(buildCard).join("");
   loadingLabel.textContent = visible.length ? `${visible.length} ofertas` : "Nenhuma oferta encontrada";
@@ -248,97 +151,95 @@ function initSearch(){
   });
 }
 
-// ===== Valor (UX correto) =====
+// ===== Campo de valor (corrigido) =====
 const priceInput = $("#priceInput");
 
-// Enquanto digita: não formatar, só filtrar caracteres inválidos.
+// Enquanto digita: só filtra caracteres. Não formata e não “pula”.
 priceInput.addEventListener("input", () => {
-  priceInput.value = priceInput.value.replace(/[^0-9.,]/g, "");
-  scheduleMatch(); // atualiza match com debounce + suspense
+  const before = priceInput.value;
+  const cleaned = before.replace(/[^0-9.,]/g, "");
+  if(cleaned !== before) priceInput.value = cleaned;
+
+  // guarda valor numérico (se der para interpretar)
+  const n = parseBRLToNumber(priceInput.value);
+  priceInput.dataset.value = (n === null) ? "" : String(n);
+
+  // MATCH será disparado por debounce (abaixo)
+  scheduleMatch();
 });
 
-// Ao sair do campo: formata padrão BRL
+// Ao sair do campo: padroniza visualmente
 priceInput.addEventListener("blur", () => {
   const n = parseBRLToNumber(priceInput.value);
   if(n === null){
     priceInput.value = "";
+    priceInput.dataset.value = "";
     return;
   }
-  priceInput.value = formatBRL(n);
+  priceInput.dataset.value = String(n);
+  priceInput.value = formatPtNumber(n); // sem "R$" porque já existe prefixo
 });
 
-// ===== MATCH BAR + MODAL =====
+// ===== MATCH BAR (suspense por etapas) =====
 const matchBar = $("#matchBar");
 const matchTitle = $("#matchTitle");
 const matchSub = $("#matchSub");
 const matchBtn = $("#matchBtn");
+const matchProg = $("#matchProg");
 
 const modalBackdrop = $("#matchModalBackdrop");
 const modalBody = $("#matchModalBody");
 const openOfferLink = $("#openOfferLink");
 const closeMatchModal = $("#closeMatchModal");
 
-const MATCH_SUSPENSE_MS = 4200; // suspense total
-const STAGES = [
-  { t: 0,   title: "Buscando MATCH…", sub: "Validando o seu valor" },
-  { t: 900, title: "Buscando MATCH…", sub: "Checando reputação e verificação" },
-  { t: 1900,title: "Buscando MATCH…", sub: "Analisando distância e logística" },
-  { t: 3000,title: "Buscando MATCH…", sub: "Comparando as melhores ofertas" }
-];
+const MATCH_SUSPENSE_MS = 4200;
+const MATCH_DEBOUNCE_MS = 650;
 
+let matchDebounceTimer = null;
 let matchTimer = null;
-let stageTimers = [];
+let stageTimer = null;
 let currentMatch = null;
 
 function showMatchBar(){
   matchBar.classList.add("show");
   matchBar.setAttribute("aria-hidden","false");
 }
+function hideMatchBar(){
+  matchBar.classList.remove("show");
+  matchBar.setAttribute("aria-hidden","true");
+}
 
-function clearStageTimers(){
-  stageTimers.forEach(id => clearTimeout(id));
-  stageTimers = [];
+function resetProgress(){
+  matchProg.style.width = "0%";
 }
 
 function setSearching(){
   currentMatch = null;
-  matchTitle.textContent = "Buscando MATCH…";
-  matchSub.textContent = "Analisando sinais de segurança (alguns segundos)";
   matchBtn.disabled = true;
   matchBtn.textContent = "Aguardando…";
+  matchTitle.textContent = "Buscando MATCH…";
+  matchSub.textContent = "Iniciando análise";
+  resetProgress();
   showMatchBar();
-
-  // Etapas (efeito suspense)
-  clearStageTimers();
-  STAGES.forEach(s => {
-    stageTimers.push(setTimeout(() => {
-      matchTitle.textContent = s.title;
-      matchSub.textContent = s.sub;
-    }, s.t));
-  });
-}
-
-function setMatchFound(offer, score){
-  currentMatch = offer;
-  matchTitle.textContent = "MATCH encontrado";
-  matchSub.textContent = `${offer.title} • ${formatBRL(offer.price)} • ${Math.round(score)}% compatível`;
-  matchBtn.disabled = false;
-  matchBtn.textContent = "Ver MATCH";
-  showMatchBar();
-
-  if(navigator.vibrate) navigator.vibrate([40, 30, 40]);
-  matchBar.animate(
-    [{ transform:"translateY(10px)", opacity:.6 }, { transform:"translateY(0px)", opacity:1 }],
-    { duration: 240, easing:"ease-out" }
-  );
 }
 
 function setNoMatch(){
   currentMatch = null;
-  matchTitle.textContent = "Sem MATCH por enquanto";
-  matchSub.textContent = "Tente ajustar o valor — a RePhone procura o melhor encaixe";
   matchBtn.disabled = true;
   matchBtn.textContent = "Sem match";
+  matchTitle.textContent = "Sem MATCH por enquanto";
+  matchSub.textContent = "Tente ajustar o valor — a RePhone procura o melhor encaixe";
+  matchProg.style.width = "100%";
+  showMatchBar();
+}
+
+function setMatchFound(offer, score){
+  currentMatch = offer;
+  matchTitle.textContent = `MATCH encontrado: ${offer.title}`;
+  matchSub.textContent = `${formatBRL(offer.price)} • ${offer.distanceLabel} • ${offer.verified ? "vendedor verificado" : "verificação pendente"} • ${Math.round(score)}% compatível`;
+  matchBtn.disabled = false;
+  matchBtn.textContent = "Ver MATCH";
+  matchProg.style.width = "100%";
   showMatchBar();
 }
 
@@ -353,7 +254,6 @@ function computeScore(offer, budget){
 }
 
 function chooseMatch(budget){
-  // Regra: prioriza abaixo do orçamento; se não houver, tenta o mais próximo
   const below = offers.filter(o => o.price <= budget);
   const candidates = below.length ? below : offers.slice();
 
@@ -364,6 +264,83 @@ function chooseMatch(budget){
   return ranked.length ? ranked[0] : null;
 }
 
+function runStages(totalMs){
+  const stages = [
+    { t: 0.10, sub: "Validando o seu valor" },
+    { t: 0.35, sub: "Checando reputação e verificação" },
+    { t: 0.62, sub: "Analisando distância e logística" },
+    { t: 0.85, sub: "Comparando as melhores ofertas" },
+  ];
+  let idx = 0;
+  const started = Date.now();
+
+  clearInterval(stageTimer);
+  stageTimer = setInterval(() => {
+    const elapsed = Date.now() - started;
+    const progress = Math.min(0.98, elapsed / totalMs);
+    matchProg.style.width = `${Math.round(progress * 100)}%`;
+
+    // Atualiza texto de etapa
+    while(idx < stages.length && progress >= stages[idx].t){
+      matchSub.textContent = stages[idx].sub;
+      idx++;
+    }
+
+    if(elapsed >= totalMs){
+      clearInterval(stageTimer);
+    }
+  }, 120);
+}
+
+function scheduleMatch(){
+  if(matchDebounceTimer) clearTimeout(matchDebounceTimer);
+  matchDebounceTimer = setTimeout(startMatch, MATCH_DEBOUNCE_MS);
+}
+
+function startMatch(){
+  if(matchTimer) clearTimeout(matchTimer);
+  clearInterval(stageTimer);
+
+  const budget = Number(priceInput.dataset.value || 0);
+
+  if(!budget || budget <= 0){
+    // sem valor => volta tudo
+    currentMatch = null;
+    hiddenOfferId = null;
+    hideMatchBar();
+    render();
+    return;
+  }
+
+  // Mudou o valor => devolve lista (o match pode mudar)
+  currentMatch = null;
+  hiddenOfferId = null;
+  render();
+
+  setSearching();
+  runStages(MATCH_SUSPENSE_MS);
+
+  matchTimer = setTimeout(() => {
+    const chosen = chooseMatch(budget);
+    if(!chosen || !chosen.o){
+      hiddenOfferId = null;
+      setNoMatch();
+      render();
+      return;
+    }
+
+    const score = chosen.score;
+
+    // Exclusivo: remove do grid
+    currentMatch = chosen.o;
+    hiddenOfferId = currentMatch.id;
+
+    setMatchFound(currentMatch, score);
+    render();
+  }, MATCH_SUSPENSE_MS);
+}
+
+// Modal
 function openMatchModal(offer, score){
   modalBody.innerHTML = `
     <div style="display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
@@ -387,9 +364,6 @@ function openMatchModal(offer, score){
         <div style="margin-top:.75rem; color:var(--muted); font-weight:700;">
           Compatibilidade estimada: <strong>${Math.round(score)}%</strong> (demo)
         </div>
-        <div style="margin-top:.55rem; color:rgba(15,23,42,.70); font-weight:650;">
-          <strong>Exclusivo:</strong> este anúncio foi removido da lista e aparece apenas no MATCH.
-        </div>
       </div>
     </div>
   `;
@@ -399,7 +373,6 @@ function openMatchModal(offer, score){
   modalBackdrop.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 }
-
 function closeModal(){
   modalBackdrop.classList.remove("show");
   modalBackdrop.setAttribute("aria-hidden","true");
@@ -408,7 +381,7 @@ function closeModal(){
 
 matchBtn.addEventListener("click", () => {
   if(!currentMatch) return;
-  const budget = parseBRLToNumber(priceInput.value) || currentMatch.price;
+  const budget = Number(priceInput.dataset.value || currentMatch.price);
   const score = computeScore(currentMatch, budget);
   openMatchModal(currentMatch, score);
 });
@@ -417,64 +390,11 @@ closeMatchModal.addEventListener("click", closeModal);
 modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) closeModal(); });
 document.addEventListener("keydown", (e) => { if(e.key === "Escape" && modalBackdrop.classList.contains("show")) closeModal(); });
 
-// Debounce: espera o usuário parar de digitar antes de iniciar suspense
-let inputDebounce = null;
-
-function scheduleMatch(){
-  if(matchTimer) clearTimeout(matchTimer);
-  clearStageTimers();
-
-  const budget = parseBRLToNumber(priceInput.value);
-
-  if(!budget || budget <= 0){
-    currentMatch = null;
-    hiddenOfferId = null;
-    matchBar.classList.remove("show");
-    matchBar.setAttribute("aria-hidden","true");
-    render();
-    return;
-  }
-
-  // sempre que o valor muda: devolve o item para a lista enquanto recalcula
-  currentMatch = null;
-  hiddenOfferId = null;
-  render();
-
-  if(inputDebounce) clearTimeout(inputDebounce);
-  inputDebounce = setTimeout(() => {
-    setSearching();
-
-    matchTimer = setTimeout(() => {
-      const chosen = chooseMatch(budget);
-
-      if(!chosen || !chosen.o){
-        hiddenOfferId = null;
-        setNoMatch();
-        render();
-        return;
-      }
-
-      // define match e oculta item da lista
-      currentMatch = chosen.o;
-      hiddenOfferId = currentMatch.id;
-
-      setMatchFound(currentMatch, chosen.score);
-      render();
-
-    }, MATCH_SUSPENSE_MS);
-
-  }, 550);
-}
-
-// ===== Boot =====
+// Boot
 function boot(){
-  setTimeout(() => {
-    loadingLabel.textContent = `${offers.length} ofertas`;
-  }, 350);
-
+  setTimeout(() => { loadingLabel.textContent = `${offers.length} ofertas`; }, 250);
   initFilters();
   initSearch();
   render();
 }
-
 document.addEventListener("DOMContentLoaded", boot);
