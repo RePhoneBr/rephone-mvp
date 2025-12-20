@@ -1,53 +1,35 @@
+:root{
+  --green:#16a34a;
+  --green2:#22c55e;
+  --green3:#15803d;
+  --text:#0f172a;
+  --muted:#475569;
+  --border: rgba(15,23,42,.10);
+}
+.matchbar{position:fixed;left:0;right:0;bottom:0;padding:.9rem 0;background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-top:1px solid var(--border);box-shadow:0 -18px 50px rgba(15,23,42,.10);transform:translateY(120%);transition:transform .22s ease;z-index:60;}
+.matchbar.show{transform:translateY(0);}
+.matchbar-inner{width:min(1120px,calc(100% - 2rem));margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.match-left{flex:1;min-width:240px;}
+.match-title{font-weight:900;letter-spacing:-.02em;color:var(--text);}
+.match-sub{margin-top:.15rem;color:var(--muted);font-weight:800;font-size:.95rem;}
+.progress{height:8px;background:rgba(15,23,42,.08);border-radius:999px;overflow:hidden;margin-top:.6rem;}
+.progress span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--green3));border-radius:999px;}
+.match-actions{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:flex-end;}
+.matchbtn{border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.92);font-weight:900;padding:.7rem .95rem;cursor:pointer;}
+.matchbtn.primary{border-color:rgba(22,163,74,.25);background:linear-gradient(135deg,var(--green2),var(--green3));color:#fff;}
+.matchbtn:disabled{opacity:.55;cursor:not-allowed;}
 
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  margin:0;
-  background:#f8fafc;
-  color:#0f172a;
-}
-.top {
-  padding:1rem;
-  background:#dcfce7;
-}
-.container { padding:1rem; }
-.search-box input {
-  width:100%;
-  padding:0.8rem;
-  margin-bottom:0.6rem;
-  border-radius:12px;
-  border:1px solid #ccc;
-}
-.offers {
-  display:grid;
-  gap:1rem;
-}
-.card {
-  background:white;
-  border-radius:16px;
-  padding:1rem;
-}
-.radar-bubble {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#22c55e;
-  color:white;
-  padding:0.7rem 1rem;
-  border-radius:999px;
-  animation:pulse 1.5s infinite;
-}
-.hidden { display:none; }
-.match-bar {
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:white;
-  border-top:2px solid #22c55e;
-  padding:1rem;
-}
-@keyframes pulse {
-  0% { opacity:1; }
-  50% { opacity:.5; }
-  100% { opacity:1; }
-}
+.radar-pill{position:fixed;right:14px;bottom:90px;display:none;align-items:center;gap:.55rem;padding:.55rem .8rem;border-radius:999px;border:1px solid rgba(22,163,74,.28);background:rgba(22,163,74,.72);color:#fff;font-weight:950;letter-spacing:-0.01em;box-shadow:0 14px 34px rgba(22,163,74,.22);z-index:70;}
+.radar-pill.show{display:inline-flex;}
+.radar-pill .pulse{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.95);box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:rpPulse 1.15s infinite;}
+@keyframes rpPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55);opacity:1;}70%{box-shadow:0 0 0 10px rgba(255,255,255,0);opacity:.9;}100%{box-shadow:0 0 0 0 rgba(255,255,255,0);opacity:1;}}
+
+.backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.55);z-index:80;}
+.backdrop.show{display:flex;}
+.modal{width:min(720px,100%);background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.45);border-radius:22px;box-shadow:0 30px 90px rgba(15,23,42,.28);overflow:hidden;backdrop-filter:blur(12px);}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);}
+.modal-kicker{color:var(--green3);font-weight:950;letter-spacing:.02em;text-transform:uppercase;font-size:.85rem;}
+.modal-head h3{margin:.25rem 0 0;letter-spacing:-.02em;}
+.iconbtn{border:1px solid var(--border);background:rgba(255,255,255,.9);border-radius:14px;width:42px;height:42px;cursor:pointer;font-weight:900;}
+.modal-body{padding:1rem 1.1rem;color:var(--text);}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;padding:0 1.1rem 1.1rem;flex-wrap:wrap;}
