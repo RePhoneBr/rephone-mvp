@@ -9,6 +9,26 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div id="gate" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,.96); z-index:9999; padding:24px;">
+  <div style="max-width:520px; margin:10vh auto; border:1px solid rgba(0,0,0,.12); border-radius:16px; padding:18px; background:#fff;">
+    <h2 style="margin:0 0 8px;">Acesso ao V3</h2>
+    <p style="margin:0 0 14px; color:#334155;">
+      Teste fechado. Peça autorização no WhatsApp e cole o código aqui.
+      <br><b>Obs:</b> o acesso é temporário e pode ser revogado a qualquer momento.
+    </p>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <input id="gateToken" placeholder="Cole o código (ex: RPH-8742)"
+             style="flex:1; min-width:220px; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.15);" />
+      <button id="gateBtn" style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#16a34a; color:#fff; font-weight:700;">
+        Entrar
+      </button>
+      <a id="gateWa" href="#" style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-weight:700;">
+        Pedir acesso
+      </a>
+    </div>
+  </div>
+  </div>
   <header class="site-header">
     <div class="container topbar">
       <a class="brand" href="#">
@@ -100,5 +120,66 @@
   </footer>
 
   <script src="js/app.js"></script>
+  <script>
+  const OWNER_WA = "5527998205547"; // seu WhatsApp
+
+  // ✅ ESTE é o código único do momento
+  // Quando você quiser revogar: troque este valor e faça commit.
+  const ACCESS_CODE = "RPH-8742";
+
+  // Gate sempre aparece ao entrar no V3 (não salva sessão)
+  function showGate(){
+    document.getElementById("gate").style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+  function hideGate(){
+    document.getElementById("gate").style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+  // Botão WhatsApp
+  const waLink = document.getElementById("gateWa");
+  if(waLink){
+    const msg = encodeURIComponent(
+      "Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode me liberar o código temporário?"
+    );
+    waLink.href = `https://wa.me/${OWNER_WA}?text=${msg}`;
+    waLink.target = "_blank";
+    waLink.rel = "noopener";
+  }
+
+  // Se vier por URL (?token=RPH-8742), preenche automático
+  const u = new URL(window.location.href);
+  const tokenFromUrl = u.searchParams.get("token");
+  if(tokenFromUrl){
+    document.getElementById("gateToken").value = tokenFromUrl;
+  }
+
+  // Sempre bloqueia até validar
+  showGate();
+
+  document.getElementById("gateBtn").addEventListener("click", function(){
+    const t = (document.getElementById("gateToken").value || "").trim();
+
+    if(t === ACCESS_CODE){
+      hideGate();
+
+      // limpa ?token da URL (pra não ficar exposto)
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete("token");
+      window.history.replaceState({}, "", clean.toString());
+
+      // Opcional: cria um botão flutuante pra "Sair" e revogar acesso no navegador da pessoa
+      const exit = document.createElement("button");
+      exit.textContent = "Encerrar acesso";
+      exit.style.cssText = "position:fixed; bottom:16px; right:16px; z-index:9998; padding:10px 12px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-weight:700;";
+      exit.addEventListener("click", () => location.reload()); // volta pro gate
+      document.body.appendChild(exit);
+
+    }else{
+      alert("Código inválido ou acesso revogado. Peça autorização no WhatsApp.");
+    }
+  });
+          </script>
 </body>
 </html>
