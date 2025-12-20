@@ -1008,5 +1008,17 @@
       }
     });
   </script>
+  <script>
+  const OWNER_WA = "5527998205547"; // seu WhatsApp
+
+  document.getElementById("btnV3Gate").addEventListener("click", function(e){
+    e.preventDefault();
+    const msg = encodeURIComponent(
+      "Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode me liberar o código de acesso?"
+    );
+    window.open(`https://wa.me/${OWNER_WA}?text=${msg}`, "_blank");
+    alert("Pedido enviado no WhatsApp. Você receberá um código temporário para entrar.");
+  });
+  </script>
 </body>
 </html>
