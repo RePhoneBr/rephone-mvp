@@ -1,35 +1,41 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>RePhone — A melhor oferta, do jeito certo.</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RePhone V3</title>
+<link rel="icon" href="assets/favicon.svg"/>
+<link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 
-<header class="topbar">
+<header class="top">
   <strong>RePhone</strong>
+  <span>A melhor oferta, do jeito certo.</span>
 </header>
 
 <main class="container">
   <h1>A melhor oferta, do jeito certo.</h1>
-  <input id="modelInput" placeholder="Modelo desejado (ex: iPhone 11)">
-  <input id="priceInput" placeholder="Quanto quer pagar? R$">
 
-  <div class="cards">
-    <div class="card">iPhone 11 • R$ 1.890</div>
-    <div class="card">iPhone 12 • R$ 2.500</div>
+  <div class="search-box">
+    <input id="modelInput" placeholder="Modelo desejado (ex: iPhone 11)"/>
+    <input id="priceInput" placeholder="Quanto quer pagar? R$"/>
   </div>
+
+  <div id="radarBubble" class="radar-bubble hidden">
+    <span>RP Radar</span>
+  </div>
+
+  <div id="matchBar" class="match-bar hidden">
+    <strong>MATCH encontrado</strong>
+    <button id="viewMatch">Ver MATCH</button>
+  </div>
+
+  <section>
+    <h2>Ofertas em destaque</h2>
+    <div id="offers" class="offers"></div>
+  </section>
 </main>
-
-<div id="radarBadge">RP Radar</div>
-
-<div id="matchModal">
-  <p><strong>MATCH encontrado</strong></p>
-  <button onclick="closeMatch()">Ver MATCH</button>
-</div>
 
 <script src="js/app.js"></script>
 </body>
