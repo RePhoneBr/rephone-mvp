@@ -2,42 +2,54 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
+  <title>RePhone V3 — Teste fechado</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <title>RePhone V3 — Teste Fechado</title>
-  <meta name="description" content="RePhone V3 (teste fechado): vitrine local + MATCH exclusivo. O comprador define o valor, e a RePhone monitora oportunidades com foco em segurança." />
+  <meta name="description" content="RePhone V3 (teste fechado): vitrine + MATCH exclusivo." />
   <link rel="icon" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=3.1" />
 </head>
 <body>
-  <!-- GATE (acesso por código) -->
-  <div class="gate" id="gate" aria-hidden="true">
-    <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-      <h2 id="gateTitle">Acesso ao V3</h2>
-      <p>Teste fechado. Peça autorização no WhatsApp e cole o código aqui. O acesso é temporário e pode ser revogado a qualquer momento.</p>
 
-      <div class="gate-row">
-        <input class="input" id="gateToken" placeholder="Código de acesso (ex: RPH-8742)" autocomplete="off" />
-        <button class="btn btn-primary" id="gateBtn" type="button">Entrar</button>
-        <a class="btn btn-ghost" id="gateWa" href="#" target="_blank" rel="noopener">Pedir acesso</a>
+  <!-- GATE (ACESSO POR CÓDIGO) -->
+  <div id="gate" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,.96); z-index:9999; padding:24px;">
+    <div style="max-width:560px; margin:10vh auto; border:1px solid rgba(0,0,0,.12); border-radius:16px; padding:18px; background:#fff;">
+      <h2 style="margin:0 0 8px;">Acesso ao V3</h2>
+      <p style="margin:0 0 14px; color:#334155;">
+        Teste fechado. Peça autorização no WhatsApp e cole o código aqui.
+        <br><b>Obs:</b> este acesso é temporário e pode ser revogado a qualquer momento.
+      </p>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <input id="gateToken" placeholder="Cole o código (ex: RPH-8742)"
+               style="flex:1; min-width:240px; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.15);" />
+        <button id="gateBtn"
+                style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#16a34a; color:#fff; font-weight:800; cursor:pointer;">
+          Entrar
+        </button>
+        <a id="gateWa"
+           style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-weight:800; cursor:pointer;">
+          Pedir acesso
+        </a>
       </div>
 
-      <div class="gate-note">Dica: se você recebeu um link com <strong>?token=...</strong>, ele preenche automaticamente.</div>
+      <small style="display:block; margin-top:12px; color:#64748b;">
+        Dica: se você recebeu um link com <b>?token=...</b>, ele preenche automaticamente.
+      </small>
     </div>
   </div>
 
-  <header class="header">
+  <header class="site-header">
     <div class="container topbar">
-      <a class="brand" href="index.html" aria-label="RePhone (início)">
-        <img src="assets/logo-rephone.svg" alt="RePhone" />
-        <div>
-          <strong>RePhone</strong>
-          <small>A melhor oferta, do jeito certo.</small>
+      <a class="brand" href="#">
+        <img src="assets/logo-rephone.svg" alt="RePhone" class="brand-logo" />
+        <div class="brand-text">
+          <div class="brand-name">RePhone</div>
+          <div class="brand-tagline">A melhor oferta, do jeito certo.</div>
         </div>
       </a>
 
-      <div class="search-wrap">
-        <input class="search" id="searchInput" placeholder="Buscar (ex: iPhone 11, S23, Moto G84)" />
+      <div class="search-wrap" role="search">
+        <input class="search" id="searchInput" placeholder="Buscar celular ou modelo" autocomplete="off" />
       </div>
     </div>
   </header>
@@ -45,124 +57,155 @@
   <main>
     <section class="hero">
       <div class="container">
-        <h1>Vitrine local + MATCH exclusivo.</h1>
-        <p>
-          Você escolhe <strong>modelo</strong> e <strong>quanto quer pagar</strong>.
-          A RePhone orienta com base no mercado e ativa o <strong>Radar</strong> para encontrar oportunidades.
-        </p>
+        <h1>A melhor oferta, do jeito certo.</h1>
+        <p class="lead">Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
 
-        <div class="intent">
-          <div class="panel">
-            <h3>Configurar sua busca</h3>
-
-            <div class="field">
-              <label for="modelInput">Modelo desejado</label>
-              <input class="input" id="modelInput" placeholder="Ex.: iPhone 11, iPhone 13, Galaxy S23" autocomplete="off" />
-              <div class="hint">A RePhone prioriza o mercado local e busca a melhor oportunidade dentro do seu raio.</div>
-            </div>
-
-            <div class="field">
-              <label for="priceInput">Quanto você quer pagar?</label>
-              <input class="input" id="priceInput" inputmode="decimal" placeholder="Ex.: 2500 ou 2.500,00" autocomplete="off" />
-              <div class="hint">Você pode digitar 2500, 2.500 ou 2.500,00. Padronizamos ao sair do campo.</div>
-            </div>
-
-            <div class="suggest" id="suggestBox" aria-live="polite">
-              <div><strong>Sugestão RePhone:</strong> <span id="suggestText"></span></div>
-              <div class="actions">
-                <button class="btn mini mini-primary" id="applySuggest" type="button">Usar valor sugerido</button>
-                <button class="btn mini" id="keepValue" type="button">Manter meu valor</button>
-              </div>
-            </div>
-
-            <div class="filters" style="margin-top:.9rem;">
-              <button class="chip active" type="button" data-filter="all">Todos</button>
-              <button class="chip" type="button" data-filter="near">Perto</button>
-              <button class="chip" type="button" data-filter="verified">Verificado</button>
-              <button class="chip" type="button" data-filter="delivery">Entrega</button>
-            </div>
+        <div class="price-box" aria-label="Definir valor máximo">
+          <label class="price-label" for="priceInput">Quanto você quer pagar?</label>
+          <div class="price-row">
+            <span class="currency">R$</span>
+            <input id="priceInput" class="price-input" inputmode="decimal" placeholder="Ex: 2500 ou 2.500,00" />
           </div>
-
-          <div class="panel">
-            <h3>Área Premium (em discussão)</h3>
-            <p class="hint" style="margin:.2rem 0 0;">
-              Espaço reservado para anúncios premium e experiências especiais.
-              No V3 é apenas uma prévia do que entra no produto final.
-            </p>
-
-            <div style="margin-top:1rem; display:grid; gap:.7rem;">
-              <div style="border:1px dashed rgba(22,163,74,.35); border-radius:18px; padding:.9rem; background:rgba(34,197,94,.08); font-weight:750; color:#14532d;">
-                MATCH RePhone é exclusivo: quando aparece, o anúncio fica fora da vitrine.
-              </div>
-              <div style="border:1px solid rgba(15,23,42,.10); border-radius:18px; padding:.9rem; background:rgba(255,255,255,.85); color:var(--muted); font-weight:700;">
-                Segurança: vendedor verificado + contexto de localização + compra protegida (futuro).
-              </div>
-            </div>
+          <div class="price-hint">
+            Aceitamos <strong>2500</strong>, <strong>2.500</strong> ou <strong>2.500,00</strong>. A RePhone interpreta e padroniza ao sair do campo.
           </div>
-        </div>
-
-        <div style="margin-top:1.2rem; color:var(--muted); font-weight:750;">
-          Distância do MATCH: <strong id="radiusLabel">Local (10 km)</strong>
         </div>
       </div>
     </section>
 
-    <section>
-      <div class="container" style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem;">
-        <h2 style="margin:0; letter-spacing:-.03em;">Ofertas em destaque</h2>
-        <div style="color:var(--muted); font-weight:750;" id="countLabel">Carregando…</div>
+    <section class="section">
+      <div class="container section-head">
+        <h2>Ofertas em destaque</h2>
+        <div class="loading" id="loadingLabel" aria-live="polite">Carregando ofertas...</div>
       </div>
 
-      <div class="container" style="margin-top:1rem;">
+      <div class="container">
+        <div class="filters" role="tablist" aria-label="Filtros de ofertas">
+          <button class="chip active" data-filter="all" type="button">Todos</button>
+          <button class="chip" data-filter="near" type="button">Perto</button>
+          <button class="chip" data-filter="verified" type="button">Vendedor verificado</button>
+          <button class="chip" data-filter="delivery" type="button">Entrega</button>
+        </div>
+
         <div class="grid" id="offersGrid" aria-label="Lista de ofertas"></div>
       </div>
     </section>
   </main>
 
-  <!-- MATCH BAR -->
-  <div class="matchbar" id="matchBar" aria-hidden="true">
+  <!-- Barra do MATCH (fixa) -->
+  <div class="matchbar" id="matchBar" aria-live="polite" aria-hidden="true">
     <div class="matchbar-inner">
-      <div style="flex:1; min-width:240px;">
-        <div class="match-title" id="matchTitle">Buscando MATCH…</div>
-        <div class="match-sub" id="matchSub">Validando o seu valor…</div>
-        <div class="progress" aria-hidden="true"><span></span></div>
-        <div class="radar" id="radarLine"><span class="dot" aria-hidden="true"></span><span id="radarText">Radar RePhone ativo — monitorando oportunidades</span></div>
+      <div class="matchbar-left">
+        <div class="matchbar-title" id="matchTitle">Buscando MATCH…</div>
+        <div class="matchbar-sub" id="matchSub">Comparando sinais (alguns segundos)</div>
+        <div class="matchbar-progress" aria-hidden="true"><span id="matchProg"></span></div>
       </div>
-
-      <div class="match-actions">
-        <button class="matchbtn" id="expandBtn" type="button">Expandir distância</button>
-        <button class="matchbtn" id="radarBtn" type="button">Ativar Radar</button>
-        <button class="matchbtn primary" id="matchBtn" type="button" disabled>Ver MATCH</button>
-      </div>
+      <button class="matchbar-btn" id="matchBtn" type="button" disabled>Ver MATCH</button>
     </div>
   </div>
 
-  <!-- MODAL -->
-  <div class="backdrop" id="modalBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <!-- Modal do MATCH -->
+  <div class="modal-backdrop" id="matchModalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="matchModalTitle">
       <div class="modal-head">
         <div>
-          <div class="modal-kicker" id="modalKicker">MATCH RePhone</div>
-          <h3 id="modalTitle">Encontramos uma oportunidade</h3>
+          <div class="modal-kicker">MATCH RePhone</div>
+          <h3 id="matchModalTitle">Encontramos uma oferta para você</h3>
         </div>
-        <button class="iconbtn" id="closeModal" type="button" aria-label="Fechar">✕</button>
+        <button class="icon-btn" id="closeMatchModal" type="button" aria-label="Fechar">✕</button>
       </div>
 
-      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-body" id="matchModalBody"></div>
 
       <div class="modal-actions">
-        <a class="btn btn-ghost" href="#modelInput" id="adjustBtn">Ajustar busca</a>
-        <a class="btn btn-primary" href="#" id="openOffer">Abrir anúncio</a>
+        <a class="btn btn-ghost" href="#priceInput" id="adjustPrice">Ajustar valor</a>
+        <a class="btn btn-primary" href="#" id="openOfferLink">Abrir anúncio</a>
       </div>
     </div>
   </div>
 
-  <footer class="footer">
-    <div class="container">
-      <small>RePhone V3 (teste fechado) • © <span id="year"></span></small>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>RePhone © — A melhor oferta, do jeito certo.</span>
     </div>
   </footer>
 
-  <script src="js/app.js"></script>
+  <script>
+    // ====== GATE (1 código por vez / sessão do navegador) ======
+    const OWNER_WA = "5527998205547";      // seu WhatsApp
+    const ACCESS_CODE = "RPH-8742";        // troque e faça commit para revogar geral
+    const SESSION_KEY = "rephone_v3_ok";   // só dura na aba (sessionStorage)
+
+    const gate = document.getElementById("gate");
+    const gateToken = document.getElementById("gateToken");
+    const gateBtn = document.getElementById("gateBtn");
+    const gateWa = document.getElementById("gateWa");
+
+    function showGate(){
+      gate.style.display = "block";
+      document.body.style.overflow = "hidden";
+    }
+    function hideGate(){
+      gate.style.display = "none";
+      document.body.style.overflow = "";
+    }
+    function isAllowed(){
+      return sessionStorage.getItem(SESSION_KEY) === "1";
+    }
+    function allow(){
+      sessionStorage.setItem(SESSION_KEY, "1");
+    }
+    function deny(){
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+
+    // WhatsApp link
+    if(gateWa){
+      const msg = encodeURIComponent("Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode liberar o código temporário?");
+      gateWa.href = `https://wa.me/${OWNER_WA}?text=${msg}`;
+      gateWa.target = "_blank";
+      gateWa.rel = "noopener";
+    }
+
+    // Preenche token via URL
+    const u = new URL(window.location.href);
+    const tokenFromUrl = u.searchParams.get("token");
+    if(tokenFromUrl && gateToken) gateToken.value = tokenFromUrl;
+
+    // Bloqueia se não autorizado
+    if(!isAllowed()) showGate();
+
+    gateBtn.addEventListener("click", () => {
+      const t = (gateToken.value || "").trim();
+      if(t === ACCESS_CODE){
+        allow();
+        hideGate();
+        // remove token da URL
+        const clean = new URL(window.location.href);
+        clean.searchParams.delete("token");
+        window.history.replaceState({}, "", clean.toString());
+      }else{
+        alert("Código inválido ou acesso revogado. Peça autorização no WhatsApp.");
+      }
+    });
+
+    // Botão flutuante para encerrar (revoga na hora para o usuário)
+    function mountExit(){
+      const exit = document.createElement("button");
+      exit.textContent = "Encerrar acesso";
+      exit.className = "exit-pill";
+      exit.addEventListener("click", () => { deny(); location.reload(); });
+      document.body.appendChild(exit);
+    }
+    if(isAllowed()) mountExit();
+  </script>
+
+  <script src="js/app.js?v=3.1"></script>
+
+  <!-- Radar discreto (canto inferior direito) -->
+  <button class="radar-pill" id="radarPill" type="button" aria-hidden="true" title="RP Radar">
+    <span class="pulse" aria-hidden="true"></span>
+    <span class="txt">RP Radar</span>
+  </button>
 </body>
 </html>
