@@ -22,24 +22,20 @@
     <p>Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
     <input id="priceInput" class="price-input" placeholder="Quanto você quer pagar? (R$)">
   </section>
+<section>
+  <h2>Ofertas em destaque</h2>
 
-  <section>
-    <h2>Ofertas em destaque</h2>
-    <div class="grid">
-      <a class="card" href="anuncio.html" data-price="2900">
-        <img src="https://via.placeholder.com/300">
-        <strong>iPhone 13 • 128GB</strong><br>
-        <span class="badge">Alta compatibilidade</span>
-        <div class="price">R$ 2.900</div>
-      </a>
-      <a class="card" href="anuncio.html" data-price="2500">
-        <img src="https://via.placeholder.com/300">
-        <strong>iPhone 12 • 64GB</strong><br>
-        <span class="badge">Boa compatibilidade</span>
-        <div class="price">R$ 2.500</div>
-      </a>
-    </div>
-  </section>
+  <!-- Chips de filtro (opcional) -->
+  <div class="filters" id="quickFilters">
+    <button class="chip active" data-filter="all" type="button">Todos</button>
+    <button class="chip" data-filter="near" type="button">Perto</button>
+    <button class="chip" data-filter="verified" type="button">Vendedor verificado</button>
+    <button class="chip" data-filter="delivery" type="button">Entrega</button>
+  </div>
+
+  <!-- Lista gerada pelo JS -->
+  <div class="grid" id="resultsGrid"></div>
+</section>
 </main>
 
 <footer>
