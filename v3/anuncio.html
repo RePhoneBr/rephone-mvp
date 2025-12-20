@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Anúncio — RePhone V3</title>
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container topbar">
+      <a class="brand" href="index.html">
+        <img src="assets/logo-rephone.svg" alt="RePhone" />
+        <div>
+          <strong>RePhone</strong>
+          <small>Voltar para vitrine</small>
+        </div>
+      </a>
+      <div class="search-wrap">
+        <a class="btn btn-ghost" href="index.html">← Voltar</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding:1.4rem 0 2.4rem;">
+    <div class="panel">
+      <h3 id="title">Carregando anúncio…</h3>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+        <div style="flex:0 0 260px;">
+          <div class="media" style="height:240px; border-radius:18px; overflow:hidden;">
+            <img id="img" src="assets/phone-placeholder.svg" alt="" style="max-height:220px;" />
+          </div>
+        </div>
+
+        <div style="flex:1; min-width:260px;">
+          <div class="price" id="price" style="font-size:1.45rem;">—</div>
+          <div class="meta" id="meta" style="margin-top:.4rem;">—</div>
+          <div class="badges" id="badges" style="margin-top:.7rem;"></div>
+
+          <div style="margin-top:1rem; border:1px solid rgba(15,23,42,.10); border-radius:18px; padding:.95rem; background:rgba(255,255,255,.86);">
+            <div style="font-weight:950; letter-spacing:-.02em;">Opinião técnica RePhone (futuro)</div>
+            <div style="margin-top:.45rem; color:var(--muted); font-weight:700;">
+              No produto final, aqui entra o Assistente Técnico neutro (CTR). No V3, mantemos apenas a estrutura.
+            </div>
+          </div>
+
+          <div style="margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" type="button">Continuar (fluxo futuro)</button>
+            <button class="btn btn-ghost" type="button">Salvar</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem; color:var(--muted); font-weight:700;">
+        Descrição (simulada): anúncio demonstrativo do V3 para validar experiência de vitrine + MATCH.
+      </div>
+    </div>
+  </main>
+
+  <script src="js/anuncio.js"></script>
+</body>
+</html>
