@@ -1,328 +1,138 @@
-/* RePhone V3 (teste fechado)
-   - Acesso por código (gate)
-   - Vitrine com ofertas simuladas
-   - MATCH exclusivo (fora do grid), suspense ~10s com etapas
-   - Melhor oportunidade dentro do raio (10/30/60km) após clique
-   - Nunca “não encontra”: entra em Radar ativo e promete monitorar
-   - Sugestão automática de valor (faixa de mercado simulada por modelo)
-*/
+// RePhone V3 — Correções:
+// 1) Campo de valor: NÃO formata durante a digitação (não trava / não pula cursor). Formata só no blur.
+// 2) MATCH: suspense com etapas + duração maior.
+// 3) Ao encontrar MATCH: oculta o anúncio correspondente na lista (exclusivo).
 
-(() => {
-  const OWNER_WA = "5527998205547";   // seu WhatsApp
-  const ACCESS_CODE = "RPH-8742";     // troque e faça commit para revogar
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  const MATCH_SUSPENSE_MS = 10000;
-  const STEP_MS = 2000;
-  const MATCH_STEPS = [
-    "Validando o seu valor…",
-    "Checando reputação e verificação…",
-    "Analisando distância e logística…",
-    "Buscando oportunidades imediatas…",
-    "Finalizando MATCH…"
-  ];
+const offers = [
+  { id:"iphone13-128", title:"iPhone 13 • 128GB", price:2900.00, condition:"Seminovo", city:"Aracruz/ES", distanceKm:3,  distanceLabel:"Muito perto", verified:true,  rating:4.9, sales:312, since:2021, delivery:true,  match:92, compatibility:"Alta compatibilidade", image:"assets/products/iphone-13-128.webp" },
+  { id:"iphone12-64",  title:"iPhone 12 • 64GB",  price:2500.00, condition:"Seminovo", city:"Vitória/ES", distanceKm:48, distanceLabel:"Longe",      verified:false, rating:4.2, sales:18,  since:2024, delivery:false, match:71, compatibility:"Boa compatibilidade", image:"assets/products/iphone-12-64.webp" },
+  { id:"galaxy-s23-256", title:"Galaxy S23 • 256GB", price:3499.00, condition:"Novo", city:"Linhares/ES", distanceKm:78, distanceLabel:"Longe", verified:true, rating:4.7, sales:89, since:2022, delivery:true, match:84, compatibility:"Entrega disponível", image:"assets/products/galaxy-s23-256.webp" },
+  { id:"iphone14pro-256", title:"iPhone 14 Pro • 256GB", price:5290.00, condition:"Seminovo", city:"Rio de Janeiro/RJ", distanceKm:410, distanceLabel:"Muito longe", verified:false, rating:4.0, sales:7, since:2025, delivery:true, match:58, compatibility:"Premium", image:"assets/products/iphone-14-pro-256.webp" },
+  { id:"iphone11-64", title:"iPhone 11 • 64GB", price:1890.00, condition:"Usado", city:"Serra/ES", distanceKm:55, distanceLabel:"Longe", verified:true, rating:4.6, sales:41, since:2023, delivery:true, match:66, compatibility:"Bom custo-benefício", image:"assets/products/iphone-11-64.webp" },
+  { id:"moto-g84-256", title:"Moto G84 • 256GB", price:1499.00, condition:"Novo", city:"Aracruz/ES", distanceKm:6, distanceLabel:"Perto", verified:true, rating:4.8, sales:204, since:2020, delivery:true, match:73, compatibility:"Entrega local", image:"assets/products/moto-g84-256.webp" },
+];
 
-  const RADIUS_LEVELS = [10, 30, 60];
-  let radiusIndex = 0; // começa em 10km
+// ===== Util BRL =====
+function formatBRL(value){
+  return new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL" }).format(value);
+}
 
-  const FALLBACK_IMG = "assets/phone-placeholder.svg";
+// Aceita: 2500 | 2.500 | 2.500,00 | R$ 2.500,00
+function parseBRLToNumber(raw){
+  if(raw === null || raw === undefined) return null;
+  let s = String(raw).trim();
+  if(!s) return null;
 
-  const $ = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  // remove tudo exceto dígitos, ponto e vírgula
+  s = s.replace(/[^0-9.,]/g, "");
+  if(!s) return null;
 
-  const yearEl = $("#year");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-  // ---------- GATE ----------
-  const gate = $("#gate");
-  const gateToken = $("#gateToken");
-  const gateBtn = $("#gateBtn");
-  const gateWa = $("#gateWa");
-
-  function openGate(){
-    gate.classList.add("show");
-    gate.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-  }
-  function closeGate(){
-    gate.classList.remove("show");
-    gate.setAttribute("aria-hidden","true");
-    document.body.style.overflow = "";
-  }
-
-  if (gateWa){
-    const msg = encodeURIComponent("Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode me liberar o código temporário?");
-    gateWa.href = `https://wa.me/${OWNER_WA}?text=${msg}`;
-  }
-
-  // prefill from URL ?token=
-  try{
-    const u = new URL(window.location.href);
-    const t = u.searchParams.get("token");
-    if (t && gateToken) gateToken.value = t;
-  }catch(e){}
-
-  // sempre exige código ao abrir (1 pessoa por vez por prática: você troca o código)
-  openGate();
-
-  function validateGate(){
-    const t = (gateToken?.value || "").trim();
-    if (t === ACCESS_CODE){
-      closeGate();
-      // limpa token na URL
-      try{
-        const u = new URL(window.location.href);
-        u.searchParams.delete("token");
-        window.history.replaceState({}, "", u.toString());
-      }catch(e){}
-      // botão encerrar acesso (recarrega e volta ao gate)
-      const exit = document.createElement("button");
-      exit.textContent = "Encerrar acesso";
-      exit.className = "btn";
-      exit.style.cssText = "position:fixed; bottom:16px; right:16px; z-index:90; box-shadow:none; background:rgba(255,255,255,.92)";
-      exit.addEventListener("click", () => location.reload());
-      document.body.appendChild(exit);
-    } else {
-      alert("Código inválido ou acesso revogado. Peça autorização no WhatsApp.");
-    }
-  }
-  gateBtn?.addEventListener("click", validateGate);
-  gateToken?.addEventListener("keydown", (e) => { if(e.key === "Enter") validateGate(); });
-
-  // ---------- DATA ----------
-  // Faixas simuladas (no futuro: banco de dados real)
-  const market = [
-    { key:"iphone 11", min: 1700, avg: 2100, max: 2600 },
-    { key:"iphone 12", min: 2100, avg: 2500, max: 3200 },
-    { key:"iphone 13", min: 2500, avg: 3000, max: 3800 },
-    { key:"iphone 14 pro", min: 4200, avg: 5200, max: 6500 },
-    { key:"galaxy s23", min: 2900, avg: 3500, max: 4500 },
-    { key:"moto g84", min: 1100, avg: 1500, max: 1900 },
-  ];
-
-  const offers = [
-    {
-      id:"iphone11-64",
-      title:"iPhone 11 • 64GB",
-      modelKey:"iphone 11",
-      price:1890,
-      condition:"Usado",
-      city:"Serra/ES",
-      distanceKm:55,
-      verified:true,
-      rating:4.6,
-      reviews: 92,
-      delivery:true,
-      image:"assets/products/iphone-11-64.webp"
-    },
-    {
-      id:"iphone13-128",
-      title:"iPhone 13 • 128GB",
-      modelKey:"iphone 13",
-      price:2900,
-      condition:"Seminovo",
-      city:"Aracruz/ES",
-      distanceKm:3,
-      verified:true,
-      rating:4.9,
-      reviews: 312,
-      delivery:true,
-      image:"assets/products/iphone-13-128.webp"
-    },
-    {
-      id:"iphone12-64",
-      title:"iPhone 12 • 64GB",
-      modelKey:"iphone 12",
-      price:2500,
-      condition:"Seminovo",
-      city:"Vitória/ES",
-      distanceKm:48,
-      verified:false,
-      rating:4.2,
-      reviews: 18,
-      delivery:false,
-      image:"assets/products/iphone-12-64.webp"
-    },
-    {
-      id:"galaxys23-256",
-      title:"Galaxy S23 • 256GB",
-      modelKey:"galaxy s23",
-      price:3499,
-      condition:"Novo",
-      city:"Linhares/ES",
-      distanceKm:78,
-      verified:true,
-      rating:4.7,
-      reviews: 89,
-      delivery:true,
-      image:"assets/products/galaxy-s23-256.webp"
-    },
-    {
-      id:"iphone14pro-256",
-      title:"iPhone 14 Pro • 256GB",
-      modelKey:"iphone 14 pro",
-      price:5290,
-      condition:"Seminovo",
-      city:"Rio de Janeiro/RJ",
-      distanceKm:410,
-      verified:false,
-      rating:4.0,
-      reviews: 7,
-      delivery:true,
-      image:"assets/products/iphone-14-pro-256.webp"
-    },
-    {
-      id:"motog84-256",
-      title:"Moto G84 • 256GB",
-      modelKey:"moto g84",
-      price:1499,
-      condition:"Novo",
-      city:"Aracruz/ES",
-      distanceKm:6,
-      verified:true,
-      rating:4.8,
-      reviews: 204,
-      delivery:true,
-      image:"assets/products/moto-g84-256.webp"
-    },
-  ];
-
-  function attachImageFallback(img){
-    img.addEventListener("error", () => {
-      if(img.dataset.fallbackApplied) return;
-      img.dataset.fallbackApplied = "1";
-      img.src = FALLBACK_IMG;
-    });
-  }
-
-  function formatBRL(n){
-    return n.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
-  }
-
-  // parse BR value to number
-  function parseBRL(raw){
-    if(!raw) return null;
-    let s = String(raw).trim().replace(/[^\d.,]/g, "");
-    if(!s) return null;
-
-    if(s.includes(",")){
-      s = s.replace(/\./g, "").replace(",", ".");
-    } else if ((s.match(/\./g) || []).length === 1){
-      const [a,b] = s.split(".");
-      if(b.length !== 2) s = a + b;
-    } else {
+  // Se tem vírgula, vírgula é decimal e ponto é milhar
+  if(s.includes(",")){
+    s = s.replace(/\./g, ""); // remove milhares
+    s = s.replace(",", "."); // decimal
+  } else {
+    // sem vírgula
+    const dots = (s.match(/\./g) || []).length;
+    if(dots === 1){
+      const parts = s.split(".");
+      const last = parts[1] || "";
+      // se tiver 2 dígitos após o ponto, trata como decimal (1500.50)
+      if(last.length === 2){
+        s = parts[0] + "." + last;
+      } else {
+        // senão, ponto é milhar
+        s = parts[0] + last;
+      }
+    } else if(dots > 1){
+      // muitos pontos => milhares
       s = s.replace(/\./g, "");
     }
-
-    const n = Number(s);
-    return Number.isFinite(n) ? n : null;
   }
 
-  function normalizeBRLInputOnBlur(input){
-    const n = parseBRL(input.value);
-    if(n === null){
-      input.dataset.value = "";
-      input.value = "";
-      return;
-    }
-    input.dataset.value = String(n);
-    input.value = formatBRL(n);
-  }
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
 
-  function toModelKey(str){
-    return String(str||"").trim().toLowerCase();
-  }
+function formatPtNumber(n){
+  return new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+}
 
-  function findMarketRange(modelKey){
-    const mk = toModelKey(modelKey);
-    // match by inclusion for flexibility (iphone 11 / iphone11)
-    const hit = market.find(m => mk.includes(m.key));
-    return hit || null;
-  }
+// ===== Render / Filters =====
+const offersGrid = $("#offersGrid");
+const loadingLabel = $("#loadingLabel");
 
-  function priceTag(offer){
-    const r = findMarketRange(offer.modelKey);
-    if(!r) return { label:"Preço", cls:"neutral" };
-    if(offer.price < r.avg*0.92) return { label:"Bom preço", cls:"good" };
-    if(offer.price > r.avg*1.10) return { label:"Acima da média", cls:"warn" };
-    return { label:"Dentro da média", cls:"neutral" };
-  }
+let activeFilter = "all";
+let activeQuery = "";
 
-  function distanceLabel(km){
-    if(km <= 5) return "Muito perto";
-    if(km <= 10) return "Perto";
-    if(km <= 80) return "Longe";
-    return "Muito longe";
-  }
+// Quando existe MATCH, removemos esse item do grid (exclusivo)
+let hiddenOfferId = null;
 
-  // ---------- UI (GRID) ----------
-  const offersGrid = $("#offersGrid");
-  const countLabel = $("#countLabel");
-  const searchInput = $("#searchInput");
-  const modelInput = $("#modelInput");
-  const priceInput = $("#priceInput");
+function passesFilter(offer){
+  if(activeFilter === "near") return offer.distanceKm <= 10;
+  if(activeFilter === "verified") return offer.verified;
+  if(activeFilter === "delivery") return offer.delivery;
+  return true;
+}
+function passesSearch(offer){
+  if(!activeQuery) return true;
+  return offer.title.toLowerCase().includes(activeQuery) || offer.city.toLowerCase().includes(activeQuery);
+}
 
-  const suggestBox = $("#suggestBox");
-  const suggestText = $("#suggestText");
-  const applySuggest = $("#applySuggest");
-  const keepValue = $("#keepValue");
+function buildCard(offer){
+  const verifiedPill = offer.verified
+    ? '<span class="pill good">Verificado</span>'
+    : '<span class="pill warn">Verificação pendente</span>';
 
-  const radiusLabel = $("#radiusLabel");
+  const distPill =
+    offer.distanceLabel === "Muito perto" ? `<span class="pill good">Muito perto • ${offer.distanceKm}km</span>` :
+    offer.distanceLabel === "Perto" ? `<span class="pill good">Perto • ${offer.distanceKm}km</span>` :
+    offer.distanceLabel === "Muito longe" ? `<span class="pill neutral">Muito longe • ${offer.distanceKm}km</span>` :
+    `<span class="pill neutral">Longe • ${offer.distanceKm}km</span>`;
 
-  let activeFilter = "all";
-  let query = "";
-  let hiddenOfferId = null;
+  const deliveryPill = offer.delivery ? '<span class="pill good">Entrega</span>' : '<span class="pill neutral">Retirada</span>';
 
-  function passesFilter(o){
-    if(activeFilter === "near") return o.distanceKm <= 10;
-    if(activeFilter === "verified") return o.verified;
-    if(activeFilter === "delivery") return o.delivery;
-    return true;
-  }
-  function passesSearch(o){
-    if(!query) return true;
-    const q = query.toLowerCase();
-    return o.title.toLowerCase().includes(q) || o.city.toLowerCase().includes(q);
-  }
+  return `
+    <a class="card" href="anuncio.html?id=${encodeURIComponent(offer.id)}" data-offer-id="${offer.id}">
+      <div class="card-media">
+        <img src="${offer.image}" alt="${offer.title}" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <div class="title">${offer.title}</div>
+        <div class="price">${formatBRL(offer.price)}</div>
 
-  function buildCard(o){
-    const ver = o.verified ? {t:"Verificado", c:"good"} : {t:"Verificação pendente", c:"warn"};
-    const dist = distanceLabel(o.distanceKm);
-    const distBadge = dist === "Muito perto" || dist === "Perto" ? "good" : "neutral";
-    const del = o.delivery ? {t:"Entrega", c:"good"} : {t:"Retirada", c:"neutral"};
-    const pt = priceTag(o);
-
-    return `
-      <a class="card" href="anuncio.html?id=${encodeURIComponent(o.id)}">
-        <div class="media">
-          <img src="${o.image}" alt="${o.title}" loading="lazy" referrerpolicy="no-referrer" data-fallback="1" />
+        <div class="meta">
+          <span>${offer.condition}</span><span>•</span><span>${offer.city}</span>
         </div>
-        <div class="body">
-          <div class="title">${o.title}</div>
-          <div class="price">${formatBRL(o.price)}</div>
-          <div class="meta">${o.condition} • ${o.city}</div>
-          <div class="badges">
-            <span class="badge ${distBadge}">📍 ${dist} • ${o.distanceKm}km</span>
-            <span class="badge ${ver.c}">🛡 ${ver.t}</span>
-            <span class="badge ${del.c}">🚚 ${del.t}</span>
-            <span class="badge ${pt.cls}">💰 ${pt.label}</span>
-            <span class="badge neutral">⭐ ${o.rating.toFixed(1)} (${o.reviews})</span>
-          </div>
+
+        <div class="meta">
+          ${distPill}
+          ${verifiedPill}
+          ${deliveryPill}
         </div>
-      </a>
-    `;
-  }
 
-  function render(){
-    const visible = offers
-      .filter(o => passesFilter(o) && passesSearch(o))
-      .filter(o => o.id !== hiddenOfferId);
+        <div class="details">
+          <div><strong>${offer.match}%</strong> Match • <small>${offer.compatibility}</small></div>
+          <div>★ ${offer.rating.toFixed(1)} • ${offer.sales} vendas • desde ${offer.since}</div>
+        </div>
+      </div>
+    </a>
+  `;
+}
 
-    offersGrid.innerHTML = visible.map(buildCard).join("");
-    $$('img[data-fallback="1"]', offersGrid).forEach(attachImageFallback);
+function render(){
+  const visible = offers
+    .filter(o => passesFilter(o) && passesSearch(o))
+    .filter(o => o.id !== hiddenOfferId);
 
-    countLabel.textContent = visible.length ? `${visible.length} ofertas` : "Sem ofertas nesta combinação";
-  }
+  offersGrid.innerHTML = visible.map(buildCard).join("");
+  loadingLabel.textContent = visible.length ? `${visible.length} ofertas` : "Nenhuma oferta encontrada";
+}
 
+function initFilters(){
   $$(".chip").forEach(btn => {
     btn.addEventListener("click", () => {
       $$(".chip").forEach(b => b.classList.remove("active"));
@@ -331,315 +141,319 @@
       render();
     });
   });
+}
 
-  searchInput?.addEventListener("input", () => {
-    query = searchInput.value.trim();
+function initSearch(){
+  const search = $("#searchInput");
+  search.addEventListener("input", () => {
+    activeQuery = search.value.trim().toLowerCase();
     render();
   });
+}
 
-  // ---------- SUGESTÃO DE VALOR (automática) ----------
-  let lastSuggested = null;
-  function showSuggestion(msg, value){
-    if(!suggestBox) return;
-    suggestText.textContent = msg;
-    lastSuggested = value;
-    suggestBox.style.display = "block";
+// ===== Campo de valor (corrigido) =====
+const priceInput = $("#priceInput");
+
+// Enquanto digita: só filtra caracteres. Não formata e não “pula”.
+priceInput.addEventListener("input", () => {
+  const before = priceInput.value;
+  const cleaned = before.replace(/[^0-9.,]/g, "");
+  if(cleaned !== before) priceInput.value = cleaned;
+
+  // guarda valor numérico (se der para interpretar)
+  const n = parseBRLToNumber(priceInput.value);
+  priceInput.dataset.value = (n === null) ? "" : String(n);
+
+  // MATCH será disparado por debounce (abaixo)
+  scheduleMatch();
+});
+
+// Ao sair do campo: padroniza visualmente
+priceInput.addEventListener("blur", () => {
+  const n = parseBRLToNumber(priceInput.value);
+  if(n === null){
+    priceInput.value = "";
+    priceInput.dataset.value = "";
+    return;
   }
-  function hideSuggestion(){
-    if(!suggestBox) return;
-    suggestBox.style.display = "none";
-    lastSuggested = null;
-  }
+  priceInput.dataset.value = String(n);
+  priceInput.value = formatPtNumber(n); // sem "R$" porque já existe prefixo
+});
 
-  function updateSuggestion(){
-    const mk = toModelKey(modelInput?.value);
-    const n = parseBRL(priceInput?.value);
-    if(!mk || n === null) { hideSuggestion(); return; }
-    const range = findMarketRange(mk);
-    if(!range) { hideSuggestion(); return; }
+// ===== MATCH BAR (suspense por etapas) =====
+const matchBar = $("#matchBar");
+const matchTitle = $("#matchTitle");
+const matchSub = $("#matchSub");
+const matchBtn = $("#matchBtn");
+const radarPill = $("#radarPill");
+const matchProg = $("#matchProg");
 
-    // abaixo do mínimo "realista"
-    if(n < range.min){
-      showSuggestion(`Para ${range.key.toUpperCase()}, oportunidades costumam aparecer a partir de ${formatBRL(range.min)}. Mantemos seu valor e seguimos monitorando.`, range.min);
+const modalBackdrop = $("#matchModalBackdrop");
+const modalBody = $("#matchModalBody");
+const openOfferLink = $("#openOfferLink");
+const closeMatchModal = $("#closeMatchModal");
+
+const MATCH_SUSPENSE_MS = 4200;
+const MATCH_DEBOUNCE_MS = 650;
+// NOVO: comportamento do Radar/MATCH
+const SILENT_AFTER_INPUT_MS = 5000; // 5s invisível após parar de digitar
+const RADAR_VISIBLE_MS = 10000;     // 10s com RP Radar no canto antes do resultado
+let silentTimer = null;
+let radarTimer = null;
+
+let matchDebounceTimer = null;
+let matchTimer = null;
+let stageTimer = null;
+let currentMatch = null;
+
+function showMatchBar(){
+  matchBar.classList.add("show");
+  matchBar.setAttribute("aria-hidden","false");
+}
+function hideMatchBar(){
+  matchBar.classList.remove("show");
+  matchBar.setAttribute("aria-hidden","true");
+}
+
+
+function showRadarPill(){
+  if(!radarPill) return;
+  radarPill.classList.add("show");
+  radarPill.setAttribute("aria-hidden","false");
+}
+function hideRadarPill(){
+  if(!radarPill) return;
+  radarPill.classList.remove("show");
+  radarPill.setAttribute("aria-hidden","true");
+}
+function cancelRadarFlow(){
+  if(silentTimer){ clearTimeout(silentTimer); silentTimer = null; }
+  if(radarTimer){ clearTimeout(radarTimer); radarTimer = null; }
+  hideRadarPill();
+}
+
+function resetProgress(){
+  matchProg.style.width = "0%";
+}
+
+function setSearching(){
+  currentMatch = null;
+  matchBtn.disabled = true;
+  matchBtn.textContent = "Aguardando…";
+  matchTitle.textContent = "Buscando MATCH…";
+  matchSub.textContent = "Iniciando análise";
+  resetProgress();
+  showMatchBar();
+}
+
+function setNoMatch(){
+  currentMatch = null;
+  matchBtn.disabled = true;
+  matchBtn.textContent = "Radar ativo";
+  matchTitle.textContent = "RP Radar monitorando";
+  matchSub.textContent = "A RePhone vai avisar assim que surgir uma oportunidade compatível. Você pode ajustar o valor se quiser.";
+  matchProg.style.width = "100%";
+  showMatchBar();
+}
+
+function setMatchFound(offer, score){
+  currentMatch = offer;
+  matchTitle.textContent = `MATCH encontrado: ${offer.title}`;
+  matchSub.textContent = `${formatBRL(offer.price)} • ${offer.distanceLabel} • ${offer.verified ? "vendedor verificado" : "verificação pendente"} • ${Math.round(score)}% compatível`;
+  matchBtn.disabled = false;
+  matchBtn.textContent = "Ver MATCH";
+  matchProg.style.width = "100%";
+  showMatchBar();
+}
+
+function computeScore(offer, budget){
+  const priceDiff = Math.abs(budget - offer.price);
+  const priceScore = Math.max(0, 100 - (priceDiff / Math.max(1, budget)) * 100);
+  const distScore = Math.max(0, 100 - (offer.distanceKm / 5));
+  const verifiedScore = offer.verified ? 10 : 0;
+  const deliveryScore = offer.delivery ? 6 : 0;
+  const ratingScore = (offer.rating || 0) * 2;
+  return priceScore * 0.55 + distScore * 0.25 + ratingScore * 0.10 + verifiedScore + deliveryScore;
+}
+
+function chooseMatch(budget){
+  const below = offers.filter(o => o.price <= budget);
+  const candidates = below.length ? below : offers.slice();
+
+  const ranked = candidates
+    .map(o => ({ o, score: computeScore(o, budget) }))
+    .sort((a,b) => b.score - a.score);
+
+  return ranked.length ? ranked[0] : null;
+}
+
+function runStages(totalMs){
+  const stages = [
+    { t: 0.10, sub: "Validando o seu valor" },
+    { t: 0.35, sub: "Checando reputação e verificação" },
+    { t: 0.62, sub: "Analisando distância e logística" },
+    { t: 0.85, sub: "Comparando as melhores ofertas" },
+  ];
+  let idx = 0;
+  const started = Date.now();
+
+  clearInterval(stageTimer);
+  stageTimer = setInterval(() => {
+    const elapsed = Date.now() - started;
+    const progress = Math.min(0.98, elapsed / totalMs);
+    matchProg.style.width = `${Math.round(progress * 100)}%`;
+
+    // Atualiza texto de etapa
+    while(idx < stages.length && progress >= stages[idx].t){
+      matchSub.textContent = stages[idx].sub;
+      idx++;
+    }
+
+    if(elapsed >= totalMs){
+      clearInterval(stageTimer);
+    }
+  }, 120);
+}
+
+function scheduleMatch(){
+  if(matchDebounceTimer) clearTimeout(matchDebounceTimer);
+  // Enquanto o usuário digita, nada aparece.
+  // Quando ele para, esperamos 5s invisível; depois mostramos o RP Radar por 10s; só então exibimos o resultado do MATCH.
+  matchDebounceTimer = setTimeout(() => {
+    cancelRadarFlow();
+    // Se não há orçamento válido, volta ao estado inicial
+    const budget = Number(priceInput.dataset.value || 0);
+    if(!budget || budget <= 0){
+      currentMatch = null;
+      hiddenOfferId = null;
+      hideMatchBar();
+      render();
       return;
     }
-    // muito acima da média -> sugerir ajustar para média
-    if(n > range.avg * 1.20){
-      showSuggestion(`Este valor está acima da média atual (${formatBRL(range.avg)}). Se quiser, podemos priorizar ofertas mais justas.`, range.avg);
-      return;
-    }
-    hideSuggestion();
-  }
+    // some qualquer barra durante o tempo invisível
+    hideMatchBar();
+    // 5s invisível
+    silentTimer = setTimeout(() => {
+      // 10s de radar discreto
+      showRadarPill();
+      radarTimer = setTimeout(() => {
+        hideRadarPill();
+        // agora sim, decide o match e mostra a barra de resultado
+        startMatch();
+      }, RADAR_VISIBLE_MS);
+    }, SILENT_AFTER_INPUT_MS);
+  }, MATCH_DEBOUNCE_MS);
+}
 
-  applySuggest?.addEventListener("click", () => {
-    if(lastSuggested === null) return;
-    priceInput.value = String(Math.round(lastSuggested)); // deixa digitável
-    priceInput.dataset.value = String(lastSuggested);
-    normalizeBRLInputOnBlur(priceInput); // padroniza
-    hideSuggestion();
-    kickMatch(); // reprocessa
-  });
-  keepValue?.addEventListener("click", () => hideSuggestion());
+function startMatch(){
+  if(matchTimer) clearTimeout(matchTimer);
+  clearInterval(stageTimer);
 
-  // ---------- PRICE INPUT (corrigido: não trava) ----------
-  priceInput?.addEventListener("input", () => {
-    // Não formatar aqui! (evita pulo de cursor)
-    priceInput.value = priceInput.value.replace(/[^\d.,]/g, "");
-    updateSuggestion();
-    kickMatch(); // reage com debounce/suspense
-  });
-  priceInput?.addEventListener("blur", () => {
-    normalizeBRLInputOnBlur(priceInput);
-    updateSuggestion();
-  });
+  const budget = Number(priceInput.dataset.value || 0);
 
-  modelInput?.addEventListener("input", () => {
-    updateSuggestion();
-    kickMatch();
-  });
-
-  // ---------- MATCH ENGINE ----------
-  const matchBar = $("#matchBar");
-  const matchTitle = $("#matchTitle");
-  const matchSub = $("#matchSub");
-  const matchBtn = $("#matchBtn");
-  const expandBtn = $("#expandBtn");
-  const radarBtn = $("#radarBtn");
-  const radarLine = $("#radarLine");
-  const radarText = $("#radarText");
-
-  const backdrop = $("#modalBackdrop");
-  const modalBody = $("#modalBody");
-  const openOffer = $("#openOffer");
-  const closeModalBtn = $("#closeModal");
-
-  let matchTimer = null;
-  let stepTimer = null;
-  let currentMatch = null;
-  let radarEnabled = false;
-
-  function showBar(){
-    matchBar.classList.add("show");
-    matchBar.setAttribute("aria-hidden","false");
-  }
-
-  function setSearching(){
+  if(!budget || budget <= 0){
+    // sem valor => volta tudo
     currentMatch = null;
-    matchBtn.disabled = true;
-    matchBtn.textContent = "Aguardando…";
-    matchTitle.textContent = "Buscando MATCH…";
-    matchSub.textContent = MATCH_STEPS[0];
-    radarLine.style.display = "none";
-    showBar();
-
-    // etapas
-    let i = 0;
-    if(stepTimer) clearInterval(stepTimer);
-    stepTimer = setInterval(() => {
-      i++;
-      if(i < MATCH_STEPS.length){
-        matchSub.textContent = MATCH_STEPS[i];
-      } else {
-        clearInterval(stepTimer);
-        stepTimer = null;
-      }
-    }, STEP_MS);
+    hiddenOfferId = null;
+    hideMatchBar();
+    render();
+    return;
   }
 
-  function setRadar(msg){
-    matchTitle.textContent = "Radar RePhone ativo";
-    matchSub.textContent = msg;
-    matchBtn.disabled = true;
-    matchBtn.textContent = "Sem MATCH agora";
-    radarLine.style.display = "flex";
-    radarText.textContent = radarEnabled
-      ? "Radar RePhone ativo — monitorando oportunidades"
-      : "Você pode ativar o Radar para continuar monitorando";
-    showBar();
-  }
+  // Mudou o valor => devolve lista (o match pode mudar)
+  currentMatch = null;
+  hiddenOfferId = null;
+  render();
 
-  function isRare(offer, budget){
-    const within = offer.price <= budget * 1.02; // muito próximo do valor
-    const trust = offer.verified || offer.rating >= 4.7;
-    const logistics = offer.delivery || offer.distanceKm <= 10;
-    return within && trust && logistics;
-  }
-
-  function scoreOffer(o, budget){
-    const range = findMarketRange(o.modelKey);
-    const priceCenter = range ? range.avg : budget;
-    const priceGap = Math.abs(o.price - budget);
-    const priceScore = Math.max(0, 100 - (priceGap / Math.max(1, priceCenter)) * 110);
-
-    const distScore = Math.max(0, 100 - (o.distanceKm / 1.2)); // forte impacto de distância, mas não absoluto
-    const trustScore = (o.verified ? 14 : 0) + (o.rating * 2.0);
-    const deliveryScore = o.delivery ? 8 : 0;
-
-    return priceScore * 0.55 + distScore * 0.20 + trustScore * 0.18 + deliveryScore;
-  }
-
-  function chooseBest(modelKey, budget, radiusKm){
-    const mk = toModelKey(modelKey);
-    let pool = offers.filter(o => o.distanceKm <= radiusKm);
-
-    if(mk){
-      // tentativa forte: filtrar por modelo
-      const byModel = pool.filter(o => o.modelKey && mk.includes(o.modelKey));
-      if(byModel.length) pool = byModel;
+  setSearching();
+  // Suspense visual já aconteceu no RP Radar (10s). Agora mostramos o resultado imediatamente.
+  const chosen = chooseMatch(budget);
+    if(!chosen || !chosen.o){
+      hiddenOfferId = null;
+      setNoMatch();
+      render();
+      return;
     }
 
-    if(!pool.length) return null;
+    const score = chosen.score;
 
-    const ranked = pool
-      .map(o => ({o, s: scoreOffer(o, budget)}))
-      .sort((a,b) => b.s - a.s);
+    // Exclusivo: remove do grid
+    currentMatch = chosen.o;
+    hiddenOfferId = currentMatch.id;
 
-    // Para “melhor oportunidade”, aceitamos o melhor mesmo se preço > budget,
-    // mas com penalidade no score (já acontece no priceScore)
-    return ranked[0] || null;
-  }
-
-  function setMatchFound(offer, budget){
-    currentMatch = offer;
-    hiddenOfferId = offer.id; // exclusivo: some do grid
+    setMatchFound(currentMatch, score);
     render();
 
-    const rare = isRare(offer, budget);
-    matchTitle.textContent = rare ? "MATCH RARO — oportunidade imediata" : "MATCH encontrado";
-    matchSub.textContent = `${offer.title} • ${formatBRL(offer.price)} • ${distanceLabel(offer.distanceKm)} • ${offer.verified ? "verificado" : "verificação pendente"}`;
-    matchBtn.disabled = false;
-    matchBtn.textContent = rare ? "Ver MATCH raro" : "Ver MATCH";
-    showBar();
-  }
+}
 
-  function openModal(){
-    if(!currentMatch) return;
-    const budget = parseBRL(priceInput.value) ?? currentMatch.price;
-
-    const rare = isRare(currentMatch, budget);
-    $("#modalKicker").textContent = rare ? "MATCH RARO" : "MATCH RePhone";
-    $("#modalTitle").textContent = rare ? "Oportunidade imediata" : "Melhor oportunidade disponível";
-
-    const pt = priceTag(currentMatch);
-    modalBody.innerHTML = `
-      <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-start;">
-        <div style="flex:0 0 180px;">
-          <div style="border:1px solid rgba(15,23,42,.10); border-radius:18px; padding:.75rem; background:rgba(15,23,42,.02); display:grid; place-items:center;">
-            <img src="${currentMatch.image}" alt="${currentMatch.title}" style="max-width:100%; max-height:160px; object-fit:contain;" />
-          </div>
-        </div>
-        <div style="flex:1; min-width:240px;">
-          <div style="font-weight:950; letter-spacing:-.02em; font-size:1.15rem;">${currentMatch.title}</div>
-          <div style="margin-top:.35rem; font-weight:950; font-size:1.25rem;">${formatBRL(currentMatch.price)}</div>
-          <div style="margin-top:.55rem; color:rgba(15,23,42,.78); font-weight:750;">
-            ${currentMatch.condition} • ${currentMatch.city} • ${distanceLabel(currentMatch.distanceKm)} (${currentMatch.distanceKm}km)
-          </div>
-
-          <div style="margin-top:.6rem; display:flex; gap:.5rem; flex-wrap:wrap;">
-            <span class="badge ${currentMatch.verified ? "good":"warn"}">🛡 ${currentMatch.verified ? "Verificado":"Verificação pendente"}</span>
-            <span class="badge ${currentMatch.delivery ? "good":"neutral"}">🚚 ${currentMatch.delivery ? "Entrega":"Retirada"}</span>
-            <span class="badge ${pt.cls}">💰 ${pt.label}</span>
-            <span class="badge neutral">⭐ ${currentMatch.rating.toFixed(1)} (${currentMatch.reviews})</span>
-          </div>
-
-          <div style="margin-top:.9rem; color:var(--muted); font-weight:750;">
-            ${rare ? "Você liberou uma oportunidade rara. Ela pode sair a qualquer momento." : "Encontramos a melhor oportunidade no raio atual."}
-          </div>
+// Modal
+function openMatchModal(offer, score){
+  modalBody.innerHTML = `
+    <div style="display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap;">
+      <div style="flex:0 0 160px;">
+        <div style="border:1px solid rgba(15,23,42,.10); border-radius:18px; padding:.75rem; background:rgba(15,23,42,.02); display:grid; place-items:center;">
+          <img src="${offer.image}" alt="${offer.title}" style="max-width:100%; max-height:140px; object-fit:contain;" />
         </div>
       </div>
-    `;
+      <div style="flex:1; min-width:220px;">
+        <div style="font-weight:950; letter-spacing:-.02em; font-size:1.15rem;">${offer.title}</div>
+        <div style="margin-top:.35rem; font-weight:950; font-size:1.25rem;">${formatBRL(offer.price)}</div>
+        <div style="margin-top:.55rem; color:rgba(15,23,42,.78); font-weight:650;">
+          ${offer.condition} • ${offer.city} • ${offer.distanceLabel} (${offer.distanceKm}km)
+        </div>
+        <div style="margin-top:.6rem; display:flex; gap:.5rem; flex-wrap:wrap;">
+          <span class="pill ${offer.verified ? "good" : "warn"}">${offer.verified ? "Verificado" : "Verificação pendente"}</span>
+          <span class="pill ${offer.delivery ? "good" : "neutral"}">${offer.delivery ? "Entrega" : "Retirada"}</span>
+          <span class="pill good">MATCH ${offer.match}%</span>
+          <span class="pill neutral">★ ${offer.rating.toFixed(1)} • ${offer.sales} vendas</span>
+        </div>
+        <div style="margin-top:.75rem; color:var(--muted); font-weight:700;">
+          Compatibilidade estimada: <strong>${Math.round(score)}%</strong> (demo)
+        </div>
+      </div>
+    </div>
+  `;
 
-    // fallback in modal
-    const img = modalBody.querySelector("img");
-    if(img) attachImageFallback(img);
+  openOfferLink.href = `anuncio.html?id=${encodeURIComponent(offer.id)}`;
+  modalBackdrop.classList.add("show");
+  modalBackdrop.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(){
+  modalBackdrop.classList.remove("show");
+  modalBackdrop.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
 
-    openOffer.href = `anuncio.html?id=${encodeURIComponent(currentMatch.id)}`;
-    backdrop.classList.add("show");
-    backdrop.setAttribute("aria-hidden","false");
-    document.body.style.overflow = "hidden";
-  }
+matchBtn.addEventListener("click", () => {
+  if(!currentMatch) return;
+  const budget = Number(priceInput.dataset.value || currentMatch.price);
+  const score = computeScore(currentMatch, budget);
+  openMatchModal(currentMatch, score);
+});
 
-  function closeModal(){
-    backdrop.classList.remove("show");
-    backdrop.setAttribute("aria-hidden","true");
-    document.body.style.overflow = "";
-  }
+closeMatchModal.addEventListener("click", closeModal);
+modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) closeModal(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape" && modalBackdrop.classList.contains("show")) closeModal(); });
 
-  closeModalBtn?.addEventListener("click", closeModal);
-  backdrop?.addEventListener("click", (e) => { if(e.target === backdrop) closeModal(); });
-  document.addEventListener("keydown", (e) => { if(e.key === "Escape" && backdrop.classList.contains("show")) closeModal(); });
-  matchBtn?.addEventListener("click", openModal);
-
-  function updateRadiusLabel(){
-    const km = RADIUS_LEVELS[radiusIndex];
-    if (km === 10) radiusLabel.textContent = "Local (10 km)";
-    else radiusLabel.textContent = `Região (${km} km)`;
-  }
-  updateRadiusLabel();
-
-  expandBtn?.addEventListener("click", () => {
-    radiusIndex = Math.min(radiusIndex + 1, RADIUS_LEVELS.length - 1);
-    updateRadiusLabel();
-    // ao expandir, aumenta compromisso do usuário -> reprocessa com suspense
-    kickMatch(true);
-  });
-
-  radarBtn?.addEventListener("click", () => {
-    radarEnabled = true;
-    radarLine.style.display = "flex";
-    radarText.textContent = "Radar RePhone ativo — monitorando oportunidades";
-    matchSub.textContent = "Vamos avisar assim que surgir uma oportunidade compatível.";
-  });
-
-  function clearTimers(){
-    if(matchTimer) clearTimeout(matchTimer);
-    matchTimer = null;
-    if(stepTimer) clearInterval(stepTimer);
-    stepTimer = null;
-  }
-
-  function kickMatch(force=false){
-    // reset exclusividade se usuário mudou intenção
-    if(!force){
-      hiddenOfferId = null;
-      render();
-    }
-
-    clearTimers();
-
-    const model = modelInput?.value || "";
-    const budget = parseBRL(priceInput?.value);
-
-    // Só começa match quando tem pelo menos valor OU modelo (para demonstrar motor).
-    if((!model || model.trim().length < 2) && (!budget || budget <= 0)){
-      matchBar.classList.remove("show");
-      matchBar.setAttribute("aria-hidden","true");
-      return;
-    }
-
-    setSearching();
-    showBar();
-
-    matchTimer = setTimeout(() => {
-      const usedBudget = budget && budget > 0 ? budget : (findMarketRange(model)?.avg || 2500);
-
-      const best = chooseBest(model, usedBudget, RADIUS_LEVELS[radiusIndex]);
-
-      if(best && best.o){
-        setMatchFound(best.o, usedBudget);
-      } else {
-        // nunca "sem match": radar
-        const km = RADIUS_LEVELS[radiusIndex];
-        const msg = km < 60
-          ? `Nenhuma oportunidade ideal apareceu em até ${km} km agora. Você pode expandir a distância ou manter o Radar ativo.`
-          : "Ainda não apareceu uma oportunidade compatível no momento. A RePhone continua monitorando e vai avisar assim que surgir.";
-        setRadar(msg);
-      }
-    }, MATCH_SUSPENSE_MS);
-  }
-
-  // initial render
+// Boot
+function boot(){
+  setTimeout(() => { loadingLabel.textContent = `${offers.length} ofertas`; }, 250);
+  initFilters();
+  initSearch();
   render();
-  countLabel.textContent = `${offers.length} ofertas`;
+}
+document.addEventListener("DOMContentLoaded", boot);
 
-})();
+
+// Clicar no RP Radar mostra uma mensagem discreta (sem resultado)
+if(radarPill){
+  radarPill.addEventListener("click", () => {
+    showMatchBar();
+    matchTitle.textContent = "RP Radar monitorando";
+    matchSub.textContent = "Aguardando uma oportunidade compatível…";
+    matchBtn.disabled = true;
+    matchBtn.textContent = "Aguardando";
+    matchProg.style.width = "35%";
+  });
+}
