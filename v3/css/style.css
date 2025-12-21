@@ -1,114 +1,148 @@
-/**
- * RePhone V3 - Core Engine
- * Versão Corrigida: Sincronização de Classes e Exclusividade
- */
-
-// 1. Configurações e Mocks
-const PLACEHOLDER_IMG = "https://www.apple.com/v/iphone/home/bu/images/overview/select/iphone_15_pro__dqll89m6at6a_xlarge.jpg";
-const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-
-// Gerador de ofertas falsas (Simulando Banco de Dados)
-const MOCK_OFFERS = [
-    { id: 101, model: "iPhone 13", storage: "128GB", price: 3100, cond: "Excelente", city: "São Paulo", distKm: 4, distLabel: "Perto de você", verified: true, delivery: true, premium: true, rating: 4.9, reviews: 128 },
-    { id: 102, model: "iPhone 14", storage: "128GB", price: 4200, cond: "Como novo", city: "Rio de Janeiro", distKm: 12, distLabel: "Barra da Tijuca", verified: true, delivery: true, premium: false, rating: 4.7, reviews: 54 },
-    { id: 103, model: "iPhone 11", storage: "64GB", price: 1850, cond: "Bom", city: "Curitiba", distKm: 8, distLabel: "Centro", verified: false, delivery: true, premium: false, rating: 4.5, reviews: 210 },
-    { id: 104, model: "iPhone 13 Pro", storage: "256GB", price: 4800, cond: "Excelente", city: "Belo Horizonte", distKm: 15, distLabel: "Savassi", verified: true, delivery: false, premium: true, rating: 5.0, reviews: 42 },
-    { id: 105, model: "iPhone 12", storage: "128GB", price: 2750, cond: "Excelente", city: "São Paulo", distKm: 2, distLabel: "Jardins", verified: true, delivery: true, premium: false, rating: 4.8, reviews: 89 }
-];
-
-// 2. Seletores
-const searchInput = document.getElementById('searchInput');
-const priceInput = document.getElementById('priceInput');
-const btnSearch = document.getElementById('btnSearch');
-const offersGrid = document.getElementById('offersGrid');
-const radarPill = document.getElementById('radarPill');
-const matchBar = document.getElementById('matchBar');
-const matchTitle = document.getElementById('matchTitle');
-const matchSub = document.getElementById('matchSub');
-
-// 3. Funções de Renderização
-function renderOffers(list) {
-    offersGrid.innerHTML = list.map(o => offerCardHTML(o)).join('');
+/* RePhone V3 — Layout Consolidado */
+:root {
+  --bg: #f6f7fb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: rgba(15, 23, 42, 0.1);
+  --green: #16a34a;
+  --green-light: #22c55e;
+  --radius: 18px;
+  --container: 1080px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-function offerCardHTML(o) {
-    // CORREÇÃO: Usando 'card-media' para bater com o CSS
-    return `
-      <div class="card" id="card-${o.id}">
-        <div class="card-media">
-          <img src="${PLACEHOLDER_IMG}" alt="${o.model}">
-        </div>
-        <div class="card-body">
-          <div class="meta">${o.city} • ${o.distKm}km</div>
-          <div class="title">${o.model} ${o.storage}</div>
-          <div class="price">${brl.format(o.price)}</div>
-          <div class="chips">
-            <span class="chip">${o.cond}</span>
-            <span class="chip">⭐ ${o.rating}</span>
-            ${o.verified ? '<span class="chip">🛡️ Verificado</span>' : ''}
-          </div>
-        </div>
-      </div>
-    `;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(22, 163, 74, 0.05), transparent 50%),
+    var(--bg);
+  line-height: 1.5;
 }
 
-// 4. Lógica do Radar e Match
-function runRadarSequence() {
-    if (!searchInput.value) return alert("Digite um modelo primeiro!");
+.container { width: min(var(--container), 100% - 2rem); margin: 0 auto; }
 
-    // Passo 1: Armar o Radar
-    radarPill.classList.remove('state-idle');
-    radarPill.classList.add('state-armed');
-    radarPill.querySelector('.rp').innerText = "BUSCANDO...";
+/* HEADER */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 0;
+}
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+.brand-logo { width: 38px; height: 38px; }
+.brand-name { font-weight: 800; color: var(--green); font-size: 1.2rem; }
+.brand-tagline { font-size: 0.8rem; color: var(--muted); display: block; }
 
-    // Passo 2: Iniciar Scan (Animação) após 2 segundos
-    setTimeout(() => {
-        radarPill.classList.replace('state-armed', 'state-scan');
-        
-        // Passo 3: Encontrar o Match após 5 segundos de scan
-        setTimeout(() => {
-            const bestOffer = MOCK_OFFERS[0]; // Simula que a primeira é a melhor
-            showMatch(bestOffer);
-        }, 5000);
+/* BUSCA E HERO */
+.hero { padding: 3rem 0 1.5rem; }
+.hero h1 { font-size: 2.5rem; letter-spacing: -0.03em; margin: 0 0 1rem; }
+.lead { color: var(--muted); font-size: 1.1rem; margin-bottom: 2rem; }
 
-    }, 2000);
+.price-box {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  max-width: 500px;
+}
+.price-label { display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.9rem; }
+.search, .price-input {
+  width: 100%; padding: 0.8rem 1rem; border-radius: 12px;
+  border: 1px solid var(--border); background: #f8fafc; font-size: 1rem;
+  margin-bottom: 1rem; outline: none;
+}
+.search:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+
+.price-row { display: flex; align-items: center; gap: 0.5rem; }
+.currency { font-weight: 800; color: var(--green); }
+
+.btn-primary {
+  width: 100%; padding: 1rem; border-radius: 99px; border: none;
+  background: var(--green); color: #fff; font-weight: 700;
+  cursor: pointer; transition: 0.2s;
+}
+.btn-primary:hover:not(:disabled) { background: var(--green-light); transform: translateY(-2px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* GRID DE OFERTAS */
+.section { padding: 2rem 0; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  text-decoration: none; color: inherit;
+  transition: 0.3s; display: flex; flex-direction: column;
+}
+.card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+
+.card-media {
+  height: 180px; background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.card-media img { max-height: 100%; object-fit: contain; }
+
+.card-body { padding: 1.2rem; }
+.title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.4rem; }
+.price { font-weight: 800; font-size: 1.3rem; color: var(--green); margin-bottom: 0.5rem; }
+.meta { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.6rem;
+  background: #f1f5f9; border-radius: 6px; text-transform: uppercase;
 }
 
-function showMatch(offer) {
-    // Adiciona classe ao body para subir o radar e dar padding
-    document.body.classList.add('match-bar-open');
+/* RADAR E MATCH BAR */
+#radarPill {
+  position: fixed; right: 20px; bottom: 20px;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #fff; border: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#radarPill .rp { font-size: 9px; font-weight: 900; text-align: center; color: var(--text); }
 
-    // Preenche a barra de Match
-    matchTitle.innerText = `MATCH: ${offer.model} ${offer.storage}`;
-    matchSub.innerText = `Melhor preço encontrado: ${brl.format(offer.price)} em ${offer.city}`;
-    
-    // Mostra a barra
-    matchBar.classList.add('show');
-
-    // Lógica de Exclusividade: Esconde o card original do grid
-    const originalCard = document.getElementById(`card-${offer.id}`);
-    if (originalCard) {
-        originalCard.classList.add('hidden-by-match');
-    }
-
-    // Reseta o Radar
-    radarPill.classList.remove('state-scan');
-    radarPill.classList.add('state-armed');
-    radarPill.querySelector('.rp').innerText = "OFERTA\nUNICA!";
+#radarPill.state-armed { background: #dcfce7; border-color: var(--green); }
+#radarPill.state-scan {
+  animation: radarBlink 1s infinite;
+  color: #fff; border: none;
 }
 
-// 5. Inicialização e Eventos
-document.addEventListener('DOMContentLoaded', () => {
-    renderOffers(MOCK_OFFERS);
+@keyframes radarBlink {
+  0% { background: var(--green); transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+  50% { background: var(--green-light); transform: scale(1.1); box-shadow: 0 0 0 15px rgba(22, 163, 74, 0); }
+  100% { background: var(--green); transform: scale(1); }
+}
 
-    btnSearch.addEventListener('click', () => {
-        runRadarSequence();
-    });
+.matchbar {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  width: min(500px, 90%); z-index: 999; opacity: 0;
+  transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.matchbar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.matchbar-inner {
+  background: #fff; border: 2px solid var(--green);
+  padding: 1rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
 
-    // Filtro simples por preço enquanto digita
-    priceInput.addEventListener('input', (e) => {
-        const maxPrice = parseFloat(e.target.value) || 99999;
-        const filtered = MOCK_OFFERS.filter(o => o.price <= maxPrice);
-        renderOffers(filtered);
-    });
-});
+.matchbar-progress { height: 6px; background: #f1f5f9; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+#matchProg { height: 100%; background: var(--green); width: 0%; transition: 0.4s; }
+
+body.match-bar-open #radarPill { bottom: 120px; }
+.hidden-by-match { display: none !important; }
+
+/* UTILS */
+.hidden { display: none !important; }
