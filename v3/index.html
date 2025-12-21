@@ -1,195 +1,81 @@
 <!DOCTYPE html>
-
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="utf-8"/>
-<title>RePhone V3 — Teste fechado</title>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="RePhone V3 (teste fechado): vitrine + MATCH exclusivo." name="description"/>
-<link href="assets/favicon.svg" rel="icon"/>
-<link href="css/style.css?v=3.1" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RePhone V3 | Radar Local</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#16a34a">
 </head>
 <body>
-<!-- GATE (ACESSO POR CÓDIGO) -->
-<div id="gate" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,.96); z-index:9999; padding:24px;">
-<div style="max-width:560px; margin:10vh auto; border:1px solid rgba(0,0,0,.12); border-radius:16px; padding:18px; background:#fff;">
-<h2 style="margin:0 0 8px;">Acesso ao V3</h2>
-<p style="margin:0 0 14px; color:#334155;">
-        Teste fechado. Peça autorização no WhatsApp e cole o código aqui.
-        <br/><b>Obs:</b> este acesso é temporário e pode ser revogado a qualquer momento.
-      </p>
-<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-<input id="gateToken" placeholder="Cole o código (ex: RPH-8742)" style="flex:1; min-width:240px; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.15);"/>
-<button id="gateBtn" style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#16a34a; color:#fff; font-weight:800; cursor:pointer;">
-          Entrar
-        </button>
-<a id="gateWa" style="padding:12px 14px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-weight:800; cursor:pointer;">
-          Pedir acesso
-        </a>
-</div>
-<small style="display:block; margin-top:12px; color:#64748b;">
-        Dica: se você recebeu um link com <b>?token=...</b>, ele preenche automaticamente.
-      </small>
-</div>
-</div>
-<header class="site-header">
-<div class="container topbar">
-<a class="brand" href="#">
-<img alt="RePhone" class="brand-logo" src="assets/logo-rephone.svg"/>
-<div class="brand-text">
-<div class="brand-name">RePhone</div>
-<div class="brand-tagline">A melhor oferta, do jeito certo.</div>
-</div>
-</a>
-<div class="search-wrap" role="search">
-<input autocomplete="off" class="search" id="searchInput" placeholder="Buscar celular ou modelo"/>
-</div>
-</div>
-</header>
-<main>
-<section class="hero">
-<div class="container">
-<h1>A melhor oferta, do jeito certo.</h1>
-<p class="lead">Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
-<div aria-label="Definir valor máximo" class="price-box">
-<label class="price-label" for="modelInput">Modelo desejado</label>
-<input autocomplete="off" class="search" id="modelInput" placeholder="Ex: iPhone 11"/>
-<label class="price-label" for="priceInput">Quanto você quer pagar?</label>
-<div class="price-row">
-<span class="currency">R$</span>
-<input class="price-input" id="priceInput" inputmode="decimal" placeholder="Ex: 2500 ou 2.500,00"/>
-</div>
-<div class="price-hint">
-            Aceitamos <strong>2500</strong>, <strong>2.500</strong> ou <strong>2.500,00</strong>. A RePhone interpreta e padroniza ao sair do campo.
-          </div>
-<div aria-live="polite" class="price-guidance" id="priceGuidance" style="display:none"></div>
-<div style="margin-top:12px; display:flex; gap:.6rem; flex-wrap:wrap;">
-<button class="btn btn-primary" disabled="" id="buscarOpp" type="button">Buscar oportunidade</button>
-</div>
-</div>
-</div>
-</section>
-<section class="section">
-<div class="container section-head">
-<h2>Ofertas em destaque</h2>
-<div aria-live="polite" class="loading" id="loadingLabel">Carregando ofertas...</div>
-</div>
-<div class="container">
-<div aria-label="Filtros de ofertas" class="filters" role="tablist">
-<button class="chip active" data-filter="all" type="button">Todos</button>
-<button class="chip" data-filter="near" type="button">Perto</button>
-<button class="chip" data-filter="verified" type="button">Vendedor verificado</button>
-<button class="chip" data-filter="delivery" type="button">Entrega</button>
-</div>
-<div aria-label="Lista de ofertas" class="grid" id="offersGrid"></div>
-</div>
-</section>
-</main>
-<!-- Barra do MATCH (fixa) -->
-<div aria-hidden="true" aria-live="polite" class="matchbar" id="matchBar">
-<div class="matchbar-inner">
-<div class="matchbar-left">
-<div class="matchbar-title" id="matchTitle">Buscando MATCH…</div>
-<div class="matchbar-sub" id="matchSub">Comparando sinais (alguns segundos)</div>
-<div aria-hidden="true" class="matchbar-progress"><span id="matchProg"></span></div>
-</div>
-<button class="matchbar-btn" disabled="" id="matchBtn" type="button">Ver MATCH</button>
-<button aria-label="Fechar" class="matchbar-close" id="matchClose" type="button">✕</button>
-</div>
-</div>
-<!-- Modal do MATCH -->
-<div aria-hidden="true" class="modal-backdrop" id="matchModalBackdrop">
-<div aria-labelledby="matchModalTitle" aria-modal="true" class="modal" role="dialog">
-<div class="modal-head">
-<div>
-<div class="modal-kicker">MATCH RePhone</div>
-<h3 id="matchModalTitle">Encontramos uma oferta para você</h3>
-</div>
-<button aria-label="Fechar" class="icon-btn" id="closeMatchModal" type="button">✕</button>
-</div>
-<div class="modal-body" id="matchModalBody"></div>
-<div class="modal-actions">
-<a class="btn btn-ghost" href="#priceInput" id="adjustPrice">Ajustar valor</a>
-<a class="btn btn-primary" href="#" id="openOfferLink">Abrir anúncio</a>
-</div>
-</div>
-</div>
-<footer class="site-footer">
-<div class="container footer-inner">
-<span>RePhone © — A melhor oferta, do jeito certo.</span>
-</div>
-</footer>
-<script>
-    // ====== GATE (1 código por vez / sessão do navegador) ======
-    const OWNER_WA = "5527998205547";      // seu WhatsApp
-    const ACCESS_CODE = "RPH-8742";        // troque e faça commit para revogar geral
-    const SESSION_KEY = "rephone_v3_ok";   // só dura na aba (sessionStorage)
 
-    const gate = document.getElementById("gate");
-    const gateToken = document.getElementById("gateToken");
-    const gateBtn = document.getElementById("gateBtn");
-    const gateWa = document.getElementById("gateWa");
+    <div id="desktop-blocker">
+        <div class="blocker-content">
+            <div class="qr-placeholder">📱</div>
+            <h2>Acesse pelo Celular</h2>
+            <p>O RePhone é uma ferramenta de proximidade exclusiva para dispositivos móveis.</p>
+            <small>Escaneie o QR Code ou acesse rephone.github.io</small>
+        </div>
+    </div>
 
-    function showGate(){
-      gate.style.display = "block";
-      document.body.style.overflow = "hidden";
-    }
-    function hideGate(){
-      gate.style.display = "none";
-      document.body.style.overflow = "";
-    }
-    function isAllowed(){
-      return sessionStorage.getItem(SESSION_KEY) === "1";
-    }
-    function allow(){
-      sessionStorage.setItem(SESSION_KEY, "1");
-    }
-    function deny(){
-      sessionStorage.removeItem(SESSION_KEY);
-    }
+    <div id="app-content">
+        <header class="app-header">
+            <div class="brand">
+                <span class="logo-dot"></span>
+                <h1>RePhone</h1>
+            </div>
+            <button id="btn-favs" class="icon-btn">❤️</button>
+        </header>
 
-    // WhatsApp link
-    if(gateWa){
-      const msg = encodeURIComponent("Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode liberar o código temporário?");
-      gateWa.href = `https://wa.me/${OWNER_WA}?text=${msg}`;
-      gateWa.target = "_blank";
-      gateWa.rel = "noopener";
-    }
+        <div class="stories-filters">
+            <div class="story-item active" data-filter="all"><span>📱</span><small>Todos</small></div>
+            <div class="story-item" data-filter="verified"><span>🛡️</span><small>Seguros</small></div>
+            <div class="story-item" data-filter="near"><span>📍</span><small>Perto</small></div>
+            <div class="story-item" data-filter="promo"><span>🔥</span><small>Ofertas</small></div>
+        </div>
 
-    // Preenche token via URL
-    const u = new URL(window.location.href);
-    const tokenFromUrl = u.searchParams.get("token");
-    if(tokenFromUrl && gateToken) gateToken.value = tokenFromUrl;
+        <main class="feed-container">
+            <div id="pull-to-refresh">⬇️ Puxe para atualizar</div>
+            
+            <section class="search-section">
+                <div class="price-target-box">
+                    <input type="text" id="modelInput" placeholder="Qual modelo busca?">
+                    <div class="input-group">
+                        <span>R$</span>
+                        <input type="number" id="priceInput" placeholder="Preço alvo">
+                    </div>
+                    <button id="btnSearch" class="btn-primary">ATIVAR RADAR</button>
+                </div>
+            </section>
 
-    // Bloqueia se não autorizado
-    if(!isAllowed()) showGate();
+            <div id="offersGrid" class="tinder-grid">
+                </div>
+        </main>
 
-    gateBtn.addEventListener("click", () => {
-      const t = (gateToken.value || "").trim();
-      if(t === ACCESS_CODE){
-        allow();
-        hideGate();
-        // remove token da URL
-        const clean = new URL(window.location.href);
-        clean.searchParams.delete("token");
-        window.history.replaceState({}, "", clean.toString());
-      }else{
-        alert("Código inválido ou acesso revogado. Peça autorização no WhatsApp.");
-      }
-    });
+        <div id="radarPill" class="state-idle">
+            <div class="radar-waves"></div>
+            <span class="rp-icon">📡</span>
+        </div>
 
-    // Botão flutuante para encerrar (revoga na hora para o usuário)
-    function mountExit(){
-      const exit = document.createElement("button");
-      exit.textContent = "Encerrar acesso";
-      exit.className = "exit-pill";
-      exit.addEventListener("click", () => { deny(); location.reload(); });
-      document.body.appendChild(exit);
-    }
-    if(isAllowed()) mountExit();
-  </script>
-<script src="js/app.js?v=3.1"></script>
-<!-- Radar discreto (canto inferior direito) -->
-<button aria-hidden="true" class="radar-pill state-idle" id="radarPill" title="RP MATCH" type="button"><span class="rp">RP<br/>MATCH</span></button>
+        <div id="matchBar" class="match-panel">
+            <div class="drag-handle"></div>
+            <div class="match-content">
+                <div class="trust-badge" id="trustScore">Confiança: 0%</div>
+                <h3 id="matchTitle">Buscando...</h3>
+                <p id="matchSub">Analisando vendedores locais...</p>
+                
+                <div class="price-history">
+                    <canvas id="historyChart"></canvas>
+                </div>
+
+                <div class="urgency-timer" id="urgencyText"></div>
+                <button id="matchBtn" class="btn-match">CONVERTER AGORA</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
