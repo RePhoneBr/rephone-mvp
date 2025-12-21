@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Administrativo | RePhone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #0f172a; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 30px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 16px; box-sizing: border-box; }
+        .btn-login { width: 100%; padding: 15px; background: #16a34a; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 16px; }
+        .brand-logo { font-weight: 900; font-size: 24px; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <span class="brand-logo">RePhone <span style="color:#16a34a">Admin</span></span>
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Acesso restrito à curadoria.</p>
+        
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="E-mail" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit" class="btn-login">ENTRAR NO SISTEMA</button>
+        </form>
+        <p id="errorMsg" style="color: #ef4444; font-size: 12px; margin-top: 15px; display: none;"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
+            authDomain: "rephone-a0a80.firebaseapp.com",
+            projectId: "rephone-a0a80",
+            storageBucket: "rephone-a0a80.firebasestorage.app",
+            messagingSenderId: "431497247030",
+            appId: "1:431497247030:web:a943715e4acc04b8995b97"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = 'admin-master.html'; // Redireciona se ok
+            } catch (error) {
+                errorMsg.innerText = "Acesso negado. Verifique as credenciais.";
+                errorMsg.style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>
