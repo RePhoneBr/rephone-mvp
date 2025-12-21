@@ -1,16 +1,48 @@
-/* RePhone V3 - Core Engine */
+/* RePhone V3 - Inteligência e Renderização */
 
 const state = {
     userLoc: null,
     offers: [
-        { id: 1, model: "iPhone 13 128GB", price: 3150, lat: -19.8210, lng: -40.2730, kyc: true, history: [3400, 3250, 3150], img: "https://m.media-amazon.com/images/I/71GLMJ7TQiL._AC_SL1500_.jpg" },
-        { id: 2, model: "iPhone 13 Blue", price: 2900, lat: -19.8050, lng: -40.2550, kyc: false, history: [3100, 3000, 2900], img: "https://m.media-amazon.com/images/I/71xb2xkN5qL._AC_SL1500_.jpg" },
-        { id: 3, model: "iPhone 14 Pro", price: 4800, lat: -19.9680, lng: -40.3950, kyc: true, history: [5200, 5000, 4800], img: "https://m.media-amazon.com/images/I/61H79+y7E+L._AC_SL1500_.jpg" },
-        { id: 4, model: "iPhone 11 64GB", price: 1600, lat: -19.8250, lng: -40.2710, kyc: true, history: [1800, 1750, 1600], img: "https://m.media-amazon.com/images/I/71i2XhHU3pL._AC_SL1500_.jpg" }
+        { 
+            id: 1, 
+            model: "iPhone 13 128GB", 
+            price: 3150, 
+            lat: -19.8210, lng: -40.2730, 
+            kyc: true, 
+            history: [3400, 3250, 3150], 
+            img: "https://m.media-amazon.com/images/I/71GLMJ7TQiL._AC_SL1500_.jpg" 
+        },
+        { 
+            id: 2, 
+            model: "iPhone 13 Blue", 
+            price: 2900, 
+            lat: -19.8050, lng: -40.2550, 
+            kyc: false, 
+            history: [3100, 3000, 2900], 
+            img: "https://m.media-amazon.com/images/I/71xb2xkN5qL._AC_SL1500_.jpg" 
+        },
+        { 
+            id: 3, 
+            model: "iPhone 14 Pro Max", 
+            price: 5200, 
+            lat: -19.9680, lng: -40.3950, 
+            kyc: true, 
+            history: [5800, 5500, 5200], 
+            img: "https://m.media-amazon.com/images/I/61H79+y7E+L._AC_SL1500_.jpg" 
+        },
+        { 
+            id: 4, 
+            model: "iPhone 11 64GB", 
+            price: 1650, 
+            lat: -19.8250, lng: -40.2710, 
+            kyc: true, 
+            history: [1900, 1800, 1650], 
+            img: "https://m.media-amazon.com/images/I/71i2XhHU3pL._AC_SL1500_.jpg" 
+        }
     ]
 };
 
-// --- CÁLCULO DE DISTÂNCIA ---
+// --- FÓRMULA DE DISTÂNCIA ---
 function haversine(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2-lat1) * Math.PI / 180;
@@ -19,73 +51,77 @@ function haversine(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// --- RENDERIZAR GRID INICIAL ---
+// --- RENDERIZAR ANÚNCIOS NO GRID ---
 function renderGrid() {
     const grid = document.getElementById('offersGrid');
+    if (!grid) return;
+
     grid.innerHTML = state.offers.map(off => `
-        <div class="card">
+        <div class="card" id="card-${off.id}">
             <div class="card-media">
                 ${off.kyc ? '<span class="badge-kyc">🛡️ Verificado</span>' : ''}
                 <img src="${off.img}" alt="${off.model}">
             </div>
-            <div class="card-body" style="padding:15px">
-                <h3 style="font-size:16px">${off.model}</h3>
-                <p style="color:var(--green); font-weight:800; font-size:18px">R$ ${off.price}</p>
-                <small style="color:var(--muted)">Vendedor Local</small>
+            <div class="card-body">
+                <h3>${off.model}</h3>
+                <p style="color:var(--green); font-weight:800; font-size:20px; margin:5px 0;">
+                    R$ ${off.price.toLocaleString('pt-BR')}
+                </p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <small style="color:var(--muted)">📍 Aracruz</small>
+                    <button class="details-btn">Ver mais</button>
+                </div>
             </div>
         </div>
     `).join('');
 }
 
-// --- MOTOR DO RADAR & MATCH ---
+// --- LÓGICA DO RADAR ---
 async function startRadar() {
-    const targetModel = document.getElementById('modelInput').value;
-    const targetPrice = parseFloat(document.getElementById('priceInput').value);
+    const modelInput = document.getElementById('modelInput').value;
+    const priceInput = document.getElementById('priceInput').value;
 
-    if (!targetModel || !targetPrice) return alert("Defina o modelo e o preço!");
+    if (!modelInput || !priceInput) {
+        alert("Por favor, digite o modelo e seu preço alvo.");
+        return;
+    }
 
     const pill = document.getElementById('radarPill');
-    pill.className = 'state-scan';
+    pill.classList.add('state-scan');
 
     navigator.geolocation.getCurrentPosition(pos => {
         state.userLoc = pos.coords;
-
+        
         setTimeout(() => {
             const ranked = state.offers.map(off => {
-                let score = 0;
                 const dist = haversine(state.userLoc.latitude, state.userLoc.longitude, off.lat, off.lng);
-                
-                if (dist <= 15) score += 50; // Logística
-                if (off.kyc) score += 30;    // Segurança
-                if (off.price <= targetPrice) score += 20; // Preço
-
-                return { ...off, score, dist };
+                let score = off.kyc ? 30 : 0;
+                if (dist <= 15) score += 50;
+                if (off.price <= parseFloat(priceInput)) score += 20;
+                return { ...off, dist, score };
             }).sort((a, b) => b.score - a.score);
 
             showMatch(ranked[0]);
-            pill.className = 'state-idle';
-        }, 4000);
-    }, () => alert("Ative o GPS para o Match Local."));
+            pill.classList.remove('state-scan');
+        }, 3500);
+    }, () => {
+        alert("GPS necessário para encontrar ofertas locais.");
+        pill.classList.remove('state-scan');
+    });
 }
 
-// --- EXIBIÇÃO DO MATCH ---
+// --- EXIBIR PAINEL DE MATCH ---
 function showMatch(match) {
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]); // Feedback Háptico
-    
     const panel = document.getElementById('matchBar');
     panel.classList.add('show');
 
     document.getElementById('trustScore').innerText = `Confiança RePhone: ${match.score}%`;
     document.getElementById('matchTitle').innerText = `${match.model} a ${match.dist.toFixed(1)}km`;
-    
-    // Alerta de Urgência
-    const views = Math.floor(Math.random() * 8) + 3;
-    document.getElementById('matchSub').innerText = `🔥 Encontrado! ${views} interessados nesta região.`;
+    document.getElementById('matchSub').innerText = match.kyc ? "🛡️ Vendedor com KYC Verificado" : "⏳ Verificação pendente para este vendedor";
 
-    // Gráfico de Histórico (Chart.js)
     const ctx = document.getElementById('historyChart').getContext('2d');
-    if (window.myChart) window.myChart.destroy();
-    window.myChart = new Chart(ctx, {
+    if (window.rephoneChart) window.rephoneChart.destroy();
+    window.rephoneChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: ['30d', '15d', 'Hoje'],
@@ -99,18 +135,14 @@ function showMatch(match) {
         },
         options: { 
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { legend: false },
             scales: { y: { display: false }, x: { grid: { display: false } } }
         }
     });
-
-    if (!match.kyc) {
-        const btn = document.getElementById('matchBtn');
-        btn.innerText = "NOTIFICAR VENDEDOR (KYC PENDENTE)";
-        btn.style.background = "#f59e0b";
-    }
 }
 
-// Iniciar eventos
-document.getElementById('btnSearch').addEventListener('click', startRadar);
-window.onload = renderGrid;
+// Inicializar
+document.addEventListener('DOMContentLoaded', () => {
+    renderGrid();
+    document.getElementById('btnSearch').addEventListener('click', startRadar);
+});
