@@ -3,107 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vender | RePhone Aracruz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>Anunciar | RePhone Aracruz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dark: #0f172a;
-            --green: #16a34a;
-            --gold: #d4af37;
-            --light-gray: #f8fafc;
-            --border: #e2e8f0;
-        }
-
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; --border: #e2e8f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #ffffff; color: var(--dark); padding-bottom: 40px; }
+        body { background: white; color: var(--dark); padding-bottom: 50px; }
 
-        /* Header */
-        .header-venda {
-            background: var(--dark);
-            padding: 30px 20px;
-            text-align: center;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 30px;
-        }
-        .logo-mini {
-            background: linear-gradient(135deg, #fdfcf0 0%, #d4af37 100%);
-            color: var(--dark);
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            margin: 0 auto 15px;
-        }
-        .header-venda h1 { color: white; font-size: 24px; font-weight: 900; }
-        .header-venda p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
-
-        /* Formulário */
+        .header-venda { background: var(--dark); padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 25px; }
+        .logo-mini { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto 10px; }
+        
         .container { padding: 0 20px; }
-        label { display: block; font-weight: 700; font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 8px; margin-left: 5px; }
-        input, select {
-            width: 100%;
-            padding: 16px;
-            border-radius: 15px;
-            border: 1px solid var(--border);
-            background: var(--light-gray);
-            font-size: 16px;
-            margin-bottom: 20px;
-            outline: none;
-            transition: 0.3s;
+        label { display: block; font-weight: 700; font-size: 11px; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--bg); font-size: 15px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--green); background: white; }
+        input:focus, textarea:focus { border-color: var(--green); background: white; }
 
-        /* Grid de Fotos */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-        .photo-slot {
-            background: var(--light-gray);
-            border: 2px dashed #cbd5e1;
-            border-radius: 20px;
-            aspect-ratio: 1/1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-        }
-        .photo-slot.has-file { border: 2px solid var(--green); background: #f0fdf4; }
-        .photo-slot span { font-size: 24px; margin-bottom: 5px; }
-        .photo-slot small { font-size: 11px; font-weight: 700; color: #64748b; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* Botões */
-        .btn-gps {
-            background: #f1f5f9;
-            color: var(--dark);
-            border: none;
-            padding: 15px;
-            border-radius: 15px;
-            width: 100%;
-            font-weight: 700;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        /* Estilo das Fotos */
+        .photo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .photo-slot { 
+            background: var(--bg); border: 2px dashed #cbd5e1; border-radius: 15px; 
+            aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; text-align: center; cursor: pointer; position: relative;
         }
-        .btn-submit {
-            background: var(--green);
-            color: white;
-            border: none;
-            padding: 20px;
-            border-radius: 20px;
-            width: 100%;
-            font-weight: 900;
-            font-size: 16px;
+        .photo-slot.active { border: 2px solid var(--green); background: #f0fdf4; }
+        .photo-slot span { font-size: 20px; }
+        .photo-slot small { font-size: 9px; font-weight: 700; color: #64748b; margin-top: 4px; }
+        .optional-badge { position: absolute; top: -5px; right: -5px; background: #94a3b8; color: white; font-size: 8px; padding: 2px 5px; border-radius: 4px; }
+
+        .btn-submit { 
+            background: var(--green); color: white; border: none; padding: 18px; 
+            border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; margin-top: 30px;
             box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);
         }
     </style>
@@ -112,59 +47,114 @@
 
     <div class="header-venda">
         <div class="logo-mini">RP</div>
-        <h1>Vender Aparelho</h1>
-        <p>Anuncie em segundos no radar de Aracruz</p>
+        <h1 style="color:white; font-size: 22px;">Novo Anúncio</h1>
+        <p style="color:#94a3b8; font-size: 13px;">Preencha os detalhes do seu aparelho</p>
     </div>
 
     <div class="container">
-        <form id="formVenda">
-            <label>O que está a vender?</label>
-            <input type="text" id="vModel" placeholder="Ex: iPhone 13 Pro Max 256GB" required>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div>
-                    <label>Preço (R$)</label>
-                    <input type="number" id="vPrice" placeholder="0.00" required>
-                </div>
-                <div>
-                    <label>Saúde Bateria</label>
-                    <input type="text" id="vBattery" placeholder="Ex: 92%" required>
-                </div>
-            </div>
+      <form id="formVenda">
+    <div class="grid-2">
+        <div>
+            <label>Marca</label>
+            <select id="vMarca" required>
+                <option value="Apple">Apple</option>
+                <option value="Samsung">Samsung</option>
+                <option value="Motorola">Motorola</option>
+                <option value="Xiaomi">Xiaomi</option>
+                <option value="Outra">Outra</option>
+            </select>
+        </div>
+        <div>
+            <label>Modelo exato</label>
+            <input type="text" id="vModel" placeholder="Ex: iPhone 13 Pro" required>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div>
+            <label>Capacidade</label>
+            <select id="vCap" required>
+                <option value="64GB">64GB</option>
+                <option value="128GB">128GB</option>
+                <option value="256GB">256GB</option>
+                <option value="512GB">512GB</option>
+                <option value="1TB">1TB</option>
+            </select>
+        </div>
+        <div>
+            <label>Conexão</label>
+            <select id="vNet">
+                <option value="5G">5G</option>
+                <option value="4G">4G</option>
+            </select>
+        </div>
+    </div>
+    
+    ```
+
+### O que garantimos com essa correção:
+
+1.  **Modelo Específico:** Agora existe um campo de texto livre chamado **"Modelo exato"**. Isso é importante porque, enquanto a marca é fixa (Apple), o modelo varia muito (iPhone 13, 13 Pro, 13 Mini), e o vendedor precisa escrever isso.
+2.  **Capacidade como Select:** Transformei a capacidade em uma lista de seleção para evitar que o vendedor escreva errado (ex: "128 giga", "cento e vinte e oito"). Isso deixa seu banco de dados muito mais organizado.
+3.  **Destaque Visual:** Coloquei as informações técnicas (Marca, Modelo, Memória) no topo, que é o que mais importa para o seu Radar Match.
+
+**Dica para o seu Banco de Dados:**
+Quando você for aprovar no `admin-master.html`, o título do anúncio agora será formado por `Marca` + `Modelo`. 
+
+Gostaria que eu atualizasse o **`admin-master.html`** para que ele exiba essa nova **Descrição** e os detalhes de **Estoque/Prazo** para você analisar antes de aprovar?
 
             <label>Estado de Conservação</label>
             <select id="vCondition">
-                <option value="Impecável">✨ Impecável (Sem marcas)</option>
-                <option value="Excelente">👍 Excelente (Sinais mínimos)</option>
-                <option value="Bom">📱 Bom (Marcas de uso)</option>
+                <option value="Novo">💎 Novo (Lacrado)</option>
+                <option value="Semi novo">✨ Semi novo (Impecável)</option>
+                <option value="Usado">📱 Usado (Marcas de uso)</option>
             </select>
 
-            <button type="button" id="btnLoc" class="btn-gps">
-                📍 Vincular Localização (Aracruz)
-            </button>
-            <input type="hidden" id="vLat"> <input type="hidden" id="vLng">
-
-            <label>Fotos Obrigatórias</label>
-            <div class="photo-grid">
-                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()">
-                    <input type="file" id="f1" hidden accept="image/*" onchange="updateSlot(1)">
-                    <span>📸</span><small>Frente</small>
+            <div class="grid-2">
+                <div>
+                    <label>Valor (R$)</label>
+                    <input type="number" id="vPrice" placeholder="0.00" required>
                 </div>
-                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()">
-                    <input type="file" id="f2" hidden accept="image/*" onchange="updateSlot(2)">
-                    <span>📱</span><small>Traseira</small>
-                </div>
-                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()">
-                    <input type="file" id="f3" hidden accept="image/*" onchange="updateSlot(3)">
-                    <span>🔋</span><small>Bateria</small>
-                </div>
-                <div class="photo-slot" id="slot4" onclick="document.getElementById('f4').click()">
-                    <input type="file" id="f4" hidden accept="image/*" onchange="updateSlot(4)">
-                    <span>⚙️</span><small>Ajustes</small>
+                <div>
+                    <label>Disponibilidade</label>
+                    <select id="vStock" onchange="togglePrazo()">
+                        <option value="Estoque">Em estoque</option>
+                        <option value="Encomenda">Sob encomenda</option>
+                    </select>
                 </div>
             </div>
 
-            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA ANÁLISE</button>
+            <div id="areaPrazo">
+                <label>Prazo de Entrega</label>
+                <select id="vDelivery">
+                    <option value="Imediato">Imediato (Aracruz)</option>
+                    <option value="Até 3 dias">Até 3 dias</option>
+                    <option value="Até 7 dias">Até 7 dias</option>
+                    <option value="Até 15 dias">Até 15 dias</option>
+                </select>
+            </div>
+
+            <label>Descrição do Aparelho</label>
+            <textarea id="vDesc" rows="4" required placeholder="insira informações importantes e detalhes de uso e marcas no aparelho"></textarea>
+
+            <label>Fotos (Mínimo 2)</label>
+            <div class="photo-row">
+                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()">
+                    <input type="file" id="f1" hidden accept="image/*" onchange="preview(1)" required>
+                    <span>📸</span><small>Frente</small>
+                </div>
+                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()">
+                    <input type="file" id="f2" hidden accept="image/*" onchange="preview(2)" required>
+                    <span>📱</span><small>Traseira</small>
+                </div>
+                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()">
+                    <div class="optional-badge">Opcional</div>
+                    <input type="file" id="f3" hidden accept="image/*" onchange="preview(3)">
+                    <span>🔍</span><small>Detalhe</small>
+                </div>
+            </div>
+
+            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA CURADORIA</button>
         </form>
     </div>
 
@@ -185,63 +175,57 @@
         const db = getFirestore(app);
         const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
 
-        // Feedback visual do upload
-        window.updateSlot = (num) => {
-            const slot = document.getElementById(`slot${num}`);
-            slot.classList.add('has-file');
-            slot.querySelector('small').innerText = "✅ Carregada";
+        window.preview = (n) => {
+            const slot = document.getElementById(`slot${n}`);
+            slot.classList.add('active');
+            slot.querySelector('small').innerText = "✓ OK";
         };
 
-        document.getElementById('btnLoc').onclick = function() {
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('vLat').value = pos.coords.latitude;
-                document.getElementById('vLng').value = pos.coords.longitude;
-                this.innerText = "✓ LOCALIZAÇÃO ATIVA";
-                this.style.background = "#dcfce7";
-                this.style.color = "#16a34a";
-            });
+        window.togglePrazo = () => {
+            const stock = document.getElementById('vStock').value;
+            // Se for estoque, geralmente é imediato, mas deixamos o campo visível para precisão
         };
 
         document.getElementById('formVenda').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnEnviar');
-            btn.innerText = "A ENVIAR... AGUARDE";
+            btn.innerText = "ENVIANDO...";
             btn.disabled = true;
 
             try {
-                const fotoUrls = [];
-                for (let i = 1; i <= 4; i++) {
+                const urls = [];
+                for (let i = 1; i <= 3; i++) {
                     const file = document.getElementById(`f${i}`).files[0];
                     if (file) {
-                        const formData = new FormData();
-                        formData.append("image", file);
-                        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-                            method: "POST",
-                            body: formData
-                        });
+                        const fd = new FormData();
+                        fd.append("image", file);
+                        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
                         const data = await res.json();
-                        fotoUrls.push(data.data.url);
+                        urls.push(data.data.url);
                     }
                 }
 
                 await addDoc(collection(db, "anuncios"), {
+                    marca: document.getElementById('vMarca').value,
                     modelo: document.getElementById('vModel').value,
-                    preco: document.getElementById('vPrice').value,
-                    bateria: document.getElementById('vBattery').value,
+                    capacidade: document.getElementById('vCap').value,
+                    conexao: document.getElementById('vNet').value,
                     condicao: document.getElementById('vCondition').value,
-                    lat: parseFloat(document.getElementById('vLat').value) || -19.82,
-                    lng: parseFloat(document.getElementById('vLng').value) || -40.27,
-                    fotos: fotoUrls,
+                    preco: document.getElementById('vPrice').value,
+                    estoque: document.getElementById('vStock').value,
+                    prazo: document.getElementById('vDelivery').value,
+                    descricao: document.getElementById('vDesc').value,
+                    fotos: urls,
                     status: "pendente",
                     data: new Date()
                 });
 
-                alert("Sucesso! O seu aparelho foi enviado para curadoria.");
+                alert("Aparelho enviado com sucesso!");
                 window.location.href = "index.html";
             } catch (err) {
-                alert("Erro ao enviar. Verifique as fotos.");
+                alert("Erro ao enviar. Tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "TENTAR NOVAMENTE";
+                btn.innerText = "ENVIAR PARA CURADORIA";
             }
         };
     </script>
