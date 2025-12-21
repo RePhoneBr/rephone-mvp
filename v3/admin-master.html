@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Control | RePhone Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #0f172a; color: white; padding: 20px; font-family: 'Inter', sans-serif; }
+        .admin-header { margin-bottom: 30px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
+        .pending-card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .price-tag { color: #16a34a; font-weight: 900; font-size: 20px; }
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; cursor: pointer; border: 1px solid #334155; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-approve { background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 2; }
+        .btn-reject { background: #ef4444; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 1; }
+        .empty-state { text-align: center; padding: 50px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <header class="admin-header">
+        <h1 style="font-weight: 900;">Curadoria RePhone</h1>
+        <p style="color: #94a3b8;">Fila de Aprovação - Aracruz, ES</p>
+    </header>
+
+    <div id="listaPendentes">
+        <div class="empty-state">Buscando novos anúncios na nuvem...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // Suas credenciais vinculadas
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
+            authDomain: "rephone-a0a80.firebaseapp.com",
+            projectId: "rephone-a0a80",
+            storageBucket: "rephone-a0a80.firebasestorage.app",
+            messagingSenderId: "431497247030",
+            appId: "1:431497247030:web:a943715e4acc04b8995b97",
+            measurementId: "G-LHRJ19C0CW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Escuta em tempo real anúncios PENDENTES
+        const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
+        
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById('listaPendentes');
+            container.innerHTML = "";
+
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="empty-state">✅ Nenhum anúncio pendente no momento.</div>';
+                return;
+            }
+
+            snapshot.forEach((adDoc) => {
+                const ad = adDoc.data();
+                const id = adDoc.id;
+
+                const card = document.createElement('div');
+                card.className = 'pending-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <h3 style="margin:0">${ad.modelo}</h3>
+                            <small style="color:#94a3b8">📍 GPS: ${ad.lat.toFixed(4)}, ${ad.lng.toFixed(4)}</small>
+                        </div>
+                        <span class="price-tag">R$ ${ad.preco}</span>
+                    </div>
+                    
+                    <div style="font-size:13px; margin-bottom:10px">
+                        <span>🔋 Bateria: <strong>${ad.bateria}</strong></span> | 
+                        <span>✨ Estado: <strong>${ad.condicao}</strong></span>
+                    </div>
+
+                    <div class="photo-grid">
+                        ${ad.fotos.map(url => `<img src="${url}" onclick="window.open('${url}')">`).join('')}
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn-approve" onclick="aprovar('${id}')">APROVAR E PUBLICAR</button>
+                        <button class="btn-reject" onclick="rejeitar('${id}')">DESCARTAR</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+
+        // Funções de Ação
+        window.aprovar = async (id) => {
+            try {
+                const docRef = doc(db, "anuncios", id);
+                await updateDoc(docRef, { status: "aprovado" });
+                if (navigator.vibrate) navigator.vibrate(100);
+            } catch (e) { alert("Erro ao aprovar: " + e.message); }
+        };
+
+        window.rejeitar = async (id) => {
+            if (confirm("Deseja deletar permanentemente este anúncio?")) {
+                try {
+                    await deleteDoc(doc(db, "anuncios", id));
+                } catch (e) { alert("Erro ao deletar: " + e.message); }
+            }
+        };
+    </script>
+</body>
+</html>
