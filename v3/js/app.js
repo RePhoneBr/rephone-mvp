@@ -1,156 +1,68 @@
-/* RePhone V3 - Inteligência e Renderização */
-
 const state = {
     userLoc: null,
     offers: [
-        { 
-            id: 1, 
-            model: "iPhone 13 128GB", 
-            price: 3150, 
-            lat: -19.8210, lng: -40.2730, 
-            kyc: true, 
-            history: [3400, 3250, 3150], 
-            img: "https://m.media-amazon.com/images/I/71GLMJ7TQiL._AC_SL1500_.jpg" 
-        },
-        { 
-            id: 2, 
-            model: "iPhone 13 Blue", 
-            price: 2900, 
-            lat: -19.8050, lng: -40.2550, 
-            kyc: false, 
-            history: [3100, 3000, 2900], 
-            img: "https://m.media-amazon.com/images/I/71xb2xkN5qL._AC_SL1500_.jpg" 
-        },
-        { 
-            id: 3, 
-            model: "iPhone 14 Pro Max", 
-            price: 5200, 
-            lat: -19.9680, lng: -40.3950, 
-            kyc: true, 
-            history: [5800, 5500, 5200], 
-            img: "https://m.media-amazon.com/images/I/61H79+y7E+L._AC_SL1500_.jpg" 
-        },
-        { 
-            id: 4, 
-            model: "iPhone 11 64GB", 
-            price: 1650, 
-            lat: -19.8250, lng: -40.2710, 
-            kyc: true, 
-            history: [1900, 1800, 1650], 
-            img: "https://m.media-amazon.com/images/I/71i2XhHU3pL._AC_SL1500_.jpg" 
-        }
+        { id: 1, model: "iPhone 13 128GB", price: 3150, lat: -19.8210, lng: -40.2730, kyc: true, history: [3400, 3250, 3150], img: "https://m.media-amazon.com/images/I/71GLMJ7TQiL._AC_SL1500_.jpg" },
+        { id: 2, model: "iPhone 13 Blue", price: 2900, lat: -19.8050, lng: -40.2550, kyc: false, history: [3100, 3000, 2900], img: "https://m.media-amazon.com/images/I/71xb2xkN5qL._AC_SL1500_.jpg" },
+        { id: 3, model: "iPhone 14 Pro Max", price: 5200, lat: -19.9680, lng: -40.3950, kyc: true, history: [5800, 5500, 5200], img: "https://m.media-amazon.com/images/I/61H79+y7E+L._AC_SL1500_.jpg" },
+        { id: 4, model: "iPhone 11 64GB", price: 1650, lat: -19.8250, lng: -40.2710, kyc: true, history: [1900, 1800, 1650], img: "https://m.media-amazon.com/images/I/71i2XhHU3pL._AC_SL1500_.jpg" }
     ]
 };
 
-// --- FÓRMULA DE DISTÂNCIA ---
-function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2-lat1) * Math.PI / 180;
-    const dLon = (lon2-lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-// --- RENDERIZAR ANÚNCIOS NO GRID ---
 function renderGrid() {
     const grid = document.getElementById('offersGrid');
-    if (!grid) return;
-
     grid.innerHTML = state.offers.map(off => `
-        <div class="card" id="card-${off.id}">
-            <div class="card-media">
-                ${off.kyc ? '<span class="badge-kyc">🛡️ Verificado</span>' : ''}
-                <img src="${off.img}" alt="${off.model}">
-            </div>
-            <div class="card-body">
-                <h3>${off.model}</h3>
-                <p style="color:var(--green); font-weight:800; font-size:20px; margin:5px 0;">
-                    R$ ${off.price.toLocaleString('pt-BR')}
-                </p>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <small style="color:var(--muted)">📍 Aracruz</small>
-                    <button class="details-btn">Ver mais</button>
-                </div>
+        <div class="card">
+            <div class="card-media"><img src="${off.img}"></div>
+            <div class="card-body" style="padding:15px">
+                <h3 style="font-size:15px">${off.model}</h3>
+                <p style="color:var(--green); font-weight:800; font-size:18px">R$ ${off.price.toLocaleString('pt-BR')}</p>
             </div>
         </div>
     `).join('');
 }
 
-// --- LÓGICA DO RADAR ---
-async function startRadar() {
-    const modelInput = document.getElementById('modelInput').value;
-    const priceInput = document.getElementById('priceInput').value;
-
-    if (!modelInput || !priceInput) {
-        alert("Por favor, digite o modelo e seu preço alvo.");
-        return;
-    }
-
+function updateRadarState(mode) {
     const pill = document.getElementById('radarPill');
-    pill.classList.add('state-scan');
+    pill.className = ''; 
+    if (mode === 'scanning') pill.classList.add('state-scanning');
+    else if (mode === 'found') pill.classList.add('state-found');
+    else pill.classList.add('state-idle');
+}
 
+async function startRadar() {
+    if(!document.getElementById('modelInput').value) return alert("O que você busca?");
+    updateRadarState('scanning');
+    
     navigator.geolocation.getCurrentPosition(pos => {
         state.userLoc = pos.coords;
-        
         setTimeout(() => {
-            const ranked = state.offers.map(off => {
-                const dist = haversine(state.userLoc.latitude, state.userLoc.longitude, off.lat, off.lng);
-                let score = off.kyc ? 30 : 0;
-                if (dist <= 15) score += 50;
-                if (off.price <= parseFloat(priceInput)) score += 20;
-                return { ...off, dist, score };
-            }).sort((a, b) => b.score - a.score);
-
-            showMatch(ranked[0]);
-            pill.classList.remove('state-scan');
-        }, 3500);
+            updateRadarState('found');
+            showMatch(state.offers[0]); // Simulação de melhor match
+        }, 3000);
     }, () => {
-        alert("GPS necessário para encontrar ofertas locais.");
-        pill.classList.remove('state-scan');
+        alert("Ative o GPS");
+        updateRadarState('idle');
     });
 }
 
-// --- EXIBIR PAINEL DE MATCH COM CONVERSÃO ---
 function showMatch(match) {
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    document.getElementById('matchBar').classList.add('show');
+    document.getElementById('trustScore').innerText = `Confiança RePhone: 92%`;
+    document.getElementById('matchTitle').innerText = `${match.model}`;
     
-    const panel = document.getElementById('matchBar');
-    panel.classList.add('show');
-
-    document.getElementById('trustScore').innerText = `Confiança RePhone: ${match.score}%`;
-    document.getElementById('matchTitle').innerText = `${match.model} a ${match.dist.toFixed(1)}km`;
-    
-    // Configura o botão de conversão para o WhatsApp
-    const btnMatch = document.getElementById('matchBtn');
-    btnMatch.onclick = () => {
-        const msg = encodeURIComponent(`Olá! Vi o seu ${match.model} no RePhone por R$ ${match.price} e tenho interesse. Podemos conversar?`);
-        window.open(`https://wa.me/5527999999999?text=${msg}`, '_blank'); // Substitua pelo número real ou campo do objeto
-    };
-
-    // Renderiza o gráfico (Mantendo sua lógica atual)
-    renderChart(match.history);
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    if(window.reChart) window.reChart.destroy();
+    window.reChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: ['30d', '15d', 'Hoje'], datasets: [{ data: match.history, borderColor: '#16a34a', tension: 0.4, fill: false }] },
+        options: { plugins: { legend: false }, scales: { y: { display: false } } }
+    });
 }
 
-// --- LÓGICA DE FECHAR COM SWIPE (DESLIZAR) ---
-let touchStartY = 0;
-const matchBar = document.getElementById('matchBar');
-
-matchBar.addEventListener('touchstart', e => touchStartY = e.touches[0].clientY);
-matchBar.addEventListener('touchmove', e => {
-    const touchY = e.touches[0].clientY;
-    const diff = touchY - touchStartY;
-    if (diff > 0) matchBar.style.transform = `translateY(${diff}px)`;
-});
-matchBar.addEventListener('touchend', e => {
-    const diff = e.changedTouches[0].clientY - touchStartY;
-    if (diff > 100) {
-        matchBar.classList.remove('show');
-    }
-    matchBar.style.transform = "";
+document.getElementById('closeMatch').addEventListener('click', () => {
+    document.getElementById('matchBar').classList.remove('show');
+    setTimeout(() => updateRadarState('idle'), 400);
 });
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', () => {
-    renderGrid();
-    document.getElementById('btnSearch').addEventListener('click', startRadar);
-});
+document.getElementById('btnSearch').addEventListener('click', startRadar);
+window.onload = renderGrid;
