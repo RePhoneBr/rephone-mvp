@@ -61,16 +61,23 @@
         <p class="lead">Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
 
         <div class="price-box" aria-label="Definir valor máximo">
-          <label class="price-label" for="priceInput">Quanto você quer pagar?</label>
+          
+          <label class="price-label" for="modelInput">Modelo desejado</label>
+          <input id="modelInput" class="search" placeholder="Ex: iPhone 11" autocomplete="off" />
+<label class="price-label" for="priceInput">Quanto você quer pagar?</label>
           <div class="price-row">
             <span class="currency">R$</span>
             <input id="priceInput" class="price-input" inputmode="decimal" placeholder="Ex: 2500 ou 2.500,00" />
-<div id="price-guidance" class="price-guidance" aria-live="polite" style="display:none;"></div>
           </div>
           <div class="price-hint">
             Aceitamos <strong>2500</strong>, <strong>2.500</strong> ou <strong>2.500,00</strong>. A RePhone interpreta e padroniza ao sair do campo.
           </div>
-        </div>
+        
+          <div id="priceGuidance" class="price-guidance" style="display:none" aria-live="polite"></div>
+          <div style="margin-top:12px; display:flex; gap:.6rem; flex-wrap:wrap;">
+            <button class="btn btn-primary" id="buscarOpp" type="button" disabled>Buscar oportunidade</button>
+          </div>
+</div>
       </div>
     </section>
 
@@ -102,6 +109,7 @@
         <div class="matchbar-progress" aria-hidden="true"><span id="matchProg"></span></div>
       </div>
       <button class="matchbar-btn" id="matchBtn" type="button" disabled>Ver MATCH</button>
+      <button class="matchbar-close" id="matchClose" type="button" aria-label="Fechar">✕</button>
     </div>
   </div>
 
@@ -204,9 +212,9 @@
   <script src="js/app.js?v=3.1"></script>
 
   <!-- Radar discreto (canto inferior direito) -->
-  <button class="radar-pill" id="radarPill" type="button" aria-hidden="true" title="RP Radar">
+  <button class="radar-pill" id="radarPill" type="button" aria-hidden="true" title="RP MATCH">
     <span class="pulse" aria-hidden="true"></span>
-    <span class="txt">RP Radar</span>
+    <span class="txt">RP MATCH</span>
   </button>
 </body>
 </html>
