@@ -3,52 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Control | RePhone Admin</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Curadoria | RePhone Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #0f172a; color: white; padding: 20px; font-family: 'Inter', sans-serif; }
-        .admin-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            border-bottom: 1px solid #1e293b; 
-            padding-bottom: 20px; 
-        }
-        .btn-logout { 
-            background: #334155; 
-            color: white; 
-            border: none; 
-            padding: 8px 15px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold;
-        }
-        .pending-card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
-        .price-tag { color: #16a34a; font-weight: 900; font-size: 20px; }
-        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-        .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #334155; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn-approve { background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 2; }
-        .btn-reject { background: #ef4444; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 1; }
-        #listaPendentes { min-height: 200px; }
-        .loading-screen { position: fixed; inset: 0; background: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --border: #334155; }
+        body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); padding: 5px 10px; border-radius: 8px; font-weight: 900; margin-right: 10px; }
+        
+        .pending-card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); position: relative; }
+        
+        /* Detalhes do Aparelho */
+        .ad-title { font-size: 20px; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .price-badge { color: var(--green); font-weight: 900; font-size: 22px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; font-size: 13px; }
+        .info-tag { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
+        .info-tag b { color: var(--gold); text-transform: uppercase; font-size: 10px; display: block; }
+
+        .desc-box { background: #0f172a; padding: 15px; border-radius: 12px; margin: 15px 0; border-left: 4px solid var(--gold); font-size: 14px; line-height: 1.6; }
+
+        .photo-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin: 15px 0; }
+        .photo-row img { height: 120px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-approve { background: var(--green); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 2; }
+        .btn-reject { background: #ef4444; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 1; }
+        
+        .loading-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen" class="loading-screen">Verificando Credenciais...</div>
+    <div id="loadingScreen" class="loading-screen">Validando Acesso...</div>
 
     <header class="admin-header">
-        <div>
-            <h1 style="font-weight: 900; margin: 0;">RePhone Master</h1>
-            <p style="color: #94a3b8; margin: 5px 0 0;">Curadoria Aracruz</p>
+        <div style="display: flex; align-items: center;">
+            <span class="logo-rp">RP</span>
+            <h1 style="font-size: 20px;">Fila de Curadoria</h1>
         </div>
-        <button onclick="fazerLogout()" class="btn-logout">Sair</button>
+        <button onclick="fazerLogout()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:5px 15px; border-radius:8px; cursor:pointer;">Sair</button>
     </header>
 
     <div id="listaPendentes">
-        <p style="text-align: center; color: #64748b;">Buscando anúncios...</p>
+        <p style="text-align: center; color: #94a3b8;">Nenhum anúncio aguardando...</p>
     </div>
 
     <script type="module">
@@ -62,35 +61,29 @@
             projectId: "rephone-a0a80",
             storageBucket: "rephone-a0a80.firebasestorage.app",
             messagingSenderId: "431497247030",
-            appId: "1:431497247030:web:a943715e4acc04b8995b97",
-            measurementId: "G-LHRJ19C0CW"
+            appId: "1:431497247030:web:a943715e4acc04b8995b97"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- ESCUDO DE PROTEÇÃO ---
         onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'admin-login.html';
-            } else {
+            if (!user) { window.location.href = 'admin-login.html'; }
+            else { 
                 document.getElementById('loadingScreen').style.display = 'none';
-                iniciarEscutaDados();
+                escutarPendentes();
             }
         });
 
-        window.fazerLogout = () => {
-            signOut(auth).then(() => window.location.href = 'admin-login.html');
-        };
+        window.fazerLogout = () => signOut(auth).then(() => window.location.href = 'admin-login.html');
 
-        // --- LÓGICA DE DADOS ---
-        function iniciarEscutaDados() {
+        function escutarPendentes() {
             const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
             
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('listaPendentes');
-                container.innerHTML = snapshot.empty ? '<p style="text-align:center; padding:50px;">✅ Nenhum pendente.</p>' : "";
+                container.innerHTML = snapshot.empty ? '<p style="text-align:center; padding:50px; color:#64748b;">✅ Tudo em dia! Sem anúncios pendentes.</p>' : "";
 
                 snapshot.forEach((adDoc) => {
                     const ad = adDoc.data();
@@ -98,16 +91,29 @@
                     const card = document.createElement('div');
                     card.className = 'pending-card';
                     card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between">
-                            <h3>${ad.modelo}</h3>
-                            <span class="price-tag">R$ ${ad.preco}</span>
+                        <div class="ad-title">
+                            <span>${ad.marca} ${ad.modelo}</span>
+                            <span class="price-badge">R$ ${ad.preco}</span>
                         </div>
-                        <p style="font-size:12px; color:#94a3b8">Bateria: ${ad.bateria} | Estado: ${ad.condicao}</p>
-                        <div class="photo-grid">
+                        
+                        <div class="info-grid">
+                            <div class="info-tag"><b>Capacidade/Conexão</b>${ad.capacidade} - ${ad.conexao}</div>
+                            <div class="info-tag"><b>Estado</b>${ad.condicao}</div>
+                            <div class="info-tag"><b>Disponibilidade</b>${ad.estoque}</div>
+                            <div class="info-tag"><b>Prazo</b>${ad.prazo}</div>
+                        </div>
+
+                        <div class="desc-box">
+                            <b>Descrição do Vendedor:</b><br>
+                            ${ad.descricao || "Sem descrição informada."}
+                        </div>
+
+                        <div class="photo-row">
                             ${ad.fotos.map(url => `<img src="${url}" onclick="window.open('${url}')">`).join('')}
                         </div>
+
                         <div class="btn-group">
-                            <button class="btn-approve" onclick="aprovar('${id}')">APROVAR</button>
+                            <button class="btn-approve" onclick="aprovar('${id}')">APROVAR ANÚNCIO</button>
                             <button class="btn-reject" onclick="rejeitar('${id}')">DELETAR</button>
                         </div>
                     `;
@@ -116,13 +122,14 @@
             });
         }
 
-        // Funções globais para os botões
         window.aprovar = async (id) => {
-            await updateDoc(doc(db, "anuncios", id), { status: "aprovado" });
+            if(confirm("Deseja publicar este anúncio no Radar?")) {
+                await updateDoc(doc(db, "anuncios", id), { status: "aprovado" });
+            }
         };
 
         window.rejeitar = async (id) => {
-            if(confirm("Excluir anúncio permanentemente?")) {
+            if(confirm("Tem certeza que deseja EXCLUIR permanentemente?")) {
                 await deleteDoc(doc(db, "anuncios", id));
             }
         };
