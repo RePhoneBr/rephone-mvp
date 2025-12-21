@@ -110,36 +110,44 @@ async function startRadar() {
     });
 }
 
-// --- EXIBIR PAINEL DE MATCH ---
+// --- EXIBIR PAINEL DE MATCH COM CONVERSÃO ---
 function showMatch(match) {
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    
     const panel = document.getElementById('matchBar');
     panel.classList.add('show');
 
     document.getElementById('trustScore').innerText = `Confiança RePhone: ${match.score}%`;
     document.getElementById('matchTitle').innerText = `${match.model} a ${match.dist.toFixed(1)}km`;
-    document.getElementById('matchSub').innerText = match.kyc ? "🛡️ Vendedor com KYC Verificado" : "⏳ Verificação pendente para este vendedor";
+    
+    // Configura o botão de conversão para o WhatsApp
+    const btnMatch = document.getElementById('matchBtn');
+    btnMatch.onclick = () => {
+        const msg = encodeURIComponent(`Olá! Vi o seu ${match.model} no RePhone por R$ ${match.price} e tenho interesse. Podemos conversar?`);
+        window.open(`https://wa.me/5527999999999?text=${msg}`, '_blank'); // Substitua pelo número real ou campo do objeto
+    };
 
-    const ctx = document.getElementById('historyChart').getContext('2d');
-    if (window.rephoneChart) window.rephoneChart.destroy();
-    window.rephoneChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['30d', '15d', 'Hoje'],
-            datasets: [{ 
-                data: match.history, 
-                borderColor: '#16a34a', 
-                backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                fill: true,
-                tension: 0.4 
-            }]
-        },
-        options: { 
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: false },
-            scales: { y: { display: false }, x: { grid: { display: false } } }
-        }
-    });
+    // Renderiza o gráfico (Mantendo sua lógica atual)
+    renderChart(match.history);
 }
+
+// --- LÓGICA DE FECHAR COM SWIPE (DESLIZAR) ---
+let touchStartY = 0;
+const matchBar = document.getElementById('matchBar');
+
+matchBar.addEventListener('touchstart', e => touchStartY = e.touches[0].clientY);
+matchBar.addEventListener('touchmove', e => {
+    const touchY = e.touches[0].clientY;
+    const diff = touchY - touchStartY;
+    if (diff > 0) matchBar.style.transform = `translateY(${diff}px)`;
+});
+matchBar.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientY - touchStartY;
+    if (diff > 100) {
+        matchBar.classList.remove('show');
+    }
+    matchBar.style.transform = "";
+});
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
