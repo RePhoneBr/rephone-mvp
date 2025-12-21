@@ -5,101 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vender | RePhone Aracruz</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        .photo-slot { aspect-ratio: 1/1; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 20px; cursor: pointer; overflow: hidden; position: relative; }
-        .slot-design { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #94a3b8; }
-        .slot-preview-img { width: 100%; height: 100%; object-fit: cover; }
-        .filled { border: 2px solid #16a34a; }
-        select { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 16px; margin-bottom: 15px; }
-    </style>
 </head>
-<body style="background: white;">
+<body style="background: white; padding: 20px;">
 
-    <div style="padding: 30px 20px;">
-        <header style="margin-bottom: 30px;">
-            <button onclick="window.location.href='index.html'" style="background:none; border:none; color:#64748b; font-weight:700; margin-bottom:15px; cursor:pointer;">← Voltar</button>
-            <h1 style="font-weight: 900; font-size: 28px; letter-spacing: -1px;">Submissão de Ativo</h1>
-            <p style="color: #64748b; font-size: 14px;">Complete a checklist para análise do RP MATCH.</p>
-        </header>
+    <header style="margin-bottom: 30px;">
+        <h1 style="font-weight: 900; font-size: 26px;">Submeter iPhone</h1>
+        <p style="color: #64748b;">Preencha os dados reais para a curadoria.</p>
+    </header>
 
-        <form id="vendedorForm">
-            <label style="display:block; font-weight:800; margin-bottom:8px;">MODELO E VALOR</label>
-            <input type="text" id="vModel" placeholder="Ex: iPhone 13 128GB" required style="margin-bottom:10px;">
-            <input type="number" id="vPrice" placeholder="Valor desejado (R$)" required style="margin-bottom:10px;">
-            
-            <label style="display:block; font-weight:800; margin-bottom:8px;">CONDIÇÃO TÉCNICA</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:15px;">
-                <input type="text" id="vBattery" placeholder="Saúde Bateria %" required>
+    <form id="formVenda">
+        <label>MODELO</label>
+        <input type="text" id="vModel" placeholder="Ex: iPhone 13 Pro 128GB" required>
+        
+        <label>VALOR (R$)</label>
+        <input type="number" id="vPrice" placeholder="Preço" required>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <label>BATERIA</label>
+                <input type="text" id="vBattery" placeholder="Ex: 88%" required>
+            </div>
+            <div>
+                <label>ESTADO</label>
                 <select id="vCondition">
                     <option value="Impecável">Impecável</option>
                     <option value="Excelente">Excelente</option>
                     <option value="Bom">Bom Estado</option>
                 </select>
             </div>
+        </div>
 
-            <button type="button" id="btnLoc" class="btn-secondary" style="width:100%; margin-bottom:25px; padding: 15px; border-radius:15px;">
-                📍 VINCULAR MINHA POSIÇÃO (ARACRUZ)
-            </button>
-            <input type="hidden" id="vLat"> <input type="hidden" id="vLng">
+        <button type="button" id="btnLoc" class="btn-secondary" style="width:100%; margin: 20px 0;">📍 Vincular GPS (Aracruz)</button>
+        <input type="hidden" id="vLat"> <input type="hidden" id="vLng">
 
-            <label style="display:block; font-weight:800; margin-bottom:15px;">CHECKLIST OBRIGATÓRIA (4 FOTOS)</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom:30px;">
-                <div class="photo-slot" onclick="document.getElementById('file1').click()">
-                    <input type="file" id="file1" hidden onchange="preview(this, 's1')">
-                    <div id="s1" class="slot-design"><span>📸</span><small>Frente</small></div>
-                </div>
-                <div class="photo-slot" onclick="document.getElementById('file2').click()">
-                    <input type="file" id="file2" hidden onchange="preview(this, 's2')">
-                    <div id="s2" class="slot-design"><span>📱</span><small>Traseira</small></div>
-                </div>
-                <div class="photo-slot" onclick="document.getElementById('file3').click()">
-                    <input type="file" id="file3" hidden onchange="preview(this, 's3')">
-                    <div id="s3" class="slot-design"><span>🔋</span><small>Bateria</small></div>
-                </div>
-                <div class="photo-slot" onclick="document.getElementById('file4').click()">
-                    <input type="file" id="file4" hidden onchange="preview(this, 's4')">
-                    <div id="s4" class="slot-design"><span>⚙️</span><small>Sobre</small></div>
-                </div>
+        <label>FOTOS OBRIGATÓRIAS (CHECKLIST)</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
+            <div class="photo-slot" onclick="document.getElementById('f1').click()">
+                <input type="file" id="f1" hidden class="foto-input" accept="image/*">
+                <div id="s1" class="slot-design"><span>📸</span><small>Frente</small></div>
             </div>
+            <div class="photo-slot" onclick="document.getElementById('f2').click()">
+                <input type="file" id="f2" hidden class="foto-input" accept="image/*">
+                <div id="s2" class="slot-design"><span>📱</span><small>Traseira</small></div>
+            </div>
+            <div class="photo-slot" onclick="document.getElementById('f3').click()">
+                <input type="file" id="f3" hidden class="foto-input" accept="image/*">
+                <div id="s3" class="slot-design"><span>🔋</span><small>Saúde</small></div>
+            </div>
+            <div class="photo-slot" onclick="document.getElementById('f4').click()">
+                <input type="file" id="f4" hidden class="foto-input" accept="image/*">
+                <div id="s4" class="slot-design"><span>⚙️</span><small>Ajustes</small></div>
+            </div>
+        </div>
 
-            <button type="submit" class="btn-primary" style="width:100%;">ENVIAR PARA CURADORIA</button>
-        </form>
-    </div>
+        <button type="submit" id="btnEnviar" class="btn-primary" style="width:100%;">ENVIAR PARA REPHONE</button>
+    </form>
 
-    <script>
-        function preview(input, id) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const slot = document.getElementById(id);
-                    slot.innerHTML = `<img src="${e.target.result}" class="slot-preview-img">`;
-                    slot.parentElement.classList.add('filled');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
+            authDomain: "rephone-a0a80.firebaseapp.com",
+            projectId: "rephone-a0a80",
+            storageBucket: "rephone-a0a80.firebasestorage.app",
+            messagingSenderId: "431497247030",
+            appId: "1:431497247030:web:a943715e4acc04b8995b97",
+            measurementId: "G-LHRJ19C0CW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
+
+        // Lógica de Localização
         document.getElementById('btnLoc').onclick = function() {
-            const btn = this;
             navigator.geolocation.getCurrentPosition(pos => {
                 document.getElementById('vLat').value = pos.coords.latitude;
                 document.getElementById('vLng').value = pos.coords.longitude;
-                btn.innerText = "✓ POSIÇÃO VINCULADA";
-                btn.style.background = "#dcfce7";
+                this.innerText = "✓ LOCALIZAÇÃO VINCULADA";
+                this.style.background = "#dcfce7";
+                this.style.color = "#16a34a";
             });
         };
 
-        document.getElementById('vendedorForm').onsubmit = function(e) {
+        // Envio Híbrido: ImgBB + Firestore
+        document.getElementById('formVenda').onsubmit = async (e) => {
             e.preventDefault();
-            const msg = `*NOVO IPHONE PARA CURADORIA*%0A` +
-                        `*Modelo:* ${document.getElementById('vModel').value}%0A` +
-                        `*Preço:* R$ ${document.getElementById('vPrice').value}%0A` +
-                        `*Bateria:* ${document.getElementById('vBattery').value}%0A` +
-                        `*Condição:* ${document.getElementById('vCondition').value}%0A%0A` +
-                        `_Estou enviando as 4 fotos da checklist abaixo:_`;
-            
-            window.open(`https://wa.me/5527999999999?text=${msg}`);
+            const btn = document.getElementById('btnEnviar');
+            btn.disabled = true;
+            btn.innerText = "PROCESSANDO...";
+
+            try {
+                const inputs = document.querySelectorAll('.foto-input');
+                const fotoUrls = [];
+
+                // 1. Upload das fotos para o ImgBB
+                for (let input of inputs) {
+                    if (input.files[0]) {
+                        const formData = new FormData();
+                        formData.append("image", input.files[0]);
+                        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+                            method: "POST",
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if(data.success) fotoUrls.push(data.data.url);
+                    }
+                }
+
+                if(fotoUrls.length < 4) throw new Error("Complete todas as fotos");
+
+                // 2. Salva no Firestore
+                await addDoc(collection(db, "anuncios"), {
+                    modelo: document.getElementById('vModel').value,
+                    preco: parseFloat(document.getElementById('vPrice').value),
+                    bateria: document.getElementById('vBattery').value,
+                    condicao: document.getElementById('vCondition').value,
+                    lat: parseFloat(document.getElementById('vLat').value),
+                    lng: parseFloat(document.getElementById('vLng').value),
+                    fotos: fotoUrls,
+                    status: "pendente", // Para sua aprovação
+                    dataCriacao: new Date()
+                });
+
+                alert("Sucesso! Seu iPhone foi enviado para curadoria.");
+                window.location.href = "index.html";
+
+            } catch (err) {
+                alert("Erro: " + err.message);
+                btn.disabled = false;
+                btn.innerText = "TENTAR NOVAMENTE";
+            }
         };
     </script>
 </body>
