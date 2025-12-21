@@ -3,163 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone | Radar de Aparelhos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>RePhone | Radar Aracruz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dark: #0f172a;
-            --green: #16a34a;
-            --gold: #d4af37;
-            --light-gray: #f8fafc;
-            --border: #e2e8f0;
-        }
-
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
 
-        body { background-color: white; color: var(--dark); line-height: 1.5; }
-
-        /* Cabeçalho Premium */
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: var(--dark);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
+        /* Header */
+        .app-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .brand { display: flex; align-items: center; gap: 10px; }
-
-        .logo-rp {
-            background: linear-gradient(135deg, #fdfcf0 0%, #d4af37 100%);
-            color: var(--dark);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
-
-        .brand h1 { color: white; font-weight: 900; font-size: 22px; margin: 0; letter-spacing: -0.5px; }
-        .brand span { color: var(--green); }
-
-        .btn-vender {
-            background: rgba(255,255,255,0.05);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            text-decoration: none;
-        }
-
-        /* Radar de Busca */
-        .search-container { padding: 20px; background: white; }
+        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
         
-        .rp-card-search {
-            background: white;
-            border-radius: 20px;
-            padding: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border: 1px solid var(--border);
-        }
+        /* Form de Busca */
+        .search-area { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); font-size: 14px; outline: none; }
+        
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-flat { background: #e2e8f0; color: var(--dark); border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .btn-match { background: var(--green); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; position: relative; overflow: hidden; }
 
-        .rp-card-search input {
-            width: 100%;
-            border: none;
-            padding: 15px;
-            font-size: 16px;
-            outline: none;
-            color: var(--dark);
-        }
+        /* Radar Animation */
+        .radar-box { display: none; text-align: center; padding: 40px 0; }
+        .radar-circle { width: 150px; height: 150px; border: 2px solid var(--green); border-radius: 50%; margin: 0 auto; position: relative; animation: pulse 2s infinite; }
+        .radar-line { width: 50%; height: 2px; background: var(--green); position: absolute; top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); } 70% { box-shadow: 0 0 0 30px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
 
-        .btn-match-trigger {
-            width: 100%;
-            background: var(--green);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 15px;
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-        }
+        /* Feed de Cards */
+        .feed { padding: 20px; display: grid; gap: 20px; }
+        .card { background: white; border-radius: 25px; padding: 15px; border: 1px solid #e2e8f0; position: relative; }
+        .badge-status { position: absolute; top: 25px; left: 25px; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; z-index: 10; display: flex; align-items: center; gap: 5px; border: 1px solid #e2e8f0; }
+        .card img { width: 100%; height: 200px; object-fit: contain; background: var(--bg); border-radius: 20px; margin-bottom: 12px; }
+        .card-info h4 { font-size: 18px; font-weight: 800; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .price { color: var(--green); font-weight: 900; font-size: 20px; }
+        .vendedor-tipo { font-size: 11px; background: #f1f5f9; padding: 3px 8px; border-radius: 5px; color: #64748b; }
 
-        /* Filtros Estilo Stories */
-        .filters-container {
-            display: flex;
-            gap: 20px;
-            padding: 10px 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .filter-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            min-width: 70px;
-        }
-
-        .filter-circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 2px solid var(--green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            background: white;
-        }
-
-        .filter-item span { font-size: 12px; font-weight: 600; color: #64748b; }
-
-        /* Feed de Anúncios */
-        .feed-grid { padding: 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-
-        .card-item {
-            background: white;
-            border-radius: 24px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            transition: 0.3s;
-        }
-
-        .card-item img {
-            width: 100%;
-            height: 250px;
-            object-fit: contain;
-            background: var(--light-gray);
-            border-radius: 18px;
-            margin-bottom: 12px;
-        }
-
-        /* Match Panel */
-        .match-panel {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: white;
-            border-radius: 30px 30px 0 0;
-            padding: 25px;
-            transform: translateY(100%);
-            transition: 0.5s cubic-bezier(0, 1, 0.5, 1);
-            z-index: 2000;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-        }
-
-        .match-panel.show { transform: translateY(0); }
-        .drag-handle { width: 40px; height: 5px; background: #cbd5e1; border-radius: 10px; margin: 0 auto 20px; }
-
+        /* Painel de Match (O "Pop-up") */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 2000; align-items: flex-end; }
+        .match-window { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 30px; position: relative; transform: translateY(100%); transition: 0.4s; }
+        .match-window.active { transform: translateY(0); }
+        .close-match { position: absolute; top: 20px; right: 20px; width: 30px; height: 30px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+        
+        .tag { display: inline-block; padding: 5px 12px; border-radius: 8px; background: var(--bg); font-size: 12px; font-weight: 700; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -167,47 +55,47 @@
     <header class="app-header">
         <div class="brand">
             <div class="logo-rp">RP</div>
-            <h1>Re<span>Phone</span></h1>
+            <h1 style="color:white">Re<span style="color:var(--green)">Phone</span></h1>
         </div>
-        <a href="vendedor.html" class="btn-vender">Vender +</a>
+        <a href="vendedor.html" style="text-decoration:none" class="vendedor-tipo">Vender +</a>
     </header>
 
-    <div class="search-container">
-        <div class="rp-card-search">
-            <input type="text" id="modelInput" placeholder="Qual aparelho você busca?">
-            <button id="btnSearch" class="btn-match-trigger">ATIVAR RADAR RP MATCH</button>
+    <div class="search-area">
+        <div class="input-group">
+            <select id="searchMarca">
+                <option value="">Marca</option>
+                <option value="Apple">Apple</option>
+                <option value="Samsung">Samsung</option>
+            </select>
+            <input type="number" id="searchMaxPrice" placeholder="Até R$">
+        </div>
+        <input type="text" id="searchModel" placeholder="Modelo (Ex: iPhone 13)" style="margin-bottom:15px">
+        
+        <div class="btn-row">
+            <button class="btn-flat" onclick="buscarNoSite()">🔍 Ver Tudo</button>
+            <button class="btn-match" onclick="ativarMatch()">✨ Ativar Match</button>
         </div>
     </div>
 
-    <div class="filters-container">
-        <div class="filter-item">
-            <div class="filter-circle">📱</div>
-            <span>Todos</span>
-        </div>
-        <div class="filter-item">
-            <div class="filter-circle">📍</div>
-            <span>Perto</span>
-        </div>
-        <div class="filter-item">
-            <div class="filter-circle">💎</div>
-            <span>Premium</span>
-        </div>
+    <div id="radarDisplay" class="radar-box">
+        <div class="radar-circle"><div class="radar-line"></div></div>
+        <p style="margin-top:20px; font-weight:800; color:var(--green)">ESCANEANDO ARACRUZ...</p>
     </div>
 
-    <main id="offersGrid" class="feed-grid">
-        <p style="text-align: center; color: #94a3b8; margin-top: 40px;">Iniciando radar em Aracruz...</p>
-    </main>
+    <main id="offersGrid" class="feed">
+        </main>
 
-    <div id="matchBar" class="match-panel">
-        <div class="drag-handle"></div>
-        <h3 id="matchTitle" style="font-size: 24px; font-weight: 900; margin-bottom: 5px;"></h3>
-        <p id="matchDist" style="color: var(--green); font-weight: 700; margin-bottom: 20px;"></p>
-        <button id="btnZap" class="btn-match-trigger" style="background: var(--dark);">CONVERSAR NO WHATSAPP</button>
+    <div id="overlayMatch" class="overlay" onclick="fecharMatch(event)">
+        <div class="match-window" id="windowMatch" onclick="event.stopPropagation()">
+            <div class="close-match" onclick="fecharMatch()">✕</div>
+            <div id="matchContent"></div>
+            <button id="btnZap" class="btn-match" style="width:100%; margin-top:20px; padding:20px">CHAMAR NO WHATSAPP</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
@@ -220,44 +108,80 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let userLoc = null;
 
-        navigator.geolocation.getCurrentPosition(pos => {
-            userLoc = pos.coords;
-            carregarAnuncios();
-        }, () => carregarAnuncios());
-
-        function carregarAnuncios() {
-            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+        // Função de busca simples
+        window.buscarNoSite = async () => {
+            const grid = document.getElementById('offersGrid');
+            grid.innerHTML = "Buscando...";
             
-            onSnapshot(q, (snapshot) => {
-                const grid = document.getElementById('offersGrid');
-                grid.innerHTML = snapshot.empty ? "<p style='text-align:center;'>Nenhum aparelho encontrado.</p>" : "";
+            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+            const snap = await getDocs(q);
+            renderizar(snap);
+        };
 
-                snapshot.forEach((adDoc) => {
-                    const ad = adDoc.data();
-                    const card = document.createElement('div');
-                    card.className = 'card-item';
-                    card.innerHTML = `
-                        <img src="${ad.fotos[0]}">
-                        <h4 style="font-weight:800; font-size:18px;">${ad.modelo}</h4>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                            <span style="color:var(--green); font-weight:900; font-size:18px;">R$ ${ad.preco}</span>
-                            <small style="color:#64748b; font-weight:600;">Aracruz</small>
+        // Função do Radar (Match)
+        window.ativarMatch = () => {
+            document.getElementById('offersGrid').innerHTML = "";
+            document.getElementById('radarDisplay').style.display = "block";
+            
+            setTimeout(async () => {
+                document.getElementById('radarDisplay').style.display = "none";
+                const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+                const snap = await getDocs(q);
+                renderizar(snap);
+            }, 3000);
+        };
+
+        function renderizar(snapshot) {
+            const grid = document.getElementById('offersGrid');
+            grid.innerHTML = "";
+            
+            snapshot.forEach(doc => {
+                const ad = doc.data();
+                // Lógica de ícones por estado
+                const icon = ad.condicao === 'Novo' ? '💎' : (ad.condicao === 'Semi novo' ? '✨' : '📱');
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="badge-status">${icon} ${ad.condicao}</div>
+                    <img src="${ad.fotos[0]}">
+                    <div class="card-info">
+                        <h4>${ad.modelo}</h4>
+                        <div class="card-meta">
+                            <span class="price">R$ ${ad.preco}</span>
+                            <span class="vendedor-tipo">👤 Particular</span>
                         </div>
-                    `;
-                    card.onclick = () => {
-                        document.getElementById('matchTitle').innerText = ad.modelo;
-                        document.getElementById('matchDist').innerText = "📍 Localizado em Aracruz";
-                        document.getElementById('matchBar').classList.add('show');
-                        document.getElementById('btnZap').onclick = () => window.open(`https://wa.me/5527999999999`);
-                    };
-                    grid.appendChild(card);
-                });
+                        <p style="font-size:12px; color:#94a3b8; margin-top:5px">📍 Aracruz, ES</p>
+                    </div>
+                `;
+                card.onclick = () => abrirMatch(ad);
+                grid.appendChild(card);
             });
         }
 
-        document.getElementById('btnSearch').onclick = carregarAnuncios;
+        window.abrirMatch = (ad) => {
+            const content = document.getElementById('matchContent');
+            content.innerHTML = `
+                <h2 style="font-weight:900; font-size:28px">${ad.modelo}</h2>
+                <p style="color:var(--green); font-weight:800; font-size:22px; margin:10px 0">R$ ${ad.preco}</p>
+                <div style="margin:20px 0">
+                    <span class="tag">🔋 Bateria: ${ad.bateria}</span>
+                    <span class="tag">✨ Estado: ${ad.condicao}</span>
+                    <span class="tag">🛡️ Verificado</span>
+                </div>
+                <p style="color:#64748b; font-size:14px">Este aparelho passou pela curadoria RePhone Aracruz e está disponível para entrega imediata.</p>
+            `;
+            document.getElementById('overlayMatch').style.display = "flex";
+            setTimeout(() => document.getElementById('windowMatch').classList.add('active'), 10);
+        };
+
+        window.fecharMatch = (e) => {
+            document.getElementById('windowMatch').classList.remove('active');
+            setTimeout(() => document.getElementById('overlayMatch').style.display = "none", 400);
+        };
+
+        buscarNoSite(); // Inicia carregando tudo
     </script>
 </body>
 </html>
