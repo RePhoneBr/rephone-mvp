@@ -4,62 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vender | RePhone Aracruz</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark: #0f172a;
+            --green: #16a34a;
+            --gold: #d4af37;
+            --light-gray: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #ffffff; color: var(--dark); padding-bottom: 40px; }
+
+        /* Header */
+        .header-venda {
+            background: var(--dark);
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 30px;
+        }
+        .logo-mini {
+            background: linear-gradient(135deg, #fdfcf0 0%, #d4af37 100%);
+            color: var(--dark);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            margin: 0 auto 15px;
+        }
+        .header-venda h1 { color: white; font-size: 24px; font-weight: 900; }
+        .header-venda p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+
+        /* Formulário */
+        .container { padding: 0 20px; }
+        label { display: block; font-weight: 700; font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 8px; margin-left: 5px; }
+        input, select {
+            width: 100%;
+            padding: 16px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            background: var(--light-gray);
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--green); background: white; }
+
+        /* Grid de Fotos */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .photo-slot {
+            background: var(--light-gray);
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .photo-slot.has-file { border: 2px solid var(--green); background: #f0fdf4; }
+        .photo-slot span { font-size: 24px; margin-bottom: 5px; }
+        .photo-slot small { font-size: 11px; font-weight: 700; color: #64748b; }
+
+        /* Botões */
+        .btn-gps {
+            background: #f1f5f9;
+            color: var(--dark);
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            width: 100%;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-submit {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            font-weight: 900;
+            font-size: 16px;
+            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);
+        }
+    </style>
 </head>
-<body style="background: white; padding: 20px;">
+<body>
 
-    <header style="margin-bottom: 30px;">
-        <h1 style="font-weight: 900; font-size: 26px;">Submeter iPhone</h1>
-        <p style="color: #64748b;">Preencha os dados reais para a curadoria.</p>
-    </header>
+    <div class="header-venda">
+        <div class="logo-mini">RP</div>
+        <h1>Vender Aparelho</h1>
+        <p>Anuncie em segundos no radar de Aracruz</p>
+    </div>
 
-    <form id="formVenda">
-        <label>MODELO</label>
-        <input type="text" id="vModel" placeholder="Ex: iPhone 13 Pro 128GB" required>
-        
-        <label>VALOR (R$)</label>
-        <input type="number" id="vPrice" placeholder="Preço" required>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-                <label>BATERIA</label>
-                <input type="text" id="vBattery" placeholder="Ex: 88%" required>
+    <div class="container">
+        <form id="formVenda">
+            <label>O que está a vender?</label>
+            <input type="text" id="vModel" placeholder="Ex: iPhone 13 Pro Max 256GB" required>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Preço (R$)</label>
+                    <input type="number" id="vPrice" placeholder="0.00" required>
+                </div>
+                <div>
+                    <label>Saúde Bateria</label>
+                    <input type="text" id="vBattery" placeholder="Ex: 92%" required>
+                </div>
             </div>
-            <div>
-                <label>ESTADO</label>
-                <select id="vCondition">
-                    <option value="Impecável">Impecável</option>
-                    <option value="Excelente">Excelente</option>
-                    <option value="Bom">Bom Estado</option>
-                </select>
-            </div>
-        </div>
 
-        <button type="button" id="btnLoc" class="btn-secondary" style="width:100%; margin: 20px 0;">📍 Vincular GPS (Aracruz)</button>
-        <input type="hidden" id="vLat"> <input type="hidden" id="vLng">
+            <label>Estado de Conservação</label>
+            <select id="vCondition">
+                <option value="Impecável">✨ Impecável (Sem marcas)</option>
+                <option value="Excelente">👍 Excelente (Sinais mínimos)</option>
+                <option value="Bom">📱 Bom (Marcas de uso)</option>
+            </select>
 
-        <label>FOTOS OBRIGATÓRIAS (CHECKLIST)</label>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
-            <div class="photo-slot" onclick="document.getElementById('f1').click()">
-                <input type="file" id="f1" hidden class="foto-input" accept="image/*">
-                <div id="s1" class="slot-design"><span>📸</span><small>Frente</small></div>
-            </div>
-            <div class="photo-slot" onclick="document.getElementById('f2').click()">
-                <input type="file" id="f2" hidden class="foto-input" accept="image/*">
-                <div id="s2" class="slot-design"><span>📱</span><small>Traseira</small></div>
-            </div>
-            <div class="photo-slot" onclick="document.getElementById('f3').click()">
-                <input type="file" id="f3" hidden class="foto-input" accept="image/*">
-                <div id="s3" class="slot-design"><span>🔋</span><small>Saúde</small></div>
-            </div>
-            <div class="photo-slot" onclick="document.getElementById('f4').click()">
-                <input type="file" id="f4" hidden class="foto-input" accept="image/*">
-                <div id="s4" class="slot-design"><span>⚙️</span><small>Ajustes</small></div>
-            </div>
-        </div>
+            <button type="button" id="btnLoc" class="btn-gps">
+                📍 Vincular Localização (Aracruz)
+            </button>
+            <input type="hidden" id="vLat"> <input type="hidden" id="vLng">
 
-        <button type="submit" id="btnEnviar" class="btn-primary" style="width:100%;">ENVIAR PARA REPHONE</button>
-    </form>
+            <label>Fotos Obrigatórias</label>
+            <div class="photo-grid">
+                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()">
+                    <input type="file" id="f1" hidden accept="image/*" onchange="updateSlot(1)">
+                    <span>📸</span><small>Frente</small>
+                </div>
+                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()">
+                    <input type="file" id="f2" hidden accept="image/*" onchange="updateSlot(2)">
+                    <span>📱</span><small>Traseira</small>
+                </div>
+                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()">
+                    <input type="file" id="f3" hidden accept="image/*" onchange="updateSlot(3)">
+                    <span>🔋</span><small>Bateria</small>
+                </div>
+                <div class="photo-slot" id="slot4" onclick="document.getElementById('f4').click()">
+                    <input type="file" id="f4" hidden accept="image/*" onchange="updateSlot(4)">
+                    <span>⚙️</span><small>Ajustes</small>
+                </div>
+            </div>
+
+            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA ANÁLISE</button>
+        </form>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
@@ -71,70 +178,68 @@
             projectId: "rephone-a0a80",
             storageBucket: "rephone-a0a80.firebasestorage.app",
             messagingSenderId: "431497247030",
-            appId: "1:431497247030:web:a943715e4acc04b8995b97",
-            measurementId: "G-LHRJ19C0CW"
+            appId: "1:431497247030:web:a943715e4acc04b8995b97"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
 
-        // Lógica de Localização
+        // Feedback visual do upload
+        window.updateSlot = (num) => {
+            const slot = document.getElementById(`slot${num}`);
+            slot.classList.add('has-file');
+            slot.querySelector('small').innerText = "✅ Carregada";
+        };
+
         document.getElementById('btnLoc').onclick = function() {
             navigator.geolocation.getCurrentPosition(pos => {
                 document.getElementById('vLat').value = pos.coords.latitude;
                 document.getElementById('vLng').value = pos.coords.longitude;
-                this.innerText = "✓ LOCALIZAÇÃO VINCULADA";
+                this.innerText = "✓ LOCALIZAÇÃO ATIVA";
                 this.style.background = "#dcfce7";
                 this.style.color = "#16a34a";
             });
         };
 
-        // Envio Híbrido: ImgBB + Firestore
         document.getElementById('formVenda').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnEnviar');
+            btn.innerText = "A ENVIAR... AGUARDE";
             btn.disabled = true;
-            btn.innerText = "PROCESSANDO...";
 
             try {
-                const inputs = document.querySelectorAll('.foto-input');
                 const fotoUrls = [];
-
-                // 1. Upload das fotos para o ImgBB
-                for (let input of inputs) {
-                    if (input.files[0]) {
+                for (let i = 1; i <= 4; i++) {
+                    const file = document.getElementById(`f${i}`).files[0];
+                    if (file) {
                         const formData = new FormData();
-                        formData.append("image", input.files[0]);
+                        formData.append("image", file);
                         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
                             method: "POST",
                             body: formData
                         });
                         const data = await res.json();
-                        if(data.success) fotoUrls.push(data.data.url);
+                        fotoUrls.push(data.data.url);
                     }
                 }
 
-                if(fotoUrls.length < 4) throw new Error("Complete todas as fotos");
-
-                // 2. Salva no Firestore
                 await addDoc(collection(db, "anuncios"), {
                     modelo: document.getElementById('vModel').value,
-                    preco: parseFloat(document.getElementById('vPrice').value),
+                    preco: document.getElementById('vPrice').value,
                     bateria: document.getElementById('vBattery').value,
                     condicao: document.getElementById('vCondition').value,
-                    lat: parseFloat(document.getElementById('vLat').value),
-                    lng: parseFloat(document.getElementById('vLng').value),
+                    lat: parseFloat(document.getElementById('vLat').value) || -19.82,
+                    lng: parseFloat(document.getElementById('vLng').value) || -40.27,
                     fotos: fotoUrls,
-                    status: "pendente", // Para sua aprovação
-                    dataCriacao: new Date()
+                    status: "pendente",
+                    data: new Date()
                 });
 
-                alert("Sucesso! Seu iPhone foi enviado para curadoria.");
+                alert("Sucesso! O seu aparelho foi enviado para curadoria.");
                 window.location.href = "index.html";
-
             } catch (err) {
-                alert("Erro: " + err.message);
+                alert("Erro ao enviar. Verifique as fotos.");
                 btn.disabled = false;
                 btn.innerText = "TENTAR NOVAMENTE";
             }
