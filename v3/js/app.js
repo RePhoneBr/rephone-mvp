@@ -45,26 +45,32 @@ async function startRadar() {
 }
 
 function showMatch(m) {
-    document.getElementById('matchBar').classList.add('show');
+    const panel = document.getElementById('matchBar');
+    
+    // 1. Atualiza os textos principais (sai o "Buscando" e entra o modelo)
     document.getElementById('matchTitle').innerText = m.model;
+    document.getElementById('matchSub').innerText = `Encontrado a 1.2km em Aracruz (${m.status})`;
+    
+    // 2. Atualiza os indicadores de qualidade com os dados do vendedor simulado
     document.getElementById('q-trust').innerText = `${m.trustScore}%`;
     document.getElementById('q-rating').innerText = m.rating.toFixed(1);
     document.getElementById('q-sales').innerText = `+${m.sales}`;
+    
+    // 3. Configura o botão de conversão (WhatsApp)
+    const btnMatch = document.getElementById('matchBtn');
+    if(m.kyc === 'none') {
+        btnMatch.style.background = "#64748b";
+        btnMatch.innerText = "SOLICITAR VERIFICAÇÃO";
+    } else {
+        btnMatch.style.background = "var(--green)";
+        btnMatch.innerText = "CONVERTER AGORA";
+    }
+    
+    btnMatch.onclick = () => {
+        const msg = encodeURIComponent(`Olá! Vi o seu ${m.model} no RePhone por R$ ${m.price} e tenho interesse.`);
+        window.open(`https://wa.me/5527999999999?text=${msg}`, '_blank');
+    };
+
+    // 4. Mostra o painel com animação
+    panel.classList.add('show');
 }
-
-document.getElementById('closeMatch').onclick = () => {
-    document.getElementById('matchBar').classList.remove('show');
-    setTimeout(() => updateRadar('idle'), 400);
-};
-
-document.getElementById('viewDetails').onclick = () => {
-    const modal = document.getElementById('galleryModal');
-    document.getElementById('galleryImg').src = state.currentMatch.img;
-    document.getElementById('galleryTitle').innerText = state.currentMatch.model;
-    document.getElementById('galleryPrice').innerText = `R$ ${state.currentMatch.price}`;
-    modal.classList.add('show');
-};
-
-document.getElementById('closeGallery').onclick = () => document.getElementById('galleryModal').classList.remove('show');
-document.getElementById('btnSearch').onclick = startRadar;
-window.onload = renderGrid;
