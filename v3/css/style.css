@@ -226,3 +226,76 @@ body{
   70%{ box-shadow: 0 0 0 10px rgba(255,255,255,0); opacity: .9; }
   100%{ box-shadow: 0 0 0 0 rgba(255,255,255,0); opacity: 1; }
 }
+
+/* ===== RP MATCH states (non-intrusive) ===== */
+#rp-match, .rp-match {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .02em;
+  z-index: 9999;
+  background: #e5e7eb; /* cinza claro */
+  color: #111827;
+  transition: background .4s ease, box-shadow .4s ease, transform .4s ease;
+}
+
+#rp-match.ready, .rp-match.ready {
+  background: #86efac; /* verde claro */
+  color: #052e16;
+}
+
+#rp-match.scanning, .rp-match.scanning {
+  animation: rpPulse 1.6s infinite;
+  box-shadow: 0 0 0 0 rgba(22,163,74,.45);
+}
+
+@keyframes rpPulse {
+  0% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
+  70% { box-shadow: 0 0 0 14px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+}
+
+/* Match bar close */
+.match-bar .close, #match-bar .close {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+/* Price guidance (assistive) */
+.price-guidance{
+  margin-top:6px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#f8fafc;
+  border:1px dashed rgba(22,163,74,.35);
+  color:#14532d;
+  font-size:13px;
+}
+.price-guidance .actions{
+  display:flex;
+  gap:8px;
+  margin-top:6px;
+}
+.price-guidance button{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(22,163,74,.35);
+  background:#ecfdf5;
+  color:#065f46;
+  cursor:pointer;
+  font-weight:600;
+}
+.price-guidance .muted{
+  color:#475569;
+}
