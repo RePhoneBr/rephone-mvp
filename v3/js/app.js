@@ -90,3 +90,34 @@ document.getElementById('closeGallery').onclick = () => {
 
 document.getElementById('btnSearch').onclick = startRadar;
 window.onload = renderGrid;
+function showMatch(m) {
+    // 1. Feedback Tátil (Vibra o celular ao encontrar o match)
+    if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]); // Vibração dupla curta
+    }
+
+    // 2. Injeta os dados nos campos
+    document.getElementById('matchTitle').innerText = m.model;
+    document.getElementById('matchSub').innerText = `Vendedor em Aracruz • ${m.status}`;
+    document.getElementById('q-trust').innerText = `${m.trustScore}%`;
+    document.getElementById('q-rating').innerText = m.rating.toFixed(1);
+    document.getElementById('q-sales').innerText = `+${m.sales}`;
+
+    const btn = document.getElementById('matchBtn');
+    
+    // 3. Configura a ação do botão baseada no vendedor
+    if(m.kyc === 'none') {
+        btn.style.backgroundColor = "#64748b";
+        btn.innerText = "SOLICITAR VERIFICAÇÃO";
+        btn.onclick = () => alert("Sua solicitação de verificação para este vendedor foi enviada à equipe RePhone!");
+    } else {
+        btn.style.backgroundColor = "#16a34a";
+        btn.innerText = "CONVERTER AGORA";
+        btn.onclick = () => {
+            const mensagem = encodeURIComponent(`Olá! Vi o seu ${m.model} no RP MATCH por R$ ${m.price} e tenho interesse. Podemos conversar?`);
+            window.open(`https://wa.me/5527999999999?text=${mensagem}`, '_blank'); // Altere para o seu número de teste
+        };
+    }
+
+    document.getElementById('matchBar').classList.add('show');
+}
