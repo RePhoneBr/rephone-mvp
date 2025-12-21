@@ -25,42 +25,66 @@ function renderGrid() {
     `).join('');
 }
 
-function updateRadar(mode) {
-    const pill = document.getElementById('radarPill');
-    if(!pill) return;
-    pill.className = mode === 'scanning' ? 'state-scanning' : (mode === 'found' ? 'state-found' : 'state-idle');
-}
-
 async function startRadar() {
-    const modelSearch = document.getElementById('modelInput').value;
-    if(!modelSearch) return alert("Digite o modelo que busca!");
+    const modelSearch = document.getElementById('modelInput').value.toLowerCase();
+    const priceTarget = parseFloat(document.getElementById('priceInput').value);
+
+    if(!modelSearch || !priceTarget) {
+        alert("Por favor, preencha o modelo e o preço alvo para o RP MATCH.");
+        return;
+    }
 
     updateRadar('scanning');
 
     setTimeout(() => {
-        updateRadar('found');
-        // Seleciona o primeiro vendedor como match padrão para o teste
-        state.currentMatch = state.offers[0];
-        showMatch(state.currentMatch);
+        // 1. TENTA O MATCH EXATO (Modelo + Preço Alvo)
+        const exactMatch = state.offers.filter(off => 
+            off.model.toLowerCase().includes(modelSearch) && off.price <= priceTarget
+        ).sort((a, b) => a.price - b.price)[0];
+
+        if (exactMatch) {
+            updateRadar('found');
+            state.currentMatch = exactMatch;
+            showMatch(exactMatch);
+        } else {
+            // 2. SE NÃO ACHAR, BUSCA A "SUGESTÃO APROXIMADA" 
+            // Procura o modelo desejado, mesmo que o preço seja um pouco maior
+            const suggestion = state.offers.filter(off => 
+                off.model.toLowerCase().includes(modelSearch)
+            ).sort((a, b) => a.price - b.price)[0];
+
+            if (suggestion) {
+                updateRadar('found');
+                state.currentMatch = suggestion;
+                
+                // Personaliza a mensagem de sugestão
+                const diff = suggestion.price - priceTarget;
+                showMatch(suggestion, `Não achamos por R$ ${priceTarget.toLocaleString()}, mas encontramos esta oferta por + R$ ${diff.toLocaleString()} em Aracruz:`);
+            } else {
+                // 3. NADA ENCONTRADO
+                updateRadar('idle');
+                alert("Nenhum iPhone deste modelo disponível em Aracruz no momento.");
+            }
+        }
     }, 3000);
 }
 
-function showMatch(m) {
-    // Injeta os dados nos campos
+// Adicione o parâmetro 'customMsg' com um valor padrão
+function showMatch(m, customMsg = null) {
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
     document.getElementById('matchTitle').innerText = m.model;
-    document.getElementById('matchSub').innerText = `Vendedor em Aracruz • ${m.status}`;
+    
+    // Se houver mensagem de sugestão, usa ela, senão usa o texto padrão
+    document.getElementById('matchSub').innerText = customMsg ? customMsg : `Vendedor em Aracruz • ${m.status}`;
+    
     document.getElementById('q-trust').innerText = `${m.trustScore}%`;
     document.getElementById('q-rating').innerText = m.rating.toFixed(1);
     document.getElementById('q-sales').innerText = `+${m.sales}`;
 
     const btn = document.getElementById('matchBtn');
-    if(m.kyc === 'none') {
-        btn.style.backgroundColor = "#64748b";
-        btn.innerText = "SOLICITAR VERIFICAÇÃO";
-    } else {
-        btn.style.backgroundColor = "#16a34a";
-        btn.innerText = "CONVERTER AGORA";
-    }
+    btn.style.backgroundColor = m.kyc === 'none' ? "#64748b" : "#16a34a";
+    btn.innerText = m.kyc === 'none' ? "SOLICITAR VERIFICAÇÃO" : "CONVERTER AGORA";
 
     document.getElementById('matchBar').classList.add('show');
 }
