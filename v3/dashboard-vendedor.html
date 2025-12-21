@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Vendedor | RePhone</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .status-badge { padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; }
+        .status-verified { background: #dcfce7; color: #16a34a; }
+        .ad-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
+        .btn-remove { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body style="background: #f8fafc;">
+
+    <div style="padding: 20px;">
+        <header style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="font-weight: 900;">Olá, Vendedor #042</h2>
+                <p style="font-size: 12px; color: #64748b;">Membro desde Dez/2025 • Aracruz, ES</p>
+            </div>
+            <span class="status-badge status-verified">KYC APROVADO</span>
+        </header>
+
+        <div class="admin-card">
+            <h4 style="margin-bottom: 15px; font-size: 14px;">Meus Dados de Registro</h4>
+            <div style="font-size: 13px; color: #475569; line-height: 1.8;">
+                <p><strong>📍 Retirada:</strong> Rua Principal, Centro, Aracruz</p>
+                <p><strong>📞 WhatsApp:</strong> (27) 99999-9999</p>
+                <p><strong>🚚 Logística:</strong> Entrega em Aracruz e Ibiraçu</p>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h4 style="margin-bottom: 15px; font-size: 14px;">Meus Anúncios no Radar</h4>
+            
+            <div class="ad-item">
+                <div>
+                    <strong style="display: block; font-size: 14px;">iPhone 13 128GB</strong>
+                    <small style="color: #64748b;">Visto por 124 pessoas</small>
+                </div>
+                <button class="btn-remove" onclick="solicitarRetirada('iPhone 13')">RETIRAR</button>
+            </div>
+
+            <div class="ad-item">
+                <div>
+                    <strong style="display: block; font-size: 14px;">iPhone 11 64GB</strong>
+                    <small style="color: #64748b;">Visto por 89 pessoas</small>
+                </div>
+                <button class="btn-remove" onclick="solicitarRetirada('iPhone 11')">RETIRAR</button>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='vendedor.html'" class="btn-primary" style="width: 100%;">+ NOVO ANÚNCIO (RP MATCH)</button>
+    </div>
+
+    <script>
+        function solicitarRetirada(modelo) {
+            const confirmacao = confirm(`Deseja solicitar a retirada do ${modelo} do Radar RePhone?`);
+            if(confirmacao) {
+                const msg = encodeURIComponent(`Olá RePhone Administrativo! Sou o Vendedor #042 e solicito a retirada do anúncio: ${modelo}. O aparelho já foi vendido.`);
+                window.open(`https://wa.me/5527999999999?text=${msg}`);
+            }
+        }
+    </script>
+</body>
+</html>
