@@ -7,34 +7,55 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         body { background: #0f172a; color: white; padding: 20px; font-family: 'Inter', sans-serif; }
-        .admin-header { margin-bottom: 30px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
+        .admin-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid #1e293b; 
+            padding-bottom: 20px; 
+        }
+        .btn-logout { 
+            background: #334155; 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
         .pending-card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .price-tag { color: #16a34a; font-weight: 900; font-size: 20px; }
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-        .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; cursor: pointer; border: 1px solid #334155; }
+        .photo-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #334155; }
         .btn-group { display: flex; gap: 10px; }
         .btn-approve { background: #16a34a; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 2; }
         .btn-reject { background: #ef4444; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 1; }
-        .empty-state { text-align: center; padding: 50px; color: #64748b; }
+        #listaPendentes { min-height: 200px; }
+        .loading-screen { position: fixed; inset: 0; background: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 9999; }
     </style>
 </head>
 <body>
 
+    <div id="loadingScreen" class="loading-screen">Verificando Credenciais...</div>
+
     <header class="admin-header">
-        <h1 style="font-weight: 900;">Curadoria RePhone</h1>
-        <p style="color: #94a3b8;">Fila de Aprovação - Aracruz, ES</p>
+        <div>
+            <h1 style="font-weight: 900; margin: 0;">RePhone Master</h1>
+            <p style="color: #94a3b8; margin: 5px 0 0;">Curadoria Aracruz</p>
+        </div>
+        <button onclick="fazerLogout()" class="btn-logout">Sair</button>
     </header>
 
     <div id="listaPendentes">
-        <div class="empty-state">Buscando novos anúncios na nuvem...</div>
+        <p style="text-align: center; color: #64748b;">Buscando anúncios...</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        // Suas credenciais vinculadas
         const firebaseConfig = {
             apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
             authDomain: "rephone-a0a80.firebaseapp.com",
@@ -47,66 +68,62 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Escuta em tempo real anúncios PENDENTES
-        const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
-        
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById('listaPendentes');
-            container.innerHTML = "";
-
-            if (snapshot.empty) {
-                container.innerHTML = '<div class="empty-state">✅ Nenhum anúncio pendente no momento.</div>';
-                return;
+        // --- ESCUDO DE PROTEÇÃO ---
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+            } else {
+                document.getElementById('loadingScreen').style.display = 'none';
+                iniciarEscutaDados();
             }
-
-            snapshot.forEach((adDoc) => {
-                const ad = adDoc.data();
-                const id = adDoc.id;
-
-                const card = document.createElement('div');
-                card.className = 'pending-card';
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div>
-                            <h3 style="margin:0">${ad.modelo}</h3>
-                            <small style="color:#94a3b8">📍 GPS: ${ad.lat.toFixed(4)}, ${ad.lng.toFixed(4)}</small>
-                        </div>
-                        <span class="price-tag">R$ ${ad.preco}</span>
-                    </div>
-                    
-                    <div style="font-size:13px; margin-bottom:10px">
-                        <span>🔋 Bateria: <strong>${ad.bateria}</strong></span> | 
-                        <span>✨ Estado: <strong>${ad.condicao}</strong></span>
-                    </div>
-
-                    <div class="photo-grid">
-                        ${ad.fotos.map(url => `<img src="${url}" onclick="window.open('${url}')">`).join('')}
-                    </div>
-
-                    <div class="btn-group">
-                        <button class="btn-approve" onclick="aprovar('${id}')">APROVAR E PUBLICAR</button>
-                        <button class="btn-reject" onclick="rejeitar('${id}')">DESCARTAR</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
         });
 
-        // Funções de Ação
+        window.fazerLogout = () => {
+            signOut(auth).then(() => window.location.href = 'admin-login.html');
+        };
+
+        // --- LÓGICA DE DADOS ---
+        function iniciarEscutaDados() {
+            const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
+            
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('listaPendentes');
+                container.innerHTML = snapshot.empty ? '<p style="text-align:center; padding:50px;">✅ Nenhum pendente.</p>' : "";
+
+                snapshot.forEach((adDoc) => {
+                    const ad = adDoc.data();
+                    const id = adDoc.id;
+                    const card = document.createElement('div');
+                    card.className = 'pending-card';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between">
+                            <h3>${ad.modelo}</h3>
+                            <span class="price-tag">R$ ${ad.preco}</span>
+                        </div>
+                        <p style="font-size:12px; color:#94a3b8">Bateria: ${ad.bateria} | Estado: ${ad.condicao}</p>
+                        <div class="photo-grid">
+                            ${ad.fotos.map(url => `<img src="${url}" onclick="window.open('${url}')">`).join('')}
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-approve" onclick="aprovar('${id}')">APROVAR</button>
+                            <button class="btn-reject" onclick="rejeitar('${id}')">DELETAR</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            });
+        }
+
+        // Funções globais para os botões
         window.aprovar = async (id) => {
-            try {
-                const docRef = doc(db, "anuncios", id);
-                await updateDoc(docRef, { status: "aprovado" });
-                if (navigator.vibrate) navigator.vibrate(100);
-            } catch (e) { alert("Erro ao aprovar: " + e.message); }
+            await updateDoc(doc(db, "anuncios", id), { status: "aprovado" });
         };
 
         window.rejeitar = async (id) => {
-            if (confirm("Deseja deletar permanentemente este anúncio?")) {
-                try {
-                    await deleteDoc(doc(db, "anuncios", id));
-                } catch (e) { alert("Erro ao deletar: " + e.message); }
+            if(confirm("Excluir anúncio permanentemente?")) {
+                await deleteDoc(doc(db, "anuncios", id));
             }
         };
     </script>
