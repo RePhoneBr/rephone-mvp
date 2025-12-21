@@ -1,312 +1,114 @@
-/* RePhone V3 — patch (match suspense + gate) */
-:root{
-  --bg:#f6f7fb;
-  --text:#0f172a;
-  --muted:#6b7280;
-  --border: rgba(15,23,42,.10);
-  --green:#16a34a;
-  --green-2:#22c55e;
-  --shadow-soft: 0 10px 28px rgba(15,23,42,.08);
-  --radius:18px;
-  --container: 1080px;
-}
-*{ box-sizing:border-box; }
-body{
-  margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  color:var(--text);
-  background:
-    radial-gradient(900px 500px at 15% -10%, rgba(34,197,94,.14), transparent 60%),
-    radial-gradient(800px 420px at 90% 0%, rgba(22,163,74,.10), transparent 55%),
-    var(--bg);
-}
-.container{ width:min(var(--container), calc(100% - 2rem)); margin:0 auto; }
-.site-header{
-  position:sticky; top:0; z-index:20;
-  background: rgba(246,247,251,.78);
-  backdrop-filter: blur(14px);
-  border-bottom:1px solid var(--border);
-}
-.topbar{ display:flex; align-items:center; gap:1rem; padding:.95rem 0; }
-.brand{ display:flex; align-items:center; gap:.75rem; min-width:170px; text-decoration:none; }
-.brand-logo{ width:40px; height:40px; }
-.brand-name{ font-weight:850; letter-spacing:-.02em; color:var(--green); font-size:1.25rem; line-height:1.05; }
-.brand-tagline{ color:var(--muted); font-weight:600; font-size:.95rem; }
-.search-wrap{ flex:1; }
-.search{
-  width:100%; padding:.95rem 1rem; border-radius:999px; border:1px solid var(--border);
-  background: rgba(255,255,255,.8); outline:none; font-size:1rem;
-}
-.search:focus{ box-shadow:0 0 0 4px rgba(34,197,94,.20); border-color: rgba(34,197,94,.35); }
+/**
+ * RePhone V3 - Core Engine
+ * Versão Corrigida: Sincronização de Classes e Exclusividade
+ */
 
-.hero{ padding:2.2rem 0 1.1rem; }
-.hero h1{ margin:0 0 .7rem; font-size: clamp(2rem, 4.2vw, 3.1rem); letter-spacing:-.04em; line-height:1.05; }
-.lead{ margin:0 0 1.2rem; color:var(--muted); font-size:1.05rem; max-width:60ch; }
+// 1. Configurações e Mocks
+const PLACEHOLDER_IMG = "https://www.apple.com/v/iphone/home/bu/images/overview/select/iphone_15_pro__dqll89m6at6a_xlarge.jpg";
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-.price-box{
-  background: rgba(255,255,255,.86); border:1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow-soft);
-  padding:1rem; max-width:560px;
-}
-.price-label{ display:block; font-weight:800; margin-bottom:.55rem; }
-.price-row{
-  display:flex; align-items:center; gap:.55rem;
-  background: rgba(15,23,42,.03); border:1px solid rgba(15,23,42,.08);
-  border-radius:999px; padding:.7rem .85rem;
-}
-.currency{ font-weight:850; color: rgba(15,23,42,.78); }
-.price-input{
-  border:0; outline:none; background:transparent; width:100%;
-  font-size:1.1rem; font-weight:750; letter-spacing:-.01em; color:var(--text);
-}
-.price-hint{ margin-top:.55rem; color:var(--muted); font-size:.92rem; }
+// Gerador de ofertas falsas (Simulando Banco de Dados)
+const MOCK_OFFERS = [
+    { id: 101, model: "iPhone 13", storage: "128GB", price: 3100, cond: "Excelente", city: "São Paulo", distKm: 4, distLabel: "Perto de você", verified: true, delivery: true, premium: true, rating: 4.9, reviews: 128 },
+    { id: 102, model: "iPhone 14", storage: "128GB", price: 4200, cond: "Como novo", city: "Rio de Janeiro", distKm: 12, distLabel: "Barra da Tijuca", verified: true, delivery: true, premium: false, rating: 4.7, reviews: 54 },
+    { id: 103, model: "iPhone 11", storage: "64GB", price: 1850, cond: "Bom", city: "Curitiba", distKm: 8, distLabel: "Centro", verified: false, delivery: true, premium: false, rating: 4.5, reviews: 210 },
+    { id: 104, model: "iPhone 13 Pro", storage: "256GB", price: 4800, cond: "Excelente", city: "Belo Horizonte", distKm: 15, distLabel: "Savassi", verified: true, delivery: false, premium: true, rating: 5.0, reviews: 42 },
+    { id: 105, model: "iPhone 12", storage: "128GB", price: 2750, cond: "Excelente", city: "São Paulo", distKm: 2, distLabel: "Jardins", verified: true, delivery: true, premium: false, rating: 4.8, reviews: 89 }
+];
 
-.section{ padding:1rem 0 2.2rem; }
-.section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
-.section h2{ margin:0; font-size:1.7rem; letter-spacing:-.03em; }
-.loading{ color:var(--muted); font-weight:650; font-size:.95rem; }
+// 2. Seletores
+const searchInput = document.getElementById('searchInput');
+const priceInput = document.getElementById('priceInput');
+const btnSearch = document.getElementById('btnSearch');
+const offersGrid = document.getElementById('offersGrid');
+const radarPill = document.getElementById('radarPill');
+const matchBar = document.getElementById('matchBar');
+const matchTitle = document.getElementById('matchTitle');
+const matchSub = document.getElementById('matchSub');
 
-.filters{ display:flex; gap:.6rem; flex-wrap:wrap; margin: 1rem 0 1.1rem; }
-.chip{
-  border:1px solid var(--border); background: rgba(255,255,255,.85);
-  border-radius:999px; padding:.55rem .85rem; font-weight:750;
-  cursor:pointer;
-}
-.chip.active{ background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.35); }
-
-.grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:.95rem; }
-.card{
-  background: rgba(255,255,255,.90); border:1px solid var(--border);
-  border-radius:22px; box-shadow: var(--shadow-soft);
-  overflow:hidden; display:flex; flex-direction:column; min-height: 330px;
-  text-decoration:none;
-}
-.card-media{
-  height: 144px;
-  background:
-    radial-gradient(280px 160px at 20% 20%, rgba(34,197,94,.18), transparent 60%),
-    radial-gradient(260px 160px at 90% 0%, rgba(22,163,74,.12), transparent 55%),
-    rgba(15,23,42,.03);
-  display:flex; align-items:center; justify-content:center;
-}
-.card-media img{ max-height:130px; max-width:80%; object-fit:contain; filter: drop-shadow(0 10px 24px rgba(15,23,42,.16)); }
-.card-body{ padding:.95rem; display:grid; gap:.6rem; }
-.title{ font-weight:900; letter-spacing:-.02em; font-size:1.05rem; line-height:1.15; }
-.price{ font-weight:950; letter-spacing:-.02em; font-size:1.2rem; }
-.meta{ color:var(--muted); font-weight:650; display:flex; flex-wrap:wrap; gap:.45rem .6rem; align-items:center; }
-.pill{
-  display:inline-flex; align-items:center; gap:.35rem;
-  border-radius:999px; padding:.25rem .55rem;
-  font-weight:800; font-size:.78rem; border:1px solid rgba(15,23,42,.10);
-  background: rgba(15,23,42,.03);
-}
-.pill.good{ border-color: rgba(34,197,94,.30); background: rgba(34,197,94,.12); color:#14532d; }
-.pill.warn{ border-color: rgba(234,179,8,.30); background: rgba(234,179,8,.14); color:#7c5a00; }
-.pill.neutral{ border-color: rgba(148,163,184,.38); background: rgba(148,163,184,.14); color:#0f172a; }
-.details{ color: rgba(15,23,42,.82); font-weight:650; line-height:1.35; }
-.details small{ color:var(--muted); font-weight:700; }
-
-.site-footer{ border-top:1px solid var(--border); background: rgba(246,247,251,.75); padding:1.4rem 0; }
-.footer-inner{ color:var(--muted); font-weight:650; }
-
-/* MATCH BAR */
-.matchbar{
-  position:fixed; left:0; right:0; bottom:12px; z-index:50;
-  display:none; padding:0 1rem;
-}
-.matchbar.show{ display:block; }
-.matchbar-inner{
-  width:min(var(--container), calc(100% - 0rem)); margin:0 auto;
-  background: rgba(255,255,255,.92);
-  border:1px solid rgba(15,23,42,.12);
-  border-radius:22px;
-  box-shadow: 0 20px 60px rgba(15,23,42,.18);
-  padding:.85rem .9rem;
-  display:flex; align-items:center; justify-content:space-between; gap:.9rem;
-}
-.matchbar-title{ font-weight:950; letter-spacing:-.02em; }
-.matchbar-sub{ margin-top:.15rem; color:var(--muted); font-weight:650; font-size:.92rem; }
-.matchbar-progress{ margin-top:.55rem; height:8px; border-radius:999px; background: rgba(15,23,42,.06); overflow:hidden; }
-.matchbar-progress span{ display:block; height:100%; width:0%; border-radius:999px; background: linear-gradient(135deg, var(--green-2), var(--green)); transition: width .35s ease; }
-.matchbar-btn{
-  border:0; border-radius:999px; padding:.75rem 1rem; font-weight:900;
-  cursor:pointer; background: linear-gradient(135deg, var(--green-2), var(--green));
-  color:#fff; box-shadow: 0 16px 34px rgba(22,163,74,.28);
-  min-width:120px;
-}
-.matchbar-btn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
-
-/* MODAL */
-.modal-backdrop{
-  position:fixed; inset:0; background: rgba(15,23,42,.55);
-  display:none; align-items:center; justify-content:center; padding:1rem; z-index:80;
-}
-.modal-backdrop.show{ display:flex; }
-.modal{
-  width:min(720px, 100%); background: rgba(255,255,255,.95);
-  border:1px solid rgba(255,255,255,.40);
-  border-radius:22px; box-shadow: 0 40px 90px rgba(15,23,42,.30); overflow:hidden;
-}
-.modal-head{
-  padding:1rem 1.1rem; border-bottom:1px solid rgba(15,23,42,.10);
-  display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
-}
-.modal-kicker{ color:#14532d; font-weight:950; letter-spacing:.02em; text-transform:uppercase; font-size:.82rem; }
-.modal-head h3{ margin:.35rem 0 0; letter-spacing:-.02em; }
-.icon-btn{ border:0; background:transparent; font-size:1.15rem; cursor:pointer; }
-.modal-body{ padding:1rem 1.1rem; }
-.modal-actions{
-  padding:1rem 1.1rem 1.1rem; display:flex; justify-content:flex-end; gap:.6rem;
-}
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  border-radius:999px; padding:.72rem 1.05rem;
-  font-weight:900; border:1px solid rgba(15,23,42,.10); background: rgba(255,255,255,.86);
-  text-decoration:none;
-}
-.btn-primary{
-  border-color: rgba(22,163,74,.30);
-  background: linear-gradient(135deg, var(--green-2), var(--green));
-  color:#fff;
-  box-shadow: 0 14px 30px rgba(22,163,74,.22);
-}
-.btn-ghost{ background: rgba(15,23,42,.03); }
-
-/* Exit pill */
-.exit-pill{
-  position: fixed; bottom: 86px; right: 16px; z-index: 60;
-  padding: 10px 12px; border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: #fff;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 12px 30px rgba(15,23,42,.12);
+// 3. Funções de Renderização
+function renderOffers(list) {
+    offersGrid.innerHTML = list.map(o => offerCardHTML(o)).join('');
 }
 
-@media (max-width: 960px){
-  .grid{ grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 640px){
-  .topbar{ flex-direction:column; align-items:stretch; }
-  .grid{ grid-template-columns: 1fr; }
-  .hero{ padding: 1.7rem 0 1rem; }
-}
-
-
-/* ===== RP MATCH (círculo discreto) ===== */
-.radar-pill{
-  position: fixed;
-  right: 14px;
-  bottom: 86px; /* fica acima da matchbar */
-  width: 58px;
-  height: 58px;
-  border-radius: 999px;
-  display: inline-flex; /* sempre visível */
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 0;
-  border: 1px solid rgba(15,23,42,.14);
-  background: rgba(226,232,240,.92); /* cinza claro */
-  color: rgba(15,23,42,.78);
-  font-weight: 950;
-  letter-spacing: -.01em;
-  box-shadow: 0 14px 34px rgba(15,23,42,.10);
-  z-index: 80;
-  cursor: default;
-  user-select: none;
-  transition: background .35s ease, border-color .35s ease, box-shadow .35s ease, transform .2s ease;
-}
-.radar-pill .pulse{ display:none; }
-.radar-pill .txt{ font-size: 10px; line-height: 1; text-align:center; padding: 0 .25rem; }
-
-/* Após clique em Buscar */
-.radar-pill.ready{
-  background: rgba(134,239,172,.92); /* verde claro */
-  border-color: rgba(22,163,74,.28);
-  color: #064e3b;
+function offerCardHTML(o) {
+    // CORREÇÃO: Usando 'card-media' para bater com o CSS
+    return `
+      <div class="card" id="card-${o.id}">
+        <div class="card-media">
+          <img src="${PLACEHOLDER_IMG}" alt="${o.model}">
+        </div>
+        <div class="card-body">
+          <div class="meta">${o.city} • ${o.distKm}km</div>
+          <div class="title">${o.model} ${o.storage}</div>
+          <div class="price">${brl.format(o.price)}</div>
+          <div class="chips">
+            <span class="chip">${o.cond}</span>
+            <span class="chip">⭐ ${o.rating}</span>
+            ${o.verified ? '<span class="chip">🛡️ Verificado</span>' : ''}
+          </div>
+        </div>
+      </div>
+    `;
 }
 
-/* Radar ativo (pisca verde claro ↔ verde escuro) */
-.radar-pill.scanning{
-  animation: rpBlink 1.2s infinite;
-  border-color: rgba(22,163,74,.38);
-}
-@keyframes rpBlink{
-  0%{ background: rgba(134,239,172,.92); box-shadow: 0 14px 34px rgba(22,163,74,.18); }
-  50%{ background: rgba(21,128,61,.92); box-shadow: 0 18px 44px rgba(22,163,74,.26); color:#fff; }
-  100%{ background: rgba(134,239,172,.92); box-shadow: 0 14px 34px rgba(22,163,74,.18); }
-}
+// 4. Lógica do Radar e Match
+function runRadarSequence() {
+    if (!searchInput.value) return alert("Digite um modelo primeiro!");
 
+    // Passo 1: Armar o Radar
+    radarPill.classList.remove('state-idle');
+    radarPill.classList.add('state-armed');
+    radarPill.querySelector('.rp').innerText = "BUSCANDO...";
 
-/* ===== Radar circle + MATCH bar behavior ===== */
-#radarPill{
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  width: 58px;
-  height: 58px;
-  border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(15,23,42,.06);
-  box-shadow: 0 14px 34px rgba(15,23,42,.12);
-  display: grid;
-  place-items: center;
-  z-index: 80;
-  cursor: pointer;
-  user-select: none;
-  transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    // Passo 2: Iniciar Scan (Animação) após 2 segundos
+    setTimeout(() => {
+        radarPill.classList.replace('state-armed', 'state-scan');
+        
+        // Passo 3: Encontrar o Match após 5 segundos de scan
+        setTimeout(() => {
+            const bestOffer = MOCK_OFFERS[0]; // Simula que a primeira é a melhor
+            showMatch(bestOffer);
+        }, 5000);
+
+    }, 2000);
 }
 
-#radarPill .rp{
-  font-weight: 900;
-  letter-spacing: .02em;
-  color: rgba(15,23,42,.80);
-  font-size: .78rem;
-  line-height: 1.05;
-  text-align: center;
+function showMatch(offer) {
+    // Adiciona classe ao body para subir o radar e dar padding
+    document.body.classList.add('match-bar-open');
+
+    // Preenche a barra de Match
+    matchTitle.innerText = `MATCH: ${offer.model} ${offer.storage}`;
+    matchSub.innerText = `Melhor preço encontrado: ${brl.format(offer.price)} em ${offer.city}`;
+    
+    // Mostra a barra
+    matchBar.classList.add('show');
+
+    // Lógica de Exclusividade: Esconde o card original do grid
+    const originalCard = document.getElementById(`card-${offer.id}`);
+    if (originalCard) {
+        originalCard.classList.add('hidden-by-match');
+    }
+
+    // Reseta o Radar
+    radarPill.classList.remove('state-scan');
+    radarPill.classList.add('state-armed');
+    radarPill.querySelector('.rp').innerText = "OFERTA\nUNICA!";
 }
 
-#radarPill:hover{ transform: translateY(-1px); }
+// 5. Inicialização e Eventos
+document.addEventListener('DOMContentLoaded', () => {
+    renderOffers(MOCK_OFFERS);
 
-#radarPill.state-idle{
-  background: rgba(15,23,42,.06);
-  border-color: rgba(15,23,42,.12);
-}
+    btnSearch.addEventListener('click', () => {
+        runRadarSequence();
+    });
 
-#radarPill.state-armed{
-  background: rgba(34,197,94,.16);
-  border-color: rgba(22,163,74,.35);
-}
-
-#radarPill.state-scan{
-  background: rgba(34,197,94,.18);
-  border-color: rgba(22,163,74,.42);
-  animation: rpBlink 1.2s ease-in-out infinite;
-}
-
-#radarPill.state-scan .rp,
-#radarPill.state-armed .rp{
-  color: #0f3d24;
-}
-
-/* When the MATCH bar is visible, keep the circle slightly above it */
-body.match-bar-open #radarPill{
-  bottom: 96px;
-}
-
-/* MATCH bar close button */
-#matchClose{
-  border: 0;
-  background: rgba(255,255,255,.9);
-  border: 1px solid rgba(15,23,42,.10);
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-/* Utility */
-.hidden{ display:none !important; }
+    // Filtro simples por preço enquanto digita
+    priceInput.addEventListener('input', (e) => {
+        const maxPrice = parseFloat(e.target.value) || 99999;
+        const filtered = MOCK_OFFERS.filter(o => o.price <= maxPrice);
+        renderOffers(filtered);
+    });
+});
