@@ -10,6 +10,7 @@ const state = {
     ]
 };
 
+// --- RENDERIZAR GRID INICIAL ---
 function renderGrid() {
     const grid = document.getElementById('offersGrid');
     if(!grid) return;
@@ -18,66 +19,71 @@ function renderGrid() {
             <div class="card-media"><img src="${off.img}"></div>
             <div class="card-body" style="padding:15px">
                 <h3 style="font-size:15px; margin-bottom:5px">${off.model}</h3>
-                <p style="color:var(--green); font-weight:800; font-size:18px">R$ ${off.price.toLocaleString('pt-BR')}</p>
-                <small style="color:#94a3b8">📍 Aracruz</small>
+                <p style="color:#16a34a; font-weight:800; font-size:18px">R$ ${off.price.toLocaleString('pt-BR')}</p>
             </div>
         </div>
     `).join('');
 }
 
-async function startRadar() {
-    const modelSearch = document.getElementById('modelInput').value.toLowerCase();
-    const priceTarget = parseFloat(document.getElementById('priceInput').value);
+// --- CONTROLE DO RADAR ---
+function updateRadar(mode) {
+    const pill = document.getElementById('radarPill');
+    if(!pill) return;
+    pill.className = mode === 'scanning' ? 'state-scanning' : (mode === 'found' ? 'state-found' : 'state-idle');
+}
 
-    if(!modelSearch || !priceTarget) {
-        alert("Por favor, preencha o modelo e o preço alvo para o RP MATCH.");
+// --- LÓGICA DE BUSCA E FILTRO ---
+function startRadar() {
+    const modelInput = document.getElementById('modelInput');
+    const priceInput = document.getElementById('priceInput');
+
+    const modelSearch = modelInput.value.toLowerCase();
+    const priceTarget = parseFloat(priceInput.value) || 99999; // Se não digitar preço, assume valor alto
+
+    if(!modelSearch) {
+        alert("Digite o modelo (ex: iPhone 11)");
         return;
     }
 
     updateRadar('scanning');
 
     setTimeout(() => {
-        // 1. TENTA O MATCH EXATO (Modelo + Preço Alvo)
-        const exactMatch = state.offers.filter(off => 
+        // 1. Tenta Match Exato
+        let match = state.offers.filter(off => 
             off.model.toLowerCase().includes(modelSearch) && off.price <= priceTarget
         ).sort((a, b) => a.price - b.price)[0];
 
-        if (exactMatch) {
-            updateRadar('found');
-            state.currentMatch = exactMatch;
-            showMatch(exactMatch);
-        } else {
-            // 2. SE NÃO ACHAR, BUSCA A "SUGESTÃO APROXIMADA" 
-            // Procura o modelo desejado, mesmo que o preço seja um pouco maior
-            const suggestion = state.offers.filter(off => 
+        let customMsg = null;
+
+        // 2. Se não achar exato, busca sugestão de preço mais próximo
+        if (!match) {
+            match = state.offers.filter(off => 
                 off.model.toLowerCase().includes(modelSearch)
             ).sort((a, b) => a.price - b.price)[0];
-
-            if (suggestion) {
-                updateRadar('found');
-                state.currentMatch = suggestion;
-                
-                // Personaliza a mensagem de sugestão
-                const diff = suggestion.price - priceTarget;
-                showMatch(suggestion, `Não achamos por R$ ${priceTarget.toLocaleString()}, mas encontramos esta oferta por + R$ ${diff.toLocaleString()} em Aracruz:`);
-            } else {
-                // 3. NADA ENCONTRADO
-                updateRadar('idle');
-                alert("Nenhum iPhone deste modelo disponível em Aracruz no momento.");
+            
+            if(match) {
+                const diff = match.price - priceTarget;
+                customMsg = `Não achamos por R$ ${priceTarget.toLocaleString()}, mas temos este por +R$ ${diff.toLocaleString()}:`;
             }
         }
-    }, 3000);
+
+        if (match) {
+            updateRadar('found');
+            state.currentMatch = match;
+            showMatch(match, customMsg);
+        } else {
+            updateRadar('idle');
+            alert("Nenhum modelo encontrado em Aracruz.");
+        }
+    }, 2500);
 }
 
-// Adicione o parâmetro 'customMsg' com um valor padrão
-function showMatch(m, customMsg = null) {
+// --- EXIBIR RESULTADO ---
+function showMatch(m, msg) {
     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
     document.getElementById('matchTitle').innerText = m.model;
-    
-    // Se houver mensagem de sugestão, usa ela, senão usa o texto padrão
-    document.getElementById('matchSub').innerText = customMsg ? customMsg : `Vendedor em Aracruz • ${m.status}`;
-    
+    document.getElementById('matchSub').innerText = msg ? msg : `Vendedor em Aracruz • ${m.status}`;
     document.getElementById('q-trust').innerText = `${m.trustScore}%`;
     document.getElementById('q-rating').innerText = m.rating.toFixed(1);
     document.getElementById('q-sales').innerText = `+${m.sales}`;
@@ -89,22 +95,19 @@ function showMatch(m, customMsg = null) {
     document.getElementById('matchBar').classList.add('show');
 }
 
-// BOTÃO FECHAR (X) - Reset total do radar e painel
-document.getElementById('closeMatch').onclick = function() {
+// --- EVENTOS ---
+document.getElementById('btnSearch').onclick = startRadar;
+
+document.getElementById('closeMatch').onclick = () => {
     document.getElementById('matchBar').classList.remove('show');
-    setTimeout(() => {
-        updateRadar('idle');
-    }, 400);
+    setTimeout(() => updateRadar('idle'), 400);
 };
 
-// GALERIA
 document.getElementById('viewDetails').onclick = () => {
-    if(!state.currentMatch) return;
     const modal = document.getElementById('galleryModal');
     document.getElementById('galleryImg').src = state.currentMatch.img;
     document.getElementById('galleryTitle').innerText = state.currentMatch.model;
     document.getElementById('galleryPrice').innerText = `R$ ${state.currentMatch.price.toLocaleString('pt-BR')}`;
-    document.getElementById('galleryTags').innerHTML = `<span class="tag">Bateria 92%</span><span class="tag">📍 Aracruz</span>`;
     modal.classList.add('show');
 };
 
@@ -112,36 +115,4 @@ document.getElementById('closeGallery').onclick = () => {
     document.getElementById('galleryModal').classList.remove('show');
 };
 
-document.getElementById('btnSearch').onclick = startRadar;
 window.onload = renderGrid;
-function showMatch(m) {
-    // 1. Feedback Tátil (Vibra o celular ao encontrar o match)
-    if (navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]); // Vibração dupla curta
-    }
-
-    // 2. Injeta os dados nos campos
-    document.getElementById('matchTitle').innerText = m.model;
-    document.getElementById('matchSub').innerText = `Vendedor em Aracruz • ${m.status}`;
-    document.getElementById('q-trust').innerText = `${m.trustScore}%`;
-    document.getElementById('q-rating').innerText = m.rating.toFixed(1);
-    document.getElementById('q-sales').innerText = `+${m.sales}`;
-
-    const btn = document.getElementById('matchBtn');
-    
-    // 3. Configura a ação do botão baseada no vendedor
-    if(m.kyc === 'none') {
-        btn.style.backgroundColor = "#64748b";
-        btn.innerText = "SOLICITAR VERIFICAÇÃO";
-        btn.onclick = () => alert("Sua solicitação de verificação para este vendedor foi enviada à equipe RePhone!");
-    } else {
-        btn.style.backgroundColor = "#16a34a";
-        btn.innerText = "CONVERTER AGORA";
-        btn.onclick = () => {
-            const mensagem = encodeURIComponent(`Olá! Vi o seu ${m.model} no RP MATCH por R$ ${m.price} e tenho interesse. Podemos conversar?`);
-            window.open(`https://wa.me/5527999999999?text=${mensagem}`, '_blank'); // Altere para o seu número de teste
-        };
-    }
-
-    document.getElementById('matchBar').classList.add('show');
-}
