@@ -1,4 +1,4 @@
-/* RePhone V3 - Ajuste de Interface Premium */
+/* RePhone V3 - Global Mobile UI */
 :root {
     --green: #16a34a;
     --green-light: #22c55e;
@@ -6,149 +6,89 @@
     --muted: #64748b;
     --bg: #f8fafc;
     --white: #ffffff;
-    --radius: 16px;
+    --radius: 20px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
 body { 
-    margin: 0; 
-    font-family: 'Inter', -apple-system, sans-serif; 
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg); 
     color: var(--dark);
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
 }
 
-/* HEADER & BRAND */
+/* BLOQUEIO DESKTOP */
+#desktop-blocker { display: none; position: fixed; inset: 0; background: white; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+@media (min-width: 769px) { #desktop-blocker { display: flex; } #app-content { display: none; } }
+
+/* HEADER */
 .app-header {
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--white);
+    position: sticky; top: 0; z-index: 100;
 }
+.brand h1 { font-size: 24px; font-weight: 900; letter-spacing: -1px; color: var(--dark); }
 
-.brand h1 { margin: 0; font-size: 24px; font-weight: 850; letter-spacing: -1px; }
-
-/* FILTROS STORIES */
+/* STORIES FILTERS */
 .stories-filters {
-    display: flex;
-    gap: 12px;
-    padding: 10px 20px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    display: flex; gap: 15px; padding: 15px 20px;
+    overflow-x: auto; scrollbar-width: none;
 }
 .stories-filters::-webkit-scrollbar { display: none; }
-
-.story-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 75px;
-    cursor: pointer;
-}
-
+.story-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; text-align: center; }
 .story-item span {
-    width: 64px;
-    height: 64px;
-    border: 2px solid var(--green);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 26px;
-    background: var(--white);
-    margin-bottom: 6px;
-    transition: 0.3s;
+    width: 64px; height: 64px; border: 2.5px solid var(--green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; background: white; margin-bottom: 6px;
 }
-.story-item small { font-weight: 700; color: var(--muted); font-size: 11px; }
-.story-item.active span { background: var(--green); color: white; }
+.story-item small { font-size: 11px; font-weight: 700; color: var(--muted); }
 
-/* CAIXA DE BUSCA (Ajuste do Print) */
-.search-section { padding: 20px; }
-
+/* BUSCA */
+.search-section { padding: 0 20px 20px; }
 .price-target-box {
-    background: var(--white);
-    padding: 20px;
-    border-radius: var(--radius);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    background: var(--white); padding: 20px; border-radius: var(--radius);
+    box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px;
 }
-
-#modelInput, #priceInput {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(15,23,42,0.1);
-    background: #f1f5f9;
-    font-size: 16px;
-    font-weight: 600;
-    outline: none;
-    transition: 0.2s;
+input[type="text"], input[type="number"] {
+    width: 100%; padding: 16px; border-radius: 14px;
+    border: 1px solid #e2e8f0; background: #f1f5f9;
+    font-size: 16px; font-weight: 600; outline: none; -webkit-appearance: none;
 }
-
-#modelInput:focus, #priceInput:focus {
-    border-color: var(--green);
-    background: var(--white);
-    box-shadow: 0 0 0 4px rgba(22, 197, 94, 0.1);
-}
-
-.input-group { position: relative; display: flex; align-items: center; }
-.input-group span {
-    position: absolute;
-    left: 16px;
-    font-weight: 800;
-    color: var(--muted);
-}
-#priceInput { padding-left: 45px; }
-
-/* BOTÃO PRINCIPAL */
 .btn-primary {
-    background: var(--green);
-    color: white;
-    border: none;
-    padding: 16px;
-    border-radius: 99px;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 5px;
+    background: var(--green); color: white; border: none; padding: 16px;
+    border-radius: 50px; font-size: 16px; font-weight: 800; cursor: pointer;
 }
 
-.btn-primary:active { transform: scale(0.96); background: var(--green-light); }
+/* GRID & CARDS */
+.tinder-grid { padding: 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+.card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.03); }
+.card-media { height: 220px; background: #f8fafc; position: relative; }
+.card-media img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.badge-kyc { position: absolute; top: 12px; left: 12px; background: #dcfce7; color: var(--green); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+
+/* MATCH PANEL */
+.match-panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; border-radius: 30px 30px 0 0;
+    padding: 25px 20px 40px; box-shadow: 0 -15px 50px rgba(0,0,0,0.15);
+    transform: translateY(100%); transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2000;
+}
+.match-panel.show { transform: translateY(0); }
+.trust-badge { display: inline-block; background: #f0fdf4; color: var(--green); padding: 6px 15px; border-radius: 20px; font-weight: 800; font-size: 12px; margin-bottom: 15px; }
+.price-history { height: 130px; margin: 20px 0; }
+.btn-match { width: 100%; padding: 18px; background: var(--dark); color: white; border-radius: 18px; border: none; font-weight: 800; font-size: 16px; }
 
 /* RADAR PILL */
 #radarPill {
-    position: fixed;
-    right: 20px;
-    bottom: 30px;
-    width: 60px;
-    height: 60px;
-    background: var(--white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    z-index: 100;
+    position: fixed; right: 20px; bottom: 30px; width: 64px; height: 64px;
+    background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1500;
 }
-.rp-icon { font-size: 24px; }
-
-/* BLOQUEIO DESKTOP (Invisível no Celular) */
-#desktop-blocker { display: none; }
-
-@media (min-width: 769px) {
-    #desktop-blocker {
-        display: flex;
-        position: fixed;
-        inset: 0;
-        background: white;
-        z-index: 9999;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 40px;
-        text-align: center;
-    }
-}
+#radarPill.state-scan { background: var(--green); color: white; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
