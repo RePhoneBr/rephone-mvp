@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone V3 | Radar Local</title>
+    <title>RePhone V3 | Radar de Oportunidades</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#16a34a">
 </head>
 <body>
 
     <div id="desktop-blocker">
         <div class="blocker-content">
-            <div class="qr-placeholder">📱</div>
+            <span style="font-size: 50px;">📱</span>
             <h2>Acesse pelo Celular</h2>
-            <p>O RePhone é uma ferramenta de proximidade exclusiva para dispositivos móveis.</p>
-            <small>Escaneie o QR Code ou acesse rephone.github.io</small>
+            <p>O RePhone é uma experiência exclusiva para dispositivos móveis para garantir a precisão do GPS local.</p>
         </div>
     </div>
 
     <div id="app-content">
         <header class="app-header">
             <div class="brand">
-                <span class="logo-dot"></span>
                 <h1>RePhone</h1>
             </div>
-            <button id="btn-favs" class="icon-btn">❤️</button>
+            <div class="header-icons">
+                <button id="btn-favs" style="background:none; border:none; font-size: 20px;">❤️</button>
+            </div>
         </header>
 
         <div class="stories-filters">
@@ -41,10 +39,7 @@
             <section class="search-section">
                 <div class="price-target-box">
                     <input type="text" id="modelInput" placeholder="Qual modelo busca?">
-                    <div class="input-group">
-                        <span>R$</span>
-                        <input type="number" id="priceInput" placeholder="Preço alvo">
-                    </div>
+                    <input type="number" id="priceInput" placeholder="Preço alvo (R$)">
                     <button id="btnSearch" class="btn-primary">ATIVAR RADAR</button>
                 </div>
             </section>
@@ -53,15 +48,14 @@
                 </div>
         </main>
 
-        <div id="radarPill" class="state-idle">
-            <div class="radar-waves"></div>
+        <div id="radarPill">
             <span class="rp-icon">📡</span>
         </div>
 
         <div id="matchBar" class="match-panel">
             <div class="drag-handle"></div>
             <div class="match-content">
-                <div class="trust-badge" id="trustScore">Confiança: 0%</div>
+                <div id="trustScore" class="trust-badge">Confiança: 0%</div>
                 <h3 id="matchTitle">Buscando...</h3>
                 <p id="matchSub">Analisando vendedores locais...</p>
                 
@@ -69,7 +63,6 @@
                     <canvas id="historyChart"></canvas>
                 </div>
 
-                <div class="urgency-timer" id="urgencyText"></div>
                 <button id="matchBtn" class="btn-match">CONVERTER AGORA</button>
             </div>
         </div>
