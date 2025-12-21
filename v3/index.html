@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone V3 | Radar de Oportunidades</title>
+    <title>RePhone V3 | Radar Local</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -12,30 +15,24 @@
         <div class="blocker-content">
             <span style="font-size: 50px;">📱</span>
             <h2>Acesse pelo Celular</h2>
-            <p>O RePhone é uma experiência exclusiva para dispositivos móveis para garantir a precisão do GPS local.</p>
+            <p>O Radar RePhone utiliza GPS em tempo real para encontrar ofertas próximas a você.</p>
         </div>
     </div>
 
     <div id="app-content">
         <header class="app-header">
-            <div class="brand">
-                <h1>RePhone</h1>
-            </div>
-            <div class="header-icons">
-                <button id="btn-favs" style="background:none; border:none; font-size: 20px;">❤️</button>
-            </div>
+            <div class="brand"><h1>RePhone</h1></div>
+            <div class="header-icons"><span id="btn-favs">❤️</span></div>
         </header>
 
         <div class="stories-filters">
-            <div class="story-item active" data-filter="all"><span>📱</span><small>Todos</small></div>
-            <div class="story-item" data-filter="verified"><span>🛡️</span><small>Seguros</small></div>
-            <div class="story-item" data-filter="near"><span>📍</span><small>Perto</small></div>
-            <div class="story-item" data-filter="promo"><span>🔥</span><small>Ofertas</small></div>
+            <div class="story-item active"><span>📱</span><small>Todos</small></div>
+            <div class="story-item"><span>🛡️</span><small>Seguros</small></div>
+            <div class="story-item"><span>📍</span><small>Perto</small></div>
+            <div class="story-item"><span>🔥</span><small>Ofertas</small></div>
         </div>
 
         <main class="feed-container">
-            <div id="pull-to-refresh">⬇️ Puxe para atualizar</div>
-            
             <section class="search-section">
                 <div class="price-target-box">
                     <input type="text" id="modelInput" placeholder="Qual modelo busca?">
@@ -48,22 +45,30 @@
                 </div>
         </main>
 
-        <div id="radarPill">
-            <span class="rp-icon">📡</span>
+        <div id="radarContainer">
+            <div id="radarPill" class="state-idle">
+                <span id="radarText">RADAR<br>RePhone</span>
+            </div>
         </div>
 
         <div id="matchBar" class="match-panel">
             <div class="drag-handle"></div>
+            <div class="match-header">
+                <button id="closeMatch" class="btn-close">✕</button>
+            </div>
             <div class="match-content">
                 <div id="trustScore" class="trust-badge">Confiança: 0%</div>
                 <h3 id="matchTitle">Buscando...</h3>
-                <p id="matchSub">Analisando vendedores locais...</p>
+                <p id="matchSub">Analisando vendedores...</p>
                 
                 <div class="price-history">
                     <canvas id="historyChart"></canvas>
                 </div>
 
-                <button id="matchBtn" class="btn-match">CONVERTER AGORA</button>
+                <div class="match-actions">
+                    <button id="viewDetails" class="btn-secondary">VER</button>
+                    <button id="matchBtn" class="btn-match">CONVERTER</button>
+                </div>
             </div>
         </div>
     </div>
