@@ -3,99 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone V3 | RP MATCH</title>
+    <title>RePhone | Radar Aracruz</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="app-content">
-        <header class="app-header">
-            <div class="brand"><h1>RePhone</h1></div>
-            <div class="header-icons"><span style="color:#ef4444">❤️</span></div>
-        </header>
+    <header class="app-header">
+        <div class="brand"><h1>RePhone</h1></div>
+        <button onclick="window.location.href='vendedor.html'" class="btn-vender-top">Vender +</button>
+    </header>
 
-        <div class="stories-filters">
-            <div class="story-item active"><span>📱</span><small>Todos</small></div>
-            <div class="story-item"><span>💎</span><small>Premium</small></div>
-            <div class="story-item"><span>📍</span><small>Perto</small></div>
-            <div class="story-item"><span>🔥</span><small>Ofertas</small></div>
-        </div>
-
-        <div style="padding: 0 20px 15px 20px;">
-            <button onclick="window.location.href='vendedor.html'" style="width: 100%; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer;">
-                VENDER MEU IPHONE EM ARACRUZ →
-            </button>
-        </div>
-
-        <main class="feed-container">
-            <section class="search-section">
-                <div class="price-target-box">
-                    <input type="text" id="modelInput" placeholder="Qual iPhone busca?">
-                    <input type="number" id="priceInput" placeholder="Preço alvo (R$)">
-                    <button id="btnSearch" class="btn-primary">ATIVAR RP MATCH</button>
-                </div>
-            </section>
-            <div id="offersGrid" class="tinder-grid"></div>
-        </main>
-
-        <div id="radarContainer">
-            <div id="radarPill" class="state-idle">
-                <div class="rp-match-brand">
-                    <span class="rp-logo">RP</span>
-                    <span class="rp-text">MATCH</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="matchBar" class="match-panel">
-            <div class="drag-handle"></div>
-            <div class="match-header">
-                <button id="closeMatch" class="btn-close">✕</button>
-            </div>
-            <div class="match-content">
-                <h3 id="matchTitle">Buscando...</h3>
-                <p id="matchSub">Analisando vendedores...</p>
-
-                <div id="dynamicSpecs"></div>
-
-                <div class="seller-quality">
-                    <div class="quality-item">
-                        <span class="q-icon">🛡️</span>
-                        <div class="q-txt"><strong id="q-trust">0%</strong><small>Confiança</small></div>
-                    </div>
-                    <div class="quality-item">
-                        <span class="q-icon">⭐</span>
-                        <div class="q-txt"><strong id="q-rating">0.0</strong><small>Avaliações</small></div>
-                    </div>
-                    <div class="quality-item">
-                        <span class="q-icon">✅</span>
-                        <div class="q-txt"><strong id="q-sales">0</strong><small>Vendas</small></div>
-                    </div>
-                </div>
-
-                <div class="match-actions">
-                    <button id="viewDetails" class="btn-secondary">VER</button>
-                    <button id="matchBtn" class="btn-match">CONVERTER</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="galleryModal" class="modal">
-            <div class="modal-content">
-                <button id="closeGallery" class="modal-close">✕</button>
-                <div class="modal-body">
-                    <img id="galleryImg" src="">
-                    <div class="modal-info">
-                        <h2 id="galleryTitle"></h2>
-                        <p id="galleryPrice" style="color:#16a34a; font-weight:800; font-size:22px"></p>
-                        <div id="galleryTags"></div>
-                    </div>
-                </div>
-            </div>
+    <div class="search-container">
+        <div class="rp-card-search">
+            <input type="text" id="modelInput" placeholder="Qual iPhone você busca?">
+            <button id="btnSearch" class="btn-match-trigger">ATIVAR RADAR RP MATCH</button>
         </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <div class="stories-filters">
+        <div class="story-item active"><span>📱</span><small>Todos</small></div>
+        <div class="story-item"><span>📍</span><small>Perto</small></div>
+        <div class="story-item"><span>💎</span><small>Premium</small></div>
+    </div>
+
+    <main id="offersGrid" class="feed-grid">
+        <div class="loading-state">Iniciando radar em Aracruz...</div>
+    </main>
+
+    <div id="matchBar" class="match-panel">
+        <div class="drag-handle"></div>
+        <h3 id="matchTitle" style="font-size: 24px; font-weight: 900;"></h3>
+        <p id="matchDist" style="color: #16a34a; font-weight: 700; margin-bottom: 15px;"></p>
+        
+        <div id="matchSpecs" class="specs-mini-grid" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            </div>
+
+        <button id="btnZap" class="btn-primary" style="width: 100%; padding: 18px; font-size: 16px;">
+            CONVERSAR NO WHATSAPP
+        </button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
+            authDomain: "rephone-a0a80.firebaseapp.com",
+            projectId: "rephone-a0a80",
+            storageBucket: "rephone-a0a80.firebasestorage.app",
+            messagingSenderId: "431497247030",
+            appId: "1:431497247030:web:a943715e4acc04b8995b97",
+            measurementId: "G-LHRJ19C0CW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let userLoc = null;
+
+        // Captura localização do comprador para o cálculo de distância
+        navigator.geolocation.getCurrentPosition(pos => {
+            userLoc = pos.coords;
+            carregarAnuncios(); // Recarrega com distâncias reais
+        }, () => carregarAnuncios());
+
+        function calcDist(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2-lat1) * Math.PI/180;
+            const dLon = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+        }
+
+        function carregarAnuncios() {
+            // BUSCA APENAS ANÚNCIOS APROVADOS PELO ADMIN
+            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+            
+            onSnapshot(q, (snapshot) => {
+                const grid = document.getElementById('offersGrid');
+                grid.innerHTML = "";
+
+                if (snapshot.empty) {
+                    grid.innerHTML = "<p style='text-align:center; padding:40px; color:#64748b;'>Nenhum iPhone no radar de Aracruz no momento.</p>";
+                    return;
+                }
+
+                snapshot.forEach((adDoc) => {
+                    const ad = adDoc.data();
+                    const d = userLoc ? calcDist(userLoc.latitude, userLoc.longitude, ad.lat, ad.lng) : "?";
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card-item';
+                    card.style = "background:white; border-radius:20px; overflow:hidden; margin-bottom:20px; border:1px solid #f1f5f9; padding:15px;";
+                    card.onclick = () => abrirMatch(ad, d);
+                    
+                    card.innerHTML = `
+                        <img src="${ad.fotos[0]}" style="width:100%; height:220px; object-fit:contain; background:#f8fafc; border-radius:12px;">
+                        <h4 style="margin:10px 0 5px">${ad.modelo}</h4>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <span style="color:#16a34a; font-weight:900">R$ ${ad.preco}</span>
+                            <small style="color:#64748b">📍 ${d} km</small>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        window.abrirMatch = (ad, dist) => {
+            document.getElementById('matchTitle').innerText = ad.modelo;
+            document.getElementById('matchDist').innerText = `📍 Apenas ${dist} km de você em Aracruz`;
+            document.getElementById('matchSpecs').innerHTML = `
+                <span class='tag-spec'>🔋 ${ad.bateria}</span>
+                <span class='tag-spec'>✨ ${ad.condicao}</span>
+            `;
+            
+            document.getElementById('btnZap').onclick = () => {
+                const msg = encodeURIComponent(`Olá! Vi o ${ad.modelo} no Radar RePhone e gostaria de mais informações.`);
+                window.open(`https://wa.me/5527999999999?text=${msg}`); // Coloque seu número aqui
+            };
+
+            document.getElementById('matchBar').classList.add('show');
+        };
+
+        document.getElementById('btnSearch').onclick = carregarAnuncios;
+
+    </script>
+
+    <style>
+        /* Ajustes rápidos de CSS para o Radar */
+        .feed-grid { padding: 20px; padding-bottom: 100px; }
+        .tag-spec { background: #f1f5f9; padding: 8px 12px; border-radius: 10px; font-weight: 700; font-size: 13px; }
+        .match-panel { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 30px 30px 0 0; padding: 25px; transform: translateY(110%); transition: 0.5s cubic-bezier(0, 1, 0.5, 1); z-index: 2000; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
+        .match-panel.show { transform: translateY(0); }
+        .drag-handle { width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 15px; }
+        .btn-vender-top { background: #0f172a; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    </style>
 </body>
 </html>
