@@ -1,114 +1,92 @@
-/**
- * RePhone V3 - Core Engine (Versão Ajustada aos IDs do HTML)
- */
+/* RePhone V3 - Core Inteligente */
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-(() => {
-    // 1. Configurações e Mocks
-    const PLACEHOLDER_IMG = "assets/phone-placeholder.svg";
-    const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const state = {
+    userLoc: null,
+    favorites: JSON.parse(localStorage.getItem('favs')) || [],
+    offers: [
+        { id: 1, model: "iPhone 13", price: 3100, lat: -19.82, lng: -40.27, kyc: true, history: [3400, 3300, 3100], verified: true },
+        { id: 2, model: "iPhone 12", price: 2400, lat: -19.85, lng: -40.30, kyc: false, history: [2600, 2500, 2400], verified: false }
+    ]
+};
 
-    const MOCK_OFFERS = [
-        { id: "o1", model: "iPhone 11", storage: "64GB", price: 1890, cond: "Usado", city: "Serra/ES", distKm: 55, distLabel: "Longe", verified: true, delivery: true, rating: 4.6, reviews: 92 },
-        { id: "o2", model: "iPhone 12", storage: "64GB", price: 2500, cond: "Seminovo", city: "Vitória/ES", distKm: 48, distLabel: "Longe", verified: false, delivery: false, rating: 4.2, reviews: 18 },
-        { id: "o3", model: "iPhone 13", storage: "128GB", price: 2900, cond: "Seminovo", city: "Aracruz/ES", distKm: 3, distLabel: "Muito perto", verified: true, delivery: false, rating: 4.9, reviews: 312 },
-        { id: "o4", model: "Galaxy S23", storage: "256GB", price: 3499, cond: "Novo", city: "Linhares/ES", distKm: 78, distLabel: "Longe", verified: true, delivery: true, rating: 4.7, reviews: 89 },
-        { id: "o5", model: "Moto G84", storage: "256GB", price: 1499, cond: "Novo", city: "Aracruz/ES", distKm: 6, distLabel: "Perto", verified: true, delivery: true, rating: 4.8, reviews: 204 }
-    ];
+// --- LOGÍSTICA & GPS ---
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2-lat1) * Math.PI / 180;
+    const dLon = (lon2-lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
-    // 2. Seletores (Ajustados para o seu HTML)
-    const offersGrid = document.getElementById('offersGrid');
-    const modelInput = document.getElementById('modelInput');
-    const priceInput = document.getElementById('priceInput');
-    const buscarBtn = document.getElementById('buscarOpp'); // ID correto do seu HTML
-    const radarPill = document.getElementById('radarPill');
-    const matchBar = document.getElementById('matchBar');
-    const matchTitle = document.getElementById('matchTitle');
-    const matchSub = document.getElementById('matchSub');
-    const matchProg = document.getElementById('matchProg');
+// --- FEEDBACK HÁPTICO (VIBRAÇÃO) ---
+function triggerVibrate() {
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
 
-    // 3. Renderização
-    function renderOffers(list) {
-        if(!offersGrid) return;
-        offersGrid.innerHTML = list.map(o => `
-            <div class="card" id="card-${o.id}">
-                <div class="card-media">
-                    <img src="${PLACEHOLDER_IMG}" alt="${o.model}" onerror="this.style.opacity=.2">
-                </div>
-                <div class="card-body">
-                    <div class="meta">${o.city} • ${o.distKm}km</div>
-                    <div class="title">${o.model} ${o.storage}</div>
-                    <div class="price">${brl.format(o.price)}</div>
-                    <div class="chips">
-                        <span class="chip">${o.cond}</span>
-                        <span class="chip">⭐ ${o.rating}</span>
-                        ${o.verified ? '<span class="chip">🛡️ Verificado</span>' : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
+// --- ALGORITMO DE MATCH ---
+async function runRadar() {
+    const targetModel = document.getElementById('modelInput').value;
+    const targetPrice = document.getElementById('priceInput').value;
 
-    // 4. Lógica do Radar
-    function startRadar() {
-        if (!modelInput.value || !priceInput.value) {
-            alert("Por favor, preencha o modelo e o valor desejado.");
-            return;
-        }
-
-        // Estado 1: Armado
-        radarPill.classList.remove('state-idle');
-        radarPill.classList.add('state-armed');
-        matchTitle.innerText = "Buscando MATCH...";
-        matchSub.innerText = "Analisando anúncios compatíveis...";
-        matchBar.classList.add('show');
-        if(matchProg) matchProg.style.width = "30%";
-
-        // Estado 2: Scan (Piscar)
+    const pill = document.getElementById('radarPill');
+    pill.className = 'state-scan';
+    
+    // Captura GPS Real
+    navigator.geolocation.getCurrentPosition(pos => {
+        state.userLoc = pos.coords;
+        
         setTimeout(() => {
-            radarPill.classList.replace('state-armed', 'state-scan');
-            if(matchProg) matchProg.style.width = "70%";
-            matchSub.innerText = "Cruzando dados de vendedores seguros...";
+            const results = state.offers.map(off => {
+                let score = 0;
+                const dist = getDistance(state.userLoc.latitude, state.userLoc.longitude, off.lat, off.lng);
+                
+                // Prioridade 1: Logística (0 a 15km)
+                if (dist <= 15) score += 50;
+                else if (dist <= 40) score += 20;
+
+                // Prioridade 2: KYC
+                if (off.kyc) score += 30;
+
+                // Prioridade 3: Preço
+                if (off.price <= targetPrice) score += 20;
+
+                return { ...off, score, dist };
+            }).sort((a, b) => b.score - a.score);
+
+            showMatch(results[0]);
         }, 3000);
-
-        // Estado 3: Resultado
-        setTimeout(() => {
-            const match = MOCK_OFFERS[2]; // iPhone 13 (Simulação)
-            showFinalMatch(match);
-        }, 7000);
-    }
-
-    function showFinalMatch(offer) {
-        document.body.classList.add('match-bar-open');
-        matchTitle.innerText = `MATCH: ${offer.model}`;
-        matchSub.innerText = `Oferta exclusiva por ${brl.format(offer.price)}`;
-        if(matchProg) matchProg.style.width = "100%";
-        
-        // Esconder do grid (Exclusividade)
-        const card = document.getElementById(`card-${offer.id}`);
-        if (card) card.classList.add('hidden-by-match');
-
-        // Ativar botão de ver MATCH
-        const matchBtn = document.getElementById('matchBtn');
-        if(matchBtn) {
-            matchBtn.disabled = false;
-            matchBtn.onclick = () => window.location.href = 'anuncio.html';
-        }
-    }
-
-    // 5. Init
-    document.addEventListener('DOMContentLoaded', () => {
-        renderOffers(MOCK_OFFERS);
-
-        if (buscarBtn) {
-            buscarBtn.disabled = false; // Garante que o botão funciona
-            buscarBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                startRadar();
-            });
-        }
-        
-        // Esconder label de carregando
-        const loadingLabel = document.getElementById('loadingLabel');
-        if(loadingLabel) loadingLabel.style.display = 'none';
     });
-})();
+}
+
+function showMatch(match) {
+    triggerVibrate();
+    const bar = document.getElementById('matchBar');
+    bar.classList.add('show');
+    
+    // Gráfico de Histórico
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['30d', '15d', 'Hoje'],
+            datasets: [{ data: match.history, borderColor: '#16a34a', tension: 0.4 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } }
+    });
+
+    document.getElementById('trustScore').innerText = `Confiança RePhone: ${match.score}%`;
+    document.getElementById('matchTitle').innerText = `${match.model} a ${match.dist.toFixed(1)}km`;
+    
+    // Gatilho de Urgência
+    const views = Math.floor(Math.random() * 10) + 2;
+    document.getElementById('urgencyText').innerText = `🔥 ${views} pessoas interessadas nesta região.`;
+
+    if (!match.kyc) {
+        document.getElementById('matchBtn').innerText = "NOTIFICAR VENDEDOR (KYC PENDENTE)";
+        document.getElementById('matchBtn').style.background = "#f59e0b";
+    }
+}
+
+// Iniciar Eventos
+document.getElementById('btnSearch').addEventListener('click', runRadar);
