@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone V3 | Radar Local</title>
+    <title>RePhone V3 | RP MATCH</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="desktop-blocker">
         <div class="blocker-content">
-            <span style="font-size: 50px;">📱</span>
-            <h2>Acesse pelo Celular</h2>
-            <p>O Radar RePhone utiliza GPS em tempo real para encontrar ofertas próximas a você.</p>
+            <h2>📱 Use o Celular</h2>
+            <p>O RP MATCH requer GPS para localizar vendedores em Aracruz.</p>
         </div>
     </div>
 
     <div id="app-content">
         <header class="app-header">
             <div class="brand"><h1>RePhone</h1></div>
-            <div class="header-icons"><span id="btn-favs">❤️</span></div>
+            <div class="header-icons"><span>❤️</span></div>
         </header>
 
         <div class="stories-filters">
             <div class="story-item active"><span>📱</span><small>Todos</small></div>
-            <div class="story-item"><span>🛡️</span><small>Seguros</small></div>
+            <div class="story-item"><span>🛡️</span><small>Premium</small></div>
             <div class="story-item"><span>📍</span><small>Perto</small></div>
             <div class="story-item"><span>🔥</span><small>Ofertas</small></div>
         </div>
@@ -35,19 +32,21 @@
         <main class="feed-container">
             <section class="search-section">
                 <div class="price-target-box">
-                    <input type="text" id="modelInput" placeholder="Qual modelo busca?">
+                    <input type="text" id="modelInput" placeholder="Qual iPhone busca?">
                     <input type="number" id="priceInput" placeholder="Preço alvo (R$)">
-                    <button id="btnSearch" class="btn-primary">ATIVAR RADAR</button>
+                    <button id="btnSearch" class="btn-primary">ATIVAR RP MATCH</button>
                 </div>
             </section>
 
-            <div id="offersGrid" class="tinder-grid">
-                </div>
+            <div id="offersGrid" class="tinder-grid"></div>
         </main>
 
         <div id="radarContainer">
             <div id="radarPill" class="state-idle">
-                <span id="radarText">RADAR<br>RePhone</span>
+                <div class="rp-match-brand">
+                    <span class="rp-logo">RP</span>
+                    <span class="rp-text">MATCH</span>
+                </div>
             </div>
         </div>
 
@@ -57,12 +56,22 @@
                 <button id="closeMatch" class="btn-close">✕</button>
             </div>
             <div class="match-content">
-                <div id="trustScore" class="trust-badge">Confiança: 0%</div>
                 <h3 id="matchTitle">Buscando...</h3>
                 <p id="matchSub">Analisando vendedores...</p>
-                
-                <div class="price-history">
-                    <canvas id="historyChart"></canvas>
+
+                <div class="seller-quality">
+                    <div class="quality-item">
+                        <span class="q-icon">🛡️</span>
+                        <div class="q-txt"><strong id="q-trust">0%</strong><small>Confiança</small></div>
+                    </div>
+                    <div class="quality-item">
+                        <span class="q-icon">⭐</span>
+                        <div class="q-txt"><strong id="q-rating">0.0</strong><small>Avaliações</small></div>
+                    </div>
+                    <div class="quality-item">
+                        <span class="q-icon">✅</span>
+                        <div class="q-txt"><strong id="q-sales">0</strong><small>Vendas</small></div>
+                    </div>
                 </div>
 
                 <div class="match-actions">
@@ -71,9 +80,22 @@
                 </div>
             </div>
         </div>
+
+        <div id="galleryModal" class="modal">
+            <div class="modal-content">
+                <button id="closeGallery" class="modal-close">✕</button>
+                <div class="modal-body">
+                    <img id="galleryImg" src="">
+                    <div class="modal-info">
+                        <h2 id="galleryTitle"></h2>
+                        <p id="galleryPrice"></p>
+                        <div id="galleryTags"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
