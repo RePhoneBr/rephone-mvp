@@ -1,32 +1,154 @@
-/* style.css */
+/* RePhone V3 - Ajuste de Interface Premium */
 :root {
     --green: #16a34a;
+    --green-light: #22c55e;
     --dark: #0f172a;
-    --glass: rgba(255, 255, 255, 0.85);
+    --muted: #64748b;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --radius: 16px;
 }
 
-body { margin: 0; background: #f1f5f9; font-family: sans-serif; overflow-x: hidden; }
+body { 
+    margin: 0; 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    background: var(--bg); 
+    color: var(--dark);
+    -webkit-font-smoothing: antialiased;
+}
 
-/* BLOQUEIO PC */
-#desktop-blocker { display: none; position: fixed; inset: 0; background: white; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-@media (min-width: 768px) { #desktop-blocker { display: flex; } #app-content { display: none; } }
+/* HEADER & BRAND */
+.app-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+}
 
-/* STORIES FILTERS */
-.stories-filters { display: flex; gap: 15px; padding: 15px; overflow-x: auto; scrollbar-width: none; }
-.story-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; }
-.story-item span { width: 60px; height: 60px; border: 2px solid var(--green); border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: white; }
+.brand h1 { margin: 0; font-size: 24px; font-weight: 850; letter-spacing: -1px; }
 
-/* TINDER CARD */
-.tinder-grid { padding: 15px; }
-.card { background: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; position: relative; }
-.card-media { height: 250px; background: #eee; }
+/* FILTROS STORIES */
+.stories-filters {
+    display: flex;
+    gap: 12px;
+    padding: 10px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.stories-filters::-webkit-scrollbar { display: none; }
 
-/* MATCH PANEL (SWIPE) */
-.match-panel { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 25px 25px 0 0; transform: translateY(100%); transition: 0.5s; z-index: 1000; padding: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-.match-panel.show { transform: translateY(0); }
-.drag-handle { width: 40px; height: 5px; background: #ddd; border-radius: 10px; margin: 0 auto 15px; }
+.story-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 75px;
+    cursor: pointer;
+}
+
+.story-item span {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    background: var(--white);
+    margin-bottom: 6px;
+    transition: 0.3s;
+}
+.story-item small { font-weight: 700; color: var(--muted); font-size: 11px; }
+.story-item.active span { background: var(--green); color: white; }
+
+/* CAIXA DE BUSCA (Ajuste do Print) */
+.search-section { padding: 20px; }
+
+.price-target-box {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#modelInput, #priceInput {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(15,23,42,0.1);
+    background: #f1f5f9;
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    transition: 0.2s;
+}
+
+#modelInput:focus, #priceInput:focus {
+    border-color: var(--green);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(22, 197, 94, 0.1);
+}
+
+.input-group { position: relative; display: flex; align-items: center; }
+.input-group span {
+    position: absolute;
+    left: 16px;
+    font-weight: 800;
+    color: var(--muted);
+}
+#priceInput { padding-left: 45px; }
+
+/* BOTÃO PRINCIPAL */
+.btn-primary {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 99px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 5px;
+}
+
+.btn-primary:active { transform: scale(0.96); background: var(--green-light); }
 
 /* RADAR PILL */
-#radarPill { position: fixed; right: 20px; bottom: 30px; width: 65px; height: 65px; background: white; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: 0.3s; z-index: 1100; }
-.state-scan { background: var(--green) !important; animation: pulse 1s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+#radarPill {
+    position: fixed;
+    right: 20px;
+    bottom: 30px;
+    width: 60px;
+    height: 60px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+.rp-icon { font-size: 24px; }
+
+/* BLOQUEIO DESKTOP (Invisível no Celular) */
+#desktop-blocker { display: none; }
+
+@media (min-width: 769px) {
+    #desktop-blocker {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        background: white;
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+    }
+}
