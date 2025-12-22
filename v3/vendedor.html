@@ -3,131 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vender | Segurança RePhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Vender | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; --border: #e2e8f0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: white; color: var(--dark); padding-bottom: 50px; }
-        .header-venda { background: var(--dark); padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 25px; }
-        .logo-mini { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto 10px; }
-        .container { padding: 0 20px; }
-        label { display: block; font-weight: 700; font-size: 11px; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); font-size: 15px; outline: none; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .sec-seguranca { background: #f1f5f9; padding: 20px; border-radius: 20px; margin: 30px 0; border: 1px solid var(--gold); }
-        .photo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .photo-slot { background: var(--bg); border: 2px dashed #cbd5e1; border-radius: 15px; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; }
-        .photo-slot.active { border: 2px solid var(--green); background: #f0fdf4; }
-        .btn-submit { background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background: white; padding: 20px; }
+        .header { text-align: center; margin-bottom: 25px; }
+        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; }
+        input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); outline: none; margin-top: 5px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-enviar { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; margin-top: 30px; }
     </style>
 </head>
 <body>
-
-    <div class="header-venda">
-        <div class="logo-mini">RP</div>
-        <h1 style="color:white; font-size: 22px;">Anunciar Aparelho</h1>
+    <div class="header">
+        <h1 style="font-weight:900;">Anunciar no RePhone</h1>
     </div>
-
-    <div class="container">
-        <form id="formVenda">
-            <div class="grid-2">
-                <div><label>Marca</label><select id="vMarca"><option>Apple</option><option>Samsung</option><option>Motorola</option><option>Xiaomi</option></select></div>
-                <div><label>Modelo</label><input type="text" id="vModel" placeholder="Ex: iPhone 14 Pro" required></div>
-            </div>
-            <div class="grid-2">
-                <div><label>Capacidade</label><input type="text" id="vCap" placeholder="128GB" required></div>
-                <div><label>Conexão</label><select id="vNet"><option>5G</option><option>4G</option></select></div>
-            </div>
-            <label>Estado</label>
-            <select id="vCondition"><option>Novo</option><option>Semi novo</option><option>Usado</option></select>
-            <div class="grid-2">
-                <div><label>Preço (R$)</label><input type="number" id="vPrice" required></div>
-                <div><label>Estoque</label><select id="vStock"><option>Estoque</option><option>Encomenda</option></select></div>
-            </div>
-            <label>Prazo de Entrega</label>
-            <select id="vDelivery"><option>Imediato</option><option>Até 3 dias</option><option>Até 7 dias</option></select>
-            <label>Descrição</label>
-            <textarea id="vDesc" rows="3" required placeholder="insira informações importantes e detalhes de uso e marcas no aparelho"></textarea>
-
-            <div class="sec-seguranca">
-                <h3 style="font-size:12px; font-weight:900; margin-bottom:10px;">🔐 SEGURANÇA REPHONE</h3>
-                <label>Nome Completo do Responsável</label>
-                <input type="text" id="vNomeReal" required>
-                <label>WhatsApp (Com DDD)</label>
-                <input type="tel" id="vZap" placeholder="27999999999" required>
-                <label>Foto do Documento (RG/CNH ou CNPJ)</label>
-                <div class="photo-slot" id="slotDoc" onclick="document.getElementById('fDoc').click()" style="width:100%; aspect-ratio:16/9;">
-                    <input type="file" id="fDoc" hidden onchange="preview(0)">
-                    <span id="iconDoc">🪪</span><small id="txtDoc">Toque para anexar</small>
-                </div>
-            </div>
-
-            <label>Fotos do Aparelho</label>
-            <div class="photo-row">
-                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()"><input type="file" id="f1" hidden onchange="preview(1)" required><span>📸</span><small>Frente</small></div>
-                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()"><input type="file" id="f2" hidden onchange="preview(2)" required><span>📱</span><small>Traseira</small></div>
-                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()"><input type="file" id="f3" hidden onchange="preview(3)"><span>🔍</span><small>Detalhe</small></div>
-            </div>
-
-            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA ANÁLISE</button>
-        </form>
-    </div>
+    <form id="formAnuncio">
+        <label>Tipo de Vendedor</label>
+        <select id="vTipo"><option value="Particular">👤 Particular</option><option value="Lojista">🏪 Lojista</option></select>
+        <div class="grid-2">
+            <div><label>Marca</label><input type="text" id="vMarca" required></div>
+            <div><label>Modelo</label><input type="text" id="vModelo" required></div>
+        </div>
+        <div class="grid-2">
+            <div><label>Capacidade</label><input type="text" id="vCap" required></div>
+            <div><label>Bateria (%)</label><input type="text" id="vBat"></div>
+        </div>
+        <div class="grid-2">
+            <div><label>Estado</label><select id="vCond"><option>Novo</option><option>Semi novo</option><option>Usado</option></select></div>
+            <div><label>Valor (R$)</label><input type="number" id="vPrice" required></div>
+        </div>
+        <label>Descrição Detalhada</label>
+        <textarea id="vDesc" rows="3" required></textarea>
+        <label>WhatsApp para Contato</label>
+        <input type="tel" id="vZap" required>
+        <button type="submit" id="btnA" class="btn-enviar">PUBLICAR AGORA</button>
+    </form>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
         const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
 
-        window.preview = (n) => {
-            const id = n === 0 ? 'slotDoc' : `slot${n}`;
-            document.getElementById(id).classList.add('active');
-            if(n === 0) document.getElementById('txtDoc').innerText = "✓ Documento Anexado";
-        };
-
-        document.getElementById('formVenda').onsubmit = async (e) => {
+        document.getElementById('formAnuncio').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnEnviar');
-            btn.innerText = "ENVIANDO SEGURANÇA..."; btn.disabled = true;
-
-            try {
-                const upload = async (id) => {
-                    const file = document.getElementById(id).files[0];
-                    if(!file) return null;
-                    const fd = new FormData(); fd.append("image", file);
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-                    const d = await res.json(); return d.data.url;
-                };
-
-                const docUrl = await upload('fDoc');
-                const p1 = await upload('f1'); const p2 = await upload('f2'); const p3 = await upload('f3');
-
-                await addDoc(collection(db, "anuncios"), {
-                    marca: document.getElementById('vMarca').value,
-                    modelo: document.getElementById('vModel').value,
-                    capacidade: document.getElementById('vCap').value,
-                    conexao: document.getElementById('vNet').value,
-                    condicao: document.getElementById('vCondition').value,
-                    preco: document.getElementById('vPrice').value,
-                    estoque: document.getElementById('vStock').value,
-                    prazo: document.getElementById('vDelivery').value,
-                    descricao: document.getElementById('vDesc').value,
-                    nomeVendedor: document.getElementById('vNomeReal').value,
-                    whatsapp: document.getElementById('vZap').value,
-                    fotoDoc: docUrl,
-                    fotos: [p1, p2, p3].filter(p => p !== null),
-                    status: "pendente",
-                    verificado: false,
-                    data: new Date()
-                });
-
-                alert("Sucesso! Aguarde a verificação.");
-                window.location.href = "index.html";
-            } catch (err) { alert("Erro ao enviar."); btn.disabled = false; }
+            await addDoc(collection(db, "anuncios"), {
+                tipo: document.getElementById('vTipo').value,
+                marca: document.getElementById('vMarca').value,
+                modelo: document.getElementById('vModelo').value,
+                preco: document.getElementById('vPrice').value,
+                whatsapp: document.getElementById('vZap').value,
+                status: "pendente",
+                data: new Date()
+            });
+            alert("Anúncio RePhone enviado!");
+            window.location.href = "index.html";
         };
     </script>
 </body>
