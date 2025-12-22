@@ -3,185 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone | Radar </title>
+    <title>Vender | Segurança RePhone</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; --border: #e2e8f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
-
-        /* Header */
-        .app-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-        
-        /* Form de Busca */
-        .search-area { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); font-size: 14px; outline: none; }
-        
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-flat { background: #e2e8f0; color: var(--dark); border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .btn-match { background: var(--green); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; position: relative; overflow: hidden; }
-
-        /* Radar Animation */
-        .radar-box { display: none; text-align: center; padding: 40px 0; }
-        .radar-circle { width: 150px; height: 150px; border: 2px solid var(--green); border-radius: 50%; margin: 0 auto; position: relative; animation: pulse 2s infinite; }
-        .radar-line { width: 50%; height: 2px; background: var(--green); position: absolute; top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); } 70% { box-shadow: 0 0 0 30px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
-
-        /* Feed de Cards */
-        .feed { padding: 20px; display: grid; gap: 20px; }
-        .card { background: white; border-radius: 25px; padding: 15px; border: 1px solid #e2e8f0; position: relative; }
-        .badge-status { position: absolute; top: 25px; left: 25px; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; z-index: 10; display: flex; align-items: center; gap: 5px; border: 1px solid #e2e8f0; }
-        .card img { width: 100%; height: 200px; object-fit: contain; background: var(--bg); border-radius: 20px; margin-bottom: 12px; }
-        .card-info h4 { font-size: 18px; font-weight: 800; }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .price { color: var(--green); font-weight: 900; font-size: 20px; }
-        .vendedor-tipo { font-size: 11px; background: #f1f5f9; padding: 3px 8px; border-radius: 5px; color: #64748b; }
-
-        /* Painel de Match (O "Pop-up") */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 2000; align-items: flex-end; }
-        .match-window { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 30px; position: relative; transform: translateY(100%); transition: 0.4s; }
-        .match-window.active { transform: translateY(0); }
-        .close-match { position: absolute; top: 20px; right: 20px; width: 30px; height: 30px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
-        
-        .tag { display: inline-block; padding: 5px 12px; border-radius: 8px; background: var(--bg); font-size: 12px; font-weight: 700; margin-right: 5px; }
+        body { background: white; color: var(--dark); padding-bottom: 50px; }
+        .header-venda { background: var(--dark); padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 25px; }
+        .logo-mini { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto 10px; }
+        .container { padding: 0 20px; }
+        label { display: block; font-weight: 700; font-size: 11px; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
+        input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); font-size: 15px; outline: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .sec-seguranca { background: #f1f5f9; padding: 20px; border-radius: 20px; margin: 30px 0; border: 1px solid var(--gold); }
+        .photo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .photo-slot { background: var(--bg); border: 2px dashed #cbd5e1; border-radius: 15px; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; }
+        .photo-slot.active { border: 2px solid var(--green); background: #f0fdf4; }
+        .btn-submit { background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="brand">
-            <div class="logo-rp">RP</div>
-            <h1 style="color:white">Re<span style="color:var(--green)">Phone</span></h1>
-        </div>
-        <a href="vendedor.html" style="text-decoration:none" class="vendedor-tipo">Vender +</a>
-    </header>
-
-    <div class="search-area">
-        <div class="input-group">
-            <select id="searchMarca">
-                <option value="">Marca</option>
-                <option value="Apple">Apple</option>
-                <option value="Samsung">Samsung</option>
-            </select>
-            <input type="number" id="searchMaxPrice" placeholder="Até R$">
-        </div>
-        <input type="text" id="searchModel" placeholder="Modelo (Ex: iPhone 13)" style="margin-bottom:15px">
-        
-        <div class="btn-row">
-            <button class="btn-flat" onclick="buscarNoSite()">🔍 Ver Tudo</button>
-            <button class="btn-match" onclick="ativarMatch()">✨ Ativar Match</button>
-        </div>
+    <div class="header-venda">
+        <div class="logo-mini">RP</div>
+        <h1 style="color:white; font-size: 22px;">Anunciar Aparelho</h1>
     </div>
 
-    <div id="radarDisplay" class="radar-box">
-        <div class="radar-circle"><div class="radar-line"></div></div>
-        <p style="margin-top:20px; font-weight:800; color:var(--green)">ESCANEANDO</p>
-    </div>
+    <div class="container">
+        <form id="formVenda">
+            <div class="grid-2">
+                <div><label>Marca</label><select id="vMarca"><option>Apple</option><option>Samsung</option><option>Motorola</option><option>Xiaomi</option></select></div>
+                <div><label>Modelo</label><input type="text" id="vModel" placeholder="Ex: iPhone 14 Pro" required></div>
+            </div>
+            <div class="grid-2">
+                <div><label>Capacidade</label><input type="text" id="vCap" placeholder="128GB" required></div>
+                <div><label>Conexão</label><select id="vNet"><option>5G</option><option>4G</option></select></div>
+            </div>
+            <label>Estado</label>
+            <select id="vCondition"><option>Novo</option><option>Semi novo</option><option>Usado</option></select>
+            <div class="grid-2">
+                <div><label>Preço (R$)</label><input type="number" id="vPrice" required></div>
+                <div><label>Estoque</label><select id="vStock"><option>Estoque</option><option>Encomenda</option></select></div>
+            </div>
+            <label>Prazo de Entrega</label>
+            <select id="vDelivery"><option>Imediato</option><option>Até 3 dias</option><option>Até 7 dias</option></select>
+            <label>Descrição</label>
+            <textarea id="vDesc" rows="3" required placeholder="insira informações importantes e detalhes de uso e marcas no aparelho"></textarea>
 
-    <main id="offersGrid" class="feed">
-        </main>
+            <div class="sec-seguranca">
+                <h3 style="font-size:12px; font-weight:900; margin-bottom:10px;">🔐 SEGURANÇA REPHONE</h3>
+                <label>Nome Completo do Responsável</label>
+                <input type="text" id="vNomeReal" required>
+                <label>WhatsApp (Com DDD)</label>
+                <input type="tel" id="vZap" placeholder="27999999999" required>
+                <label>Foto do Documento (RG/CNH ou CNPJ)</label>
+                <div class="photo-slot" id="slotDoc" onclick="document.getElementById('fDoc').click()" style="width:100%; aspect-ratio:16/9;">
+                    <input type="file" id="fDoc" hidden onchange="preview(0)">
+                    <span id="iconDoc">🪪</span><small id="txtDoc">Toque para anexar</small>
+                </div>
+            </div>
 
-    <div id="overlayMatch" class="overlay" onclick="fecharMatch(event)">
-        <div class="match-window" id="windowMatch" onclick="event.stopPropagation()">
-            <div class="close-match" onclick="fecharMatch()">✕</div>
-            <div id="matchContent"></div>
-            <button id="btnZap" class="btn-match" style="width:100%; margin-top:20px; padding:20px">CHAMAR NO WHATSAPP</button>
-        </div>
+            <label>Fotos do Aparelho</label>
+            <div class="photo-row">
+                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()"><input type="file" id="f1" hidden onchange="preview(1)" required><span>📸</span><small>Frente</small></div>
+                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()"><input type="file" id="f2" hidden onchange="preview(2)" required><span>📱</span><small>Traseira</small></div>
+                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()"><input type="file" id="f3" hidden onchange="preview(3)"><span>🔍</span><small>Detalhe</small></div>
+            </div>
+
+            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA ANÁLISE</button>
+        </form>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
-            authDomain: "rephone-a0a80.firebaseapp.com",
-            projectId: "rephone-a0a80",
-            storageBucket: "rephone-a0a80.firebasestorage.app",
-            messagingSenderId: "431497247030",
-            appId: "1:431497247030:web:a943715e4acc04b8995b97"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
 
-        // Função de busca simples
-        window.buscarNoSite = async () => {
-            const grid = document.getElementById('offersGrid');
-            grid.innerHTML = "Buscando...";
-            
-            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-            const snap = await getDocs(q);
-            renderizar(snap);
+        window.preview = (n) => {
+            const id = n === 0 ? 'slotDoc' : `slot${n}`;
+            document.getElementById(id).classList.add('active');
+            if(n === 0) document.getElementById('txtDoc').innerText = "✓ Documento Anexado";
         };
 
-        // Função do Radar (Match)
-        window.ativarMatch = () => {
-            document.getElementById('offersGrid').innerHTML = "";
-            document.getElementById('radarDisplay').style.display = "block";
-            
-            setTimeout(async () => {
-                document.getElementById('radarDisplay').style.display = "none";
-                const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-                const snap = await getDocs(q);
-                renderizar(snap);
-            }, 3000);
+        document.getElementById('formVenda').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviar');
+            btn.innerText = "ENVIANDO SEGURANÇA..."; btn.disabled = true;
+
+            try {
+                const upload = async (id) => {
+                    const file = document.getElementById(id).files[0];
+                    if(!file) return null;
+                    const fd = new FormData(); fd.append("image", file);
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+                    const d = await res.json(); return d.data.url;
+                };
+
+                const docUrl = await upload('fDoc');
+                const p1 = await upload('f1'); const p2 = await upload('f2'); const p3 = await upload('f3');
+
+                await addDoc(collection(db, "anuncios"), {
+                    marca: document.getElementById('vMarca').value,
+                    modelo: document.getElementById('vModel').value,
+                    capacidade: document.getElementById('vCap').value,
+                    conexao: document.getElementById('vNet').value,
+                    condicao: document.getElementById('vCondition').value,
+                    preco: document.getElementById('vPrice').value,
+                    estoque: document.getElementById('vStock').value,
+                    prazo: document.getElementById('vDelivery').value,
+                    descricao: document.getElementById('vDesc').value,
+                    nomeVendedor: document.getElementById('vNomeReal').value,
+                    whatsapp: document.getElementById('vZap').value,
+                    fotoDoc: docUrl,
+                    fotos: [p1, p2, p3].filter(p => p !== null),
+                    status: "pendente",
+                    verificado: false,
+                    data: new Date()
+                });
+
+                alert("Sucesso! Aguarde a verificação.");
+                window.location.href = "index.html";
+            } catch (err) { alert("Erro ao enviar."); btn.disabled = false; }
         };
-
-        function renderizar(snapshot) {
-            const grid = document.getElementById('offersGrid');
-            grid.innerHTML = "";
-            
-            snapshot.forEach(doc => {
-                const ad = doc.data();
-                // Lógica de ícones por estado
-                const icon = ad.condicao === 'Novo' ? '💎' : (ad.condicao === 'Semi novo' ? '✨' : '📱');
-                
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="badge-status">${icon} ${ad.condicao}</div>
-                    <img src="${ad.fotos[0]}">
-                    <div class="card-info">
-                        <h4>${ad.modelo}</h4>
-                        <div class="card-meta">
-                            <span class="price">R$ ${ad.preco}</span>
-                            <span class="vendedor-tipo">👤 Particular</span>
-                        </div>
-                        <p style="font-size:12px; color:#94a3b8; margin-top:5px">📍 Aracruz, ES</p>
-                    </div>
-                `;
-                card.onclick = () => abrirMatch(ad);
-                grid.appendChild(card);
-            });
-        }
-
-        window.abrirMatch = (ad) => {
-            const content = document.getElementById('matchContent');
-            content.innerHTML = `
-                <h2 style="font-weight:900; font-size:28px">${ad.modelo}</h2>
-                <p style="color:var(--green); font-weight:800; font-size:22px; margin:10px 0">R$ ${ad.preco}</p>
-                <div style="margin:20px 0">
-                    <span class="tag">🔋 Bateria: ${ad.bateria}</span>
-                    <span class="tag">✨ Estado: ${ad.condicao}</span>
-                    <span class="tag">🛡️ Verificado</span>
-                </div>
-                <p style="color:#64748b; font-size:14px">Este aparelho passou pela supervisão RePhone e está disponível para entrega imediata.</p>
-            `;
-            document.getElementById('overlayMatch').style.display = "flex";
-            setTimeout(() => document.getElementById('windowMatch').classList.add('active'), 10);
-        };
-
-        window.fecharMatch = (e) => {
-            document.getElementById('windowMatch').classList.remove('active');
-            setTimeout(() => document.getElementById('overlayMatch').style.display = "none", 400);
-        };
-
-        buscarNoSite(); // Inicia carregando tudo
     </script>
 </body>
 </html>
