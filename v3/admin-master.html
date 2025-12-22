@@ -2,137 +2,61 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <title>Curadoria | RePhone</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curadoria | RePhone Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --border: #334155; }
+        :root { --dark: #0f172a; --gold: #d4af37; --green: #16a34a; }
         body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
-        
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
-        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); padding: 5px 10px; border-radius: 8px; font-weight: 900; margin-right: 10px; }
-        
-        .pending-card { background: #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); position: relative; }
-        
-        /* Detalhes do Aparelho */
-        .ad-title { font-size: 20px; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .price-badge { color: var(--green); font-weight: 900; font-size: 22px; }
-        
-        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; font-size: 13px; }
-        .info-tag { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
-        .info-tag b { color: var(--gold); text-transform: uppercase; font-size: 10px; display: block; }
-
-        .desc-box { background: #0f172a; padding: 15px; border-radius: 12px; margin: 15px 0; border-left: 4px solid var(--gold); font-size: 14px; line-height: 1.6; }
-
-        .photo-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin: 15px 0; }
-        .photo-row img { height: 120px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-approve { background: var(--green); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 2; }
-        .btn-reject { background: #ef4444; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; flex: 1; }
-        
-        .loading-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .admin-nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .btn-back { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px 15px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .card-adm { background: #1e293b; border-radius: 20px; padding: 20px; border: 1px solid #334155; margin-bottom: 20px; }
+        .btn-appr { background: var(--green); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-del { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 5px; }
+        .doc-link { background: var(--gold); color: var(--dark); padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: 800; display: inline-block; margin: 10px 0; text-decoration: none; }
     </style>
 </head>
 <body>
-
-    <div id="loadingScreen" class="loading-screen">Validando Acesso...</div>
-
-    <header class="admin-header">
-        <div style="display: flex; align-items: center;">
-            <span class="logo-rp">RP</span>
-            <h1 style="font-size: 20px;">Fila de Curadoria</h1>
-        </div>
-        <button onclick="fazerLogout()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:5px 15px; border-radius:8px; cursor:pointer;">Sair</button>
-    </header>
-
-    <div id="listaPendentes">
-        <p style="text-align: center; color: #94a3b8;">Nenhum anúncio aguardando...</p>
+    <div class="admin-nav-top">
+        <a href="admin-hub.html" class="btn-back">← Voltar ao Hub</a>
+        <h2 style="font-size:16px;">Curadoria</h2>
     </div>
+
+    <div id="listaPendentes">Buscando anúncios...</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
-            authDomain: "rephone-a0a80.firebaseapp.com",
-            projectId: "rephone-a0a80",
-            storageBucket: "rephone-a0a80.firebasestorage.app",
-            messagingSenderId: "431497247030",
-            appId: "1:431497247030:web:a943715e4acc04b8995b97"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        onAuthStateChanged(auth, (user) => {
-            if (!user) { window.location.href = 'admin-login.html'; }
-            else { 
-                document.getElementById('loadingScreen').style.display = 'none';
-                escutarPendentes();
-            }
-        });
+        onAuthStateChanged(auth, (user) => { if (!user) window.location.href = 'admin-login.html'; else escutar(); });
 
-        window.fazerLogout = () => signOut(auth).then(() => window.location.href = 'admin-login.html');
-
-        function escutarPendentes() {
-            const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
-            
-            onSnapshot(q, (snapshot) => {
+        function escutar() {
+            onSnapshot(query(collection(db, "anuncios"), where("status", "==", "pendente")), (snap) => {
                 const container = document.getElementById('listaPendentes');
-                container.innerHTML = snapshot.empty ? '<p style="text-align:center; padding:50px; color:#64748b;">✅ Tudo em dia! Sem anúncios pendentes.</p>' : "";
-
-                snapshot.forEach((adDoc) => {
-                    const ad = adDoc.data();
-                    const id = adDoc.id;
+                container.innerHTML = snap.empty ? "Nada pendente." : "";
+                snap.forEach(d => {
+                    const ad = d.data();
                     const card = document.createElement('div');
-                    card.className = 'pending-card';
+                    card.className = 'card-adm';
                     card.innerHTML = `
-                        <div class="ad-title">
-                            <span>${ad.marca} ${ad.modelo}</span>
-                            <span class="price-badge">R$ ${ad.preco}</span>
-                        </div>
-                        
-                        <div class="info-grid">
-                            <div class="info-tag"><b>Capacidade/Conexão</b>${ad.capacidade} - ${ad.conexao}</div>
-                            <div class="info-tag"><b>Estado</b>${ad.condicao}</div>
-                            <div class="info-tag"><b>Disponibilidade</b>${ad.estoque}</div>
-                            <div class="info-tag"><b>Prazo</b>${ad.prazo}</div>
-                        </div>
-
-                        <div class="desc-box">
-                            <b>Descrição do Vendedor:</b><br>
-                            ${ad.descricao || "Sem descrição informada."}
-                        </div>
-
-                        <div class="photo-row">
-                            ${ad.fotos.map(url => `<img src="${url}" onclick="window.open('${url}')">`).join('')}
-                        </div>
-
-                        <div class="btn-group">
-                            <button class="btn-approve" onclick="aprovar('${id}')">APROVAR ANÚNCIO</button>
-                            <button class="btn-reject" onclick="rejeitar('${id}')">DELETAR</button>
-                        </div>
+                        <h3>${ad.marca} ${ad.modelo}</h3>
+                        <p>Vendedor: ${ad.nomeVendedor} (${ad.whatsapp})</p>
+                        <a href="${ad.fotoDoc}" target="_blank" class="doc-link">Ver Documento Vendedor</a>
+                        <button class="btn-appr" onclick="aprovar('${d.id}', true)">Aprovar + Selo Verificado</button>
+                        <button class="btn-del" onclick="rejeitar('${d.id}')">Excluir</button>
                     `;
                     container.appendChild(card);
                 });
             });
         }
-
-        window.aprovar = async (id) => {
-            if(confirm("Deseja publicar este anúncio no Radar?")) {
-                await updateDoc(doc(db, "anuncios", id), { status: "aprovado" });
-            }
-        };
-
-        window.rejeitar = async (id) => {
-            if(confirm("Tem certeza que deseja EXCLUIR permanentemente?")) {
-                await deleteDoc(doc(db, "anuncios", id));
-            }
-        };
+        window.aprovar = async (id, selo) => { await updateDoc(doc(db, "anuncios", id), { status: "aprovado", verificado: selo }); };
+        window.rejeitar = async (id) => { if(confirm("Excluir?")) await deleteDoc(doc(db, "anuncios", id)); };
     </script>
 </body>
 </html>
