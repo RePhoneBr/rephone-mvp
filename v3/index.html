@@ -3,132 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vender | Segurança RePhone</title>
+    <title>RePhone | Radar Aracruz</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; --border: #e2e8f0; }
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: white; color: var(--dark); padding-bottom: 50px; }
-        .header-venda { background: var(--dark); padding: 30px 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 25px; }
-        .logo-mini { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto 10px; }
-        .container { padding: 0 20px; }
-        label { display: block; font-weight: 700; font-size: 11px; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); font-size: 15px; outline: none; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .sec-seguranca { background: #f1f5f9; padding: 20px; border-radius: 20px; margin: 30px 0; border: 1px solid var(--gold); }
-        .photo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .photo-slot { background: var(--bg); border: 2px dashed #cbd5e1; border-radius: 15px; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; }
-        .photo-slot.active { border: 2px solid var(--green); background: #f0fdf4; }
-        .btn-submit { background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2); }
+        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
+
+        /* Header */
+        .app-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        
+        /* Busca e Radar */
+        .search-area { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); font-size: 14px; outline: none; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-flat { background: #e2e8f0; color: var(--dark); border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .btn-match { background: var(--green); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+
+        /* Radar Anim */
+        .radar-box { display: none; text-align: center; padding: 40px 0; }
+        .radar-circle { width: 120px; height: 120px; border: 2px solid var(--green); border-radius: 50%; margin: 0 auto; position: relative; animation: pulse 1.5s infinite; }
+        .radar-line { width: 50%; height: 2px; background: var(--green); position: absolute; top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
+
+        /* Grid */
+        .feed { padding: 20px; display: grid; gap: 20px; }
+        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; transition: 0.2s; }
+        .card:active { transform: scale(0.98); }
+        .badge-status { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1px solid #e2e8f0; }
+        .card img { width: 100%; height: 180px; object-fit: contain; background: var(--bg); border-radius: 18px; margin-bottom: 10px; }
+        .price { color: var(--green); font-weight: 900; font-size: 18px; }
+
+        /* Vitrine Detalhada (Overlay) */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2000; align-items: flex-end; }
+        .match-window { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: 0.4s cubic-bezier(0, 1, 0.5, 1); }
+        .match-window.active { transform: translateY(0); }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: #f1f5f9; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+        
+        .spec-tag { display: inline-block; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; margin: 4px 2px; color: #475569; }
+        .desc-text { background: var(--bg); padding: 15px; border-radius: 15px; font-size: 14px; line-height: 1.5; color: #334155; margin: 15px 0; border-left: 3px solid var(--gold); }
+        .stock-info { font-size: 12px; display: flex; align-items: center; gap: 5px; font-weight: 700; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="header-venda">
-        <div class="logo-mini">RP</div>
-        <h1 style="color:white; font-size: 22px;">Anunciar Aparelho</h1>
+    <header class="app-header">
+        <div class="brand">
+            <div class="logo-rp">RP</div>
+            <h1 style="color:white; font-size: 20px;">Re<span style="color:var(--green)">Phone</span></h1>
+        </div>
+        <a href="vendedor.html" style="background:rgba(255,255,255,0.1); color:white; padding:6px 12px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:700;">Vender +</a>
+    </header>
+
+    <div class="search-area">
+        <div class="input-group">
+            <select id="searchMarca">
+                <option value="">Marca</option>
+                <option value="Apple">Apple</option>
+                <option value="Samsung">Samsung</option>
+            </select>
+            <input type="number" id="searchMaxPrice" placeholder="Valor até R$">
+        </div>
+        <input type="text" id="searchModel" placeholder="Qual modelo você busca?" style="margin-bottom:12px">
+        <div class="btn-row">
+            <button class="btn-flat" onclick="buscar(false)">Ver Todos</button>
+            <button class="btn-match" onclick="buscar(true)">✨ Ativar Match</button>
+        </div>
     </div>
 
-    <div class="container">
-        <form id="formVenda">
-            <div class="grid-2">
-                <div><label>Marca</label><select id="vMarca"><option>Apple</option><option>Samsung</option><option>Motorola</option><option>Xiaomi</option></select></div>
-                <div><label>Modelo</label><input type="text" id="vModel" placeholder="Ex: iPhone 14 Pro" required></div>
-            </div>
-            <div class="grid-2">
-                <div><label>Capacidade</label><input type="text" id="vCap" placeholder="128GB" required></div>
-                <div><label>Conexão</label><select id="vNet"><option>5G</option><option>4G</option></select></div>
-            </div>
-            <label>Estado</label>
-            <select id="vCondition"><option>Novo</option><option>Semi novo</option><option>Usado</option></select>
-            <div class="grid-2">
-                <div><label>Preço (R$)</label><input type="number" id="vPrice" required></div>
-                <div><label>Estoque</label><select id="vStock"><option>Estoque</option><option>Encomenda</option></select></div>
-            </div>
-            <label>Prazo de Entrega</label>
-            <select id="vDelivery"><option>Imediato</option><option>Até 3 dias</option><option>Até 7 dias</option></select>
-            <label>Descrição</label>
-            <textarea id="vDesc" rows="3" required placeholder="insira informações importantes e detalhes de uso e marcas no aparelho"></textarea>
+    <div id="radarDisplay" class="radar-box">
+        <div class="radar-circle"><div class="radar-line"></div></div>
+        <p style="margin-top:15px; font-weight:800; color:var(--green); font-size:12px;">BUSCANDO EM ARACRUZ...</p>
+    </div>
 
-            <div class="sec-seguranca">
-                <h3 style="font-size:12px; font-weight:900; margin-bottom:10px;">🔐 SEGURANÇA REPHONE</h3>
-                <label>Nome Completo do Responsável</label>
-                <input type="text" id="vNomeReal" required>
-                <label>WhatsApp (Com DDD)</label>
-                <input type="tel" id="vZap" placeholder="27999999999" required>
-                <label>Foto do Documento (RG/CNH ou CNPJ)</label>
-                <div class="photo-slot" id="slotDoc" onclick="document.getElementById('fDoc').click()" style="width:100%; aspect-ratio:16/9;">
-                    <input type="file" id="fDoc" hidden onchange="preview(0)">
-                    <span id="iconDoc">🪪</span><small id="txtDoc">Toque para anexar</small>
-                </div>
-            </div>
+    <main id="offersGrid" class="feed"></main>
 
-            <label>Fotos do Aparelho</label>
-            <div class="photo-row">
-                <div class="photo-slot" id="slot1" onclick="document.getElementById('f1').click()"><input type="file" id="f1" hidden onchange="preview(1)" required><span>📸</span><small>Frente</small></div>
-                <div class="photo-slot" id="slot2" onclick="document.getElementById('f2').click()"><input type="file" id="f2" hidden onchange="preview(2)" required><span>📱</span><small>Traseira</small></div>
-                <div class="photo-slot" id="slot3" onclick="document.getElementById('f3').click()"><input type="file" id="f3" hidden onchange="preview(3)"><span>🔍</span><small>Detalhe</small></div>
-            </div>
-
-            <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR PARA ANÁLISE</button>
-        </form>
+    <div id="overlayMatch" class="overlay" onclick="fecharMatch()">
+        <div class="match-window" id="windowMatch" onclick="event.stopPropagation()">
+            <div class="close-btn" onclick="fecharMatch()">✕</div>
+            <div id="matchContent"></div>
+            <button id="btnZap" class="btn-match" style="width:100%; padding:18px; font-size:16px;">CONVERSAR NO WHATSAPP</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
+            authDomain: "rephone-a0a80.firebaseapp.com",
+            projectId: "rephone-a0a80",
+            storageBucket: "rephone-a0a80.firebasestorage.app",
+            messagingSenderId: "431497247030",
+            appId: "1:431497247030:web:a943715e4acc04b8995b97"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const IMGBB_KEY = 'a4405be3b982f9aad88589728a3d949c';
 
-        window.preview = (n) => {
-            const id = n === 0 ? 'slotDoc' : `slot${n}`;
-            document.getElementById(id).classList.add('active');
-            if(n === 0) document.getElementById('txtDoc').innerText = "✓ Documento Anexado";
+        window.buscar = async (comRadar) => {
+            const grid = document.getElementById('offersGrid');
+            const radar = document.getElementById('radarDisplay');
+            
+            grid.innerHTML = "";
+            if(comRadar) {
+                radar.style.display = "block";
+                await new Promise(r => setTimeout(r, 2000));
+                radar.style.display = "none";
+            }
+
+            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+            const snap = await getDocs(q);
+            
+            snap.forEach(doc => {
+                const ad = doc.data();
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="badge-status">${ad.condicao}</div>
+                    <img src="${ad.fotos[0]}">
+                    <h4 style="font-weight:800;">${ad.marca} ${ad.modelo}</h4>
+                    <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                        <span class="price">R$ ${ad.preco}</span>
+                        <span style="font-size:11px; color:#64748b;">📍 Aracruz</span>
+                    </div>
+                `;
+                card.onclick = () => abrirVitrine(ad);
+                grid.appendChild(card);
+            });
         };
 
-        document.getElementById('formVenda').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviar');
-            btn.innerText = "ENVIANDO SEGURANÇA..."; btn.disabled = true;
+        window.abrirVitrine = (ad) => {
+            const content = document.getElementById('matchContent');
+            const estoqueCor = ad.estoque === "Estoque" ? "#16a34a" : "#f59e0b";
+            
+            content.innerHTML = `
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    ${ad.fotos.map(f => `<img src="${f}" style="width:80px; height:80px; object-fit:cover; border-radius:10px; border:1px solid #e2e8f0;">`).join('')}
+                </div>
+                <h2 style="font-weight:900; font-size:24px;">${ad.marca} ${ad.modelo}</h2>
+                <div class="stock-info" style="color:${estoqueCor}">
+                    ● ${ad.estoque === "Estoque" ? "Em estoque para entrega imediata" : "Disponível sob encomenda"}
+                </div>
+                
+                <div style="margin:10px 0;">
+                    <span class="spec-tag">💾 ${ad.capacidade}</span>
+                    <span class="spec-tag">📡 ${ad.conexao}</span>
+                    <span class="spec-tag">✨ ${ad.condicao}</span>
+                    <span class="spec-tag">🚚 Prazo: ${ad.prazo}</span>
+                </div>
 
-            try {
-                const upload = async (id) => {
-                    const file = document.getElementById(id).files[0];
-                    if(!file) return null;
-                    const fd = new FormData(); fd.append("image", file);
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-                    const d = await res.json(); return d.data.url;
-                };
-
-                const docUrl = await upload('fDoc');
-                const p1 = await upload('f1'); const p2 = await upload('f2'); const p3 = await upload('f3');
-
-                await addDoc(collection(db, "anuncios"), {
-                    marca: document.getElementById('vMarca').value,
-                    modelo: document.getElementById('vModel').value,
-                    capacidade: document.getElementById('vCap').value,
-                    conexao: document.getElementById('vNet').value,
-                    condicao: document.getElementById('vCondition').value,
-                    preco: document.getElementById('vPrice').value,
-                    estoque: document.getElementById('vStock').value,
-                    prazo: document.getElementById('vDelivery').value,
-                    descricao: document.getElementById('vDesc').value,
-                    nomeVendedor: document.getElementById('vNomeReal').value,
-                    whatsapp: document.getElementById('vZap').value,
-                    fotoDoc: docUrl,
-                    fotos: [p1, p2, p3].filter(p => p !== null),
-                    status: "pendente",
-                    verificado: false,
-                    data: new Date()
-                });
-
-                alert("Sucesso! Aguarde a verificação.");
-                window.location.href = "index.html";
-            } catch (err) { alert("Erro ao enviar."); btn.disabled = false; }
+                <div class="desc-text">
+                    <strong>Descrição do vendedor:</strong><br>
+                    ${ad.descricao}
+                </div>
+                <p style="color:var(--green); font-weight:900; font-size:24px; text-align:center;">R$ ${ad.preco}</p>
+            `;
+            
+            document.getElementById('overlayMatch').style.display = "flex";
+            setTimeout(() => document.getElementById('windowMatch').classList.add('active'), 10);
+            document.getElementById('btnZap').onclick = () => window.open(`https://wa.me/5527999999999?text=Olá, vi o ${ad.marca} ${ad.modelo} no Radar RePhone!`);
         };
+
+        window.fecharMatch = () => {
+            document.getElementById('windowMatch').classList.remove('active');
+            setTimeout(() => document.getElementById('overlayMatch').style.display = "none", 400);
+        };
+
+        buscar(false);
     </script>
 </body>
 </html>
