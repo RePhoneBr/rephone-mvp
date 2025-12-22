@@ -3,60 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RePhone | Radar de Match</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>RePhone | A melhor oferta do jeito certo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --text-muted: #64748b; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--dark); padding-bottom: 50px; }
+        body { background: var(--bg); color: var(--dark); }
 
         /* HEADER */
-        .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo-text { color: white !important; font-weight: 900; font-size: 22px; text-decoration: none; }
-        .logo-text span { color: var(--green); }
-        .btn-nav { font-size: 11px; font-weight: 700; padding: 8px 14px; border-radius: 10px; text-decoration: none; }
-        .btn-reg { color: var(--gold); border: 1px solid var(--gold); }
-        .btn-vender { background: var(--green); color: white; margin-left: 5px; }
+        .main-header { 
+            background: var(--dark); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
+        .logo span { color: var(--green); }
+        .nav-btns { display: flex; gap: 8px; }
+        .btn-header { font-size: 11px; font-weight: 800; padding: 10px 15px; border-radius: 10px; text-decoration: none; text-transform: uppercase; }
+        .btn-reg { color: #d4af37; border: 1px solid #d4af37; }
+        .btn-vend { background: var(--green); color: white; }
 
-        /* ÁREA DE BUSCA E MATCH */
-        .search-container { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        .search-box { width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; font-size: 14px; margin-bottom: 10px; }
-        
-        .filters { display: flex; justify-content: center; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-chip { padding: 8px 15px; border-radius: 20px; background: #f1f5f9; font-size: 12px; font-weight: 700; border: none; cursor: pointer; white-space: nowrap; color: #64748b; }
-        .filter-chip.active { background: var(--dark); color: white; }
+        /* HERO / MATCH SECTION */
+        .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
+        .hero h1 { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        .hero p { color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.4; }
+
+        /* CARD DE BUSCA (MATCH) */
+        .match-card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+        .match-card label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+        .match-card input { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 15px; 
+            border: 1px solid #e2e8f0; 
+            background: #f8fafc; 
+            margin-bottom: 20px; 
+            font-size: 15px;
+            outline: none;
+        }
+        .match-card input:focus { border-color: var(--green); }
+        .btn-match { 
+            width: 100%; 
+            background: var(--green); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 15px; 
+            font-weight: 800; 
+            font-size: 15px; 
+            cursor: pointer;
+        }
+
+        /* FILTROS */
+        .section-title { padding: 20px; font-size: 24px; font-weight: 900; }
+        .filter-scroll { 
+            display: flex; 
+            gap: 10px; 
+            padding: 0 20px 20px; 
+            overflow-x: auto; 
+            scrollbar-width: none;
+        }
+        .filter-chip { 
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            font-size: 13px; 
+            font-weight: 700; 
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .filter-chip.active { background: #dcfce7; border-color: var(--green); color: var(--green); }
 
         /* GRID DE PRODUTOS */
-        .feed { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        
-        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; }
-        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 18px; background: #f8fafc; }
-        
-        .badge-tipo { font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 8px; position: absolute; top: 20px; left: 20px; z-index: 2; text-transform: uppercase; }
-        .Particular { background: #f1f5f9; color: #64748b; }
-        .Lojista { background: #fef3c7; color: #92400e; border: 1px solid var(--gold); }
-
-        .card h3 { font-size: 14px; font-weight: 800; margin-top: 12px; }
-        .price { color: var(--green); font-weight: 900; font-size: 18px; display: block; }
+        .feed { padding: 0 20px 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 18px; margin-bottom: 10px; }
+        .card h3 { font-size: 14px; font-weight: 800; }
+        .card .price { font-size: 18px; font-weight: 900; color: var(--green); margin-top: 5px; display: block; }
+        .badge-tipo { 
+            position: absolute; top: 20px; left: 20px; font-size: 9px; font-weight: 900; 
+            padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.9);
+        }
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <a href="index.html" class="logo-text">Re<span>Phone</span></a>
-        <div>
-            <a href="vendedor-login.html" class="btn-nav btn-vender">VENDER</a>
+        <a href="index.html" class="logo">Re<span>Phone</span></a>
+        <div class="nav-btns">
+            <a href="registro-vendedor.html" class="btn-header btn-reg">Registrar</a>
+            <a href="vendedor-login.html" class="btn-header btn-vend">Vender</a>
         </div>
     </header>
 
-    <div class="search-container">
-        <input type="text" id="inputBusca" class="search-box" placeholder="Qual modelo você procura?">
-        <div class="filters">
-            <button class="filter-chip active" onclick="filtrar('Tudo')">Tudo</button>
-            <button class="filter-chip" onclick="filtrar('iPhone')">iPhone</button>
-            <button class="filter-chip" onclick="filtrar('Samsung')">Samsung</button>
-            <button class="filter-chip" onclick="filtrar('Lojista')">Lojistas</button>
+    <section class="hero">
+        <h1>A melhor oferta, do jeito certo.</h1>
+        <p>Você define quanto quer pagar. A RePhone encontra os anúncios mais compatíveis com segurança.</p>
+
+        <div class="match-card">
+            <label>Modelo desejado</label>
+            <input type="text" id="matchModelo" placeholder="Ex: iPhone 11">
+
+            <label>Quanto você quer pagar?</label>
+            <div style="position:relative;">
+                <span style="position:absolute; left:15px; top:17px; font-weight:800; color:var(--text-muted);">R$</span>
+                <input type="text" id="matchPreco" placeholder="Ex: 2500" style="padding-left:45px;">
+            </div>
+            
+            <button class="btn-match" onclick="fazerMatch()">Buscar oportunidade</button>
         </div>
+    </section>
+
+    <h2 class="section-title">Ofertas em destaque</h2>
+    
+    <div class="filter-scroll">
+        <button class="filter-chip active" onclick="filtrar('Todos')">Todos</button>
+        <button class="filter-chip" onclick="filtrar('Perto')">Perto de mim</button>
+        <button class="filter-chip" onclick="filtrar('Lojista')">Vendedor verificado</button>
+        <button class="filter-chip" onclick="filtrar('Entrega')">Entrega</button>
     </div>
 
     <main id="radarGrid" class="feed">
@@ -72,7 +148,6 @@
 
         let todosAnuncios = [];
 
-        // BUSCA EM TEMPO REAL
         onSnapshot(query(collection(db, "anuncios"), where("status", "==", "aprovado")), (snap) => {
             todosAnuncios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderizar(todosAnuncios);
@@ -80,46 +155,33 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('radarGrid');
-            grid.innerHTML = lista.length === 0 ? '<p style="grid-column:1/-1; text-align:center; padding:50px;">Nenhum match encontrado.</p>' : "";
+            grid.innerHTML = lista.length === 0 ? '<p style="padding:20px; color:#94a3b8;">Nenhum anúncio encontrado.</p>' : "";
             
             lista.forEach(ad => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                // Correção do 'Undefined' no badge: verificamos se existe 'tipo'
-                const tipoClasse = ad.tipo || "Particular"; 
-                
                 card.innerHTML = `
-                    <div class="badge-tipo ${tipoClasse}">${tipoClasse}</div>
+                    <div class="badge-tipo">${ad.tipo || 'Particular'}</div>
                     <img src="${ad.fotos ? ad.fotos[0] : ''}">
                     <h3>${ad.modelo}</h3>
                     <span class="price">R$ ${ad.preco}</span>
-                    <p style="font-size:10px; color:#94a3b8;">${ad.cidade || 'Disponível'}</p>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // LÓGICA DE FILTRO E BUSCA
-        document.getElementById('inputBusca').addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase();
-            const filtrados = todosAnuncios.filter(a => 
-                a.modelo.toLowerCase().includes(termo) || 
-                a.marca.toLowerCase().includes(termo)
-            );
-            renderizar(filtrados);
-        });
+        window.fazerMatch = () => {
+            const mod = document.getElementById('matchModelo').value.toLowerCase();
+            const valorMax = parseFloat(document.getElementById('matchPreco').value);
 
-        window.filtrar = (tipo) => {
-            // Estética dos botões
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if(tipo === 'Tudo') return renderizar(todosAnuncios);
-            
-            const filtrados = todosAnuncios.filter(a => 
-                a.tipo === tipo || a.marca === tipo
-            );
-            renderizar(filtrados);
+            const resultados = todosAnuncios.filter(a => {
+                const precoAd = parseFloat(a.preco.replace('.', '').replace(',', '.'));
+                const matchModelo = a.modelo.toLowerCase().includes(mod);
+                const matchPreco = isNaN(valorMax) ? true : precoAd <= valorMax;
+                return matchModelo && matchPreco;
+            });
+            renderizar(resultados);
+            window.scrollTo({ top: document.getElementById('radarGrid').offsetTop - 100, behavior: 'smooth' });
         };
     </script>
 </body>
