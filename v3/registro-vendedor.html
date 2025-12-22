@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro Vendedor | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); padding: 20px; }
+        .reg-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
+        h2 { font-weight: 900; margin-bottom: 5px; color: var(--dark); }
+        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f1f5f9; outline: none; }
+        .grid-gps { background: #ecfdf5; padding: 15px; border-radius: 15px; border: 1px solid var(--green); margin-top: 20px; text-align: center; }
+        .btn-reg { width: 100%; background: var(--dark); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; margin-top: 25px; cursor: pointer; }
+        .btn-reg:disabled { background: #cbd5e1; }
+    </style>
+</head>
+<body>
 
+    <div class="reg-card">
+        <a href="index.html" style="text-decoration:none; color:var(--dark); font-size:12px;">← Voltar</a>
+        <h2 style="margin-top:15px;">Ficha de Vendedor</h2>
+        <p style="font-size:12px; color:#64748b;">Cadastre sua base para começar a vender em Aracruz.</p>
+
+        <form id="formRegistro">
+            <label>Tipo de Perfil</label>
+            <select id="rTipo"><option value="Particular">👤 Particular (Venda avulsa)</option><option value="Lojista">🏪 Lojista / Revendedor</option></select>
+
+            <label>Nome Completo ou Razão Social</label>
+            <input type="text" id="rNome" required>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>WhatsApp</label><input type="tel" id="rZap" placeholder="27999999999" required></div>
+                <div><label>E-mail</label><input type="email" id="rEmail" required></div>
+            </div>
+
+            <label>Endereço (Rua e Número)</label>
+            <input type="text" id="rRua" placeholder="Av. Venâncio Flores, 100" required>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Bairro</label><input type="text" id="rBairro" required></div>
+                <div><label>CEP</label><input type="text" id="rCep" placeholder="29190-000" required></div>
+            </div>
+
+            <label>Ponto de Referência</label>
+            <input type="text" id="rRef" placeholder="Perto do banco...">
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Cidade</label><input type="text" id="rCidade" value="Aracruz" required></div>
+                <div><label>Estado</label><input type="text" id="rEstado" value="ES" required></div>
+            </div>
+
+            <div class="grid-gps">
+                <p style="font-size:11px; font-weight:700; color:var(--green);">LOCALIZAÇÃO DE SEGURANÇA</p>
+                <button type="button" onclick="pegarGPS()" id="btnGps" style="background:var(--green); color:white; border:none; padding:8px 15px; border-radius:8px; margin-top:5px; font-weight:700;">Ativar GPS do Ponto de Venda</button>
+                <input type="hidden" id="rCoords" required>
+                <p id="gpsStatus" style="font-size:10px; margin-top:5px;"></p>
+            </div>
+
+            <button type="submit" id="btnFinalizar" class="btn-reg" disabled>FINALIZAR REGISTRO</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.pegarGPS = () => {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                document.getElementById('rCoords').value = `${pos.coords.latitude},${pos.coords.longitude}`;
+                document.getElementById('gpsStatus').innerText = "✅ GPS Capturado com sucesso!";
+                document.getElementById('btnFinalizar').disabled = false;
+            }, () => { alert("Por favor, ative o GPS."); });
+        };
+
+        document.getElementById('formRegistro').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "vendedores"), {
+                nome: document.getElementById('rNome').value,
+                tipo: document.getElementById('rTipo').value,
+                zap: document.getElementById('rZap').value,
+                endereco: {
+                    rua: document.getElementById('rRua').value,
+                    bairro: document.getElementById('rBairro').value,
+                    cidade: document.getElementById('rCidade').value,
+                    coords: document.getElementById('rCoords').value
+                },
+                status: "ativo",
+                data: new Date()
+            });
+            alert("Registro Concluído! Agora você pode anunciar.");
+            window.location.href = "vendedor.html";
+        };
+    </script>
+</body>
+</html>
