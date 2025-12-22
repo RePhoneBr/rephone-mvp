@@ -3,150 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RePhone | Radar de Match</title>
+    <title>RePhone | Radar</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
-        
         body { background: var(--bg); color: var(--dark); }
-
-        /* HEADER CORRIGIDO */
-        .main-header { 
-            background: var(--dark); 
-            padding: 15px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        /* LOGO ESTILIZADA */
-        .logo-text { 
-            color: #ffffff !important; 
-            font-weight: 900; 
-            font-size: 22px; 
-            text-decoration: none !important;
-            display: flex;
-            align-items: center;
-        }
+        .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo-text { color: white !important; font-weight: 900; font-size: 22px; text-decoration: none; }
         .logo-text span { color: var(--green); }
-
-        .nav-btns { display: flex; gap: 10px; }
-
-        .btn-nav { 
-            font-size: 11px; 
-            font-weight: 700; 
-            padding: 8px 14px; 
-            border-radius: 10px; 
-            text-decoration: none; 
-            transition: 0.2s;
-        }
-
+        .btn-nav { font-size: 11px; font-weight: 700; padding: 8px 14px; border-radius: 10px; text-decoration: none; }
         .btn-reg { color: var(--gold); border: 1px solid var(--gold); }
-        .btn-vender { background: var(--green); color: white; }
-
-        /* FEED E CARDS */
-        .search-area { background: white; padding: 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 10px; }
+        .btn-vender { background: var(--green); color: white; margin-left: 8px; }
         .feed { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        
-        .card { background: white; border-radius: 20px; padding: 12px; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
-        .badge-tipo { 
-            font-size: 9px; 
-            font-weight: 800; 
-            padding: 4px 8px; 
-            border-radius: 6px; 
-            position: absolute; 
-            top: 10px; 
-            left: 10px; 
-            z-index: 2; 
-            text-transform: uppercase;
-        }
+        .card { background: white; border-radius: 20px; padding: 12px; border: 1px solid #e2e8f0; position: relative; }
+        .badge-tipo { font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; position: absolute; top: 10px; left: 10px; z-index: 2; text-transform: uppercase; }
         .Particular { background: #f1f5f9; color: #64748b; }
         .Lojista { background: #fef3c7; color: #92400e; border: 1px solid var(--gold); }
-
-        .card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #f8fafc; border-radius: 12px; margin-top: 5px; }
-        .card h3 { font-size: 14px; margin-top: 12px; font-weight: 800; color: var(--dark); }
-        .price { color: var(--green); font-weight: 900; font-size: 17px; display: block; margin-top: 4px; }
-        
-        .no-results { grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #f8fafc; border-radius: 12px; }
+        .price { color: var(--green); font-weight: 900; font-size: 17px; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
-
     <header class="main-header">
         <a href="index.html" class="logo-text">Re<span>Phone</span></a>
-        
-        <div class="nav-btns">
+        <div>
             <a href="registro-vendedor.html" class="btn-nav btn-reg">REGISTRAR</a>
-           <a href="vendedor-login.html" class="btn-nav btn-vender">VENDER</a>
+            <a href="vendedor-login.html" class="btn-nav btn-vender">VENDER</a>
         </div>
     </header>
-
-    <div class="search-area">
-        <h2 style="font-size: 16px; font-weight: 900;">Radar de Match</h2>
-        <p style="font-size: 11px; color: #64748b;">Encontre aparelhos verificados próximos a você</p>
-    </div>
-
-    <main id="radarGrid" class="feed">
-        <div class="no-results">Buscando ofertas no radar...</div>
-    </main>
+    <main id="radarGrid" class="feed"></main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
-            authDomain: "rephone-a0a80.firebaseapp.com", 
-            projectId: "rephone-a0a80", 
-            storageBucket: "rephone-a0a80.firebasestorage.app", 
-            messagingSenderId: "431497247030", 
-            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function carregarRadar() {
+        async function carregar() {
             const grid = document.getElementById('radarGrid');
-            try {
-                const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-                const snap = await getDocs(q);
-                
-                if (snap.empty) {
-                    grid.innerHTML = '<div class="no-results">Nenhum aparelho disponível no radar no momento.</div>';
-                    return;
-                }
-
-                grid.innerHTML = "";
-                snap.forEach(doc => {
-                    const ad = doc.data();
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    // Fallback para imagem caso não exista
-                    const fotoUrl = (ad.fotos && ad.fotos.length > 0) ? ad.fotos[0] : 'https://via.placeholder.com/150?text=Sem+Foto';
-                    
-                    card.innerHTML = `
-                        <div class="badge-tipo ${ad.tipo}">${ad.tipo}</div>
-                        <img src="${fotoUrl}" alt="${ad.modelo}">
-                        <h3>${ad.modelo}</h3>
-                        <span class="price">R$ ${ad.preco}</span>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (e) {
-                console.error("Erro ao carregar:", e);
-                grid.innerHTML = '<div class="no-results">Erro ao conectar com o radar.</div>';
-            }
+            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+            const snap = await getDocs(q);
+            grid.innerHTML = "";
+            snap.forEach(doc => {
+                const ad = doc.data();
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="badge-tipo ${ad.tipo}">${ad.tipo}</div>
+                    <img src="${ad.fotos ? ad.fotos[0] : ''}">
+                    <h3 style="font-size:14px; margin-top:10px;">${ad.modelo}</h3>
+                    <span class="price">R$ ${ad.preco}</span>
+                `;
+                grid.appendChild(card);
+            });
         }
-
-        carregarRadar();
+        carregar();
     </script>
 </body>
 </html>
