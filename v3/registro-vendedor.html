@@ -3,99 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Registro Vendedor | RePhone</title>
+    <title>Cadastro RePhone | Vendedor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         body { background: var(--bg); padding: 20px; color: var(--dark); }
         .reg-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
-        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 12px 0 4px 5px; }
+        h2 { font-weight: 900; margin-bottom: 5px; }
+        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
         input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; font-size: 14px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .gps-box { background: #f0fdf4; padding: 15px; border-radius: 15px; border: 1px solid var(--green); margin-top: 20px; text-align: center; }
         .btn-reg { width: 100%; background: var(--dark); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; margin-top: 25px; cursor: pointer; }
         .btn-reg:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .pass-info { font-size: 10px; color: #94a3b8; margin-top: 5px; margin-left: 5px; }
     </style>
 </head>
 <body>
     <div class="reg-card">
-        <a href="index.html" style="text-decoration:none; color:var(--dark); font-size:12px; font-weight:bold;">← Voltar ao Radar</a>
-        <h2 style="margin-top:15px; font-weight:900;">Registro de Vendedor RePhone</h2>
-        <p style="font-size:12px; color:#64748b; margin-bottom:10px;">Complete seu perfil para anunciar na rede.</p>
+        <a href="index.html" style="text-decoration:none; color:var(--dark); font-size:12px; font-weight:bold;">← Voltar</a>
+        <h2 style="margin-top:15px;">Criar Conta RePhone</h2>
+        <p style="font-size:12px; color:#64748b; margin-bottom:10px;">Cadastre-se para gerenciar seus próprios anúncios.</p>
 
         <form id="formRegistro">
-            <label>Tipo de Vendedor</label>
+            <label>E-mail de Acesso</label>
+            <input type="email" id="rEmail" placeholder="seu@email.com" required>
+            
+            <label>Criar Senha</label>
+            <input type="password" id="rSenha" placeholder="Mínimo 6 caracteres" required>
+            <p class="pass-info">Esta senha será usada para entrar no seu painel.</p>
+
+            <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
+
+            <label>Tipo de Perfil</label>
             <select id="rTipo"><option value="Particular">👤 Particular</option><option value="Lojista">🏪 Lojista / Revenda</option></select>
 
-            <label>Nome Completo / Razão Social</label>
+            <label>Nome Completo ou Loja</label>
             <input type="text" id="rNome" required>
 
-            <div class="grid-2">
-                <div><label>WhatsApp</label><input type="tel" id="rZap" placeholder="DDD + Número" required></div>
-                <div><label>E-mail</label><input type="email" id="rEmail" required></div>
-            </div>
+            <label>WhatsApp (DDD + Número)</label>
+            <input type="tel" id="rZap" placeholder="Ex: 27999998888" required>
 
-            <label>Endereço (Rua e Número)</label>
-            <input type="text" id="rRua" required>
+            <label>Endereço e Número</label>
+            <input type="text" id="rRua" placeholder="Rua exemplo, 123" required>
 
             <div class="grid-2">
                 <div><label>Bairro</label><input type="text" id="rBairro" required></div>
-                <div><label>CEP</label><input type="text" id="rCep" required></div>
+                <div><label>CEP</label><input type="text" id="rCep" placeholder="00000-000" required></div>
+            </div>
+
+            <div class="grid-2">
+                <div><label>Cidade</label><input type="text" id="rCidade" required></div>
+                <div><label>Estado</label><input type="text" id="rEstado" placeholder="Ex: ES" required></div>
             </div>
 
             <label>Ponto de Referência</label>
             <input type="text" id="rRef">
 
-            <div class="grid-2">
-                <div><label>Cidade</label><input type="text" id="rCidade" required></div>
-                <div><label>Estado</label><input type="text" id="rEstado" required></div>
-            </div>
-
             <div class="gps-box">
-                <p style="font-size:11px; font-weight:700; color:var(--green);">VALIDAÇÃO GPS REPHONE</p>
-                <button type="button" onclick="pegarGPS()" id="btnGps" style="background:var(--green); color:white; border:none; padding:10px; border-radius:8px; margin-top:5px; font-weight:700; width:100%;">Validar Minha Localização</button>
+                <p style="font-size:11px; font-weight:700; color:var(--green);">LOCALIZAÇÃO DE SEGURANÇA</p>
+                <button type="button" onclick="pegarGPS()" id="btnGps" style="background:var(--green); color:white; border:none; padding:10px; border-radius:8px; margin-top:5px; font-weight:700; width:100%;">Validar meu GPS</button>
                 <input type="hidden" id="rCoords" required>
                 <p id="gpsStatus" style="font-size:10px; margin-top:5px; font-weight:bold;"></p>
             </div>
 
-            <button type="submit" id="btnFinalizar" class="btn-reg" disabled>FINALIZAR REGISTRO</button>
+            <button type="submit" id="btnFinalizar" class="btn-reg" disabled>CRIAR CONTA E FINALIZAR</button>
         </form>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            messagingSenderId: "431497247030", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         window.pegarGPS = () => {
             navigator.geolocation.getCurrentPosition((pos) => {
                 document.getElementById('rCoords').value = `${pos.coords.latitude},${pos.coords.longitude}`;
-                document.getElementById('gpsStatus').innerText = "✅ Localização Capturada!";
+                document.getElementById('gpsStatus').innerText = "✅ GPS Capturado!";
+                document.getElementById('gpsStatus').style.color = "var(--green)";
                 document.getElementById('btnFinalizar').disabled = false;
-            }, () => { alert("Ative a localização para segurança do anúncio."); });
+            }, () => { 
+                alert("A geolocalização é obrigatória para segurança da RePhone."); 
+            });
         };
 
         document.getElementById('formRegistro').onsubmit = async (e) => {
             e.preventDefault();
-            await addDoc(collection(db, "vendedores"), {
-                nome: document.getElementById('rNome').value,
-                tipo: document.getElementById('rTipo').value,
-                zap: document.getElementById('rZap').value,
-                email: document.getElementById('rEmail').value,
-                rua: document.getElementById('rRua').value,
-                bairro: document.getElementById('rBairro').value,
-                cep: document.getElementById('rCep').value,
-                cidade: document.getElementById('rCidade').value,
-                estado: document.getElementById('rEstado').value,
-                coords: document.getElementById('rCoords').value,
-                data: new Date()
-            });
-            alert("Cadastro RePhone realizado!");
-            window.location.href = "vendedor.html";
+            const btn = document.getElementById('btnFinalizar');
+            btn.innerText = "CRIANDO CONTA...";
+            btn.disabled = true;
+
+            const email = document.getElementById('rEmail').value;
+            const senha = document.getElementById('rSenha').value;
+
+            try {
+                // 1. Criar usuário no Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+                const user = userCredential.user;
+
+                // 2. Salvar dados extras no Firestore
+                await addDoc(collection(db, "vendedores"), {
+                    uid: user.uid,
+                    email: email,
+                    nome: document.getElementById('rNome').value,
+                    tipo: document.getElementById('rTipo').value,
+                    zap: document.getElementById('rZap').value,
+                    rua: document.getElementById('rRua').value,
+                    bairro: document.getElementById('rBairro').value,
+                    cep: document.getElementById('rCep').value,
+                    cidade: document.getElementById('rCidade').value,
+                    estado: document.getElementById('rEstado').value,
+                    ref: document.getElementById('rRef').value,
+                    coords: document.getElementById('rCoords').value,
+                    status: "pendente", // Admin precisa aprovar o vendedor
+                    dataCadastro: new Date()
+                });
+
+                alert("Conta RePhone criada com sucesso! Entre para anunciar.");
+                window.location.href = "vendedor-login.html";
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao criar conta: " + error.message);
+                btn.innerText = "CRIAR CONTA E FINALIZAR";
+                btn.disabled = false;
+            }
         };
     </script>
 </body>
