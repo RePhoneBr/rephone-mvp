@@ -74,7 +74,17 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+       // Em vez de usar addDoc, use setDoc para o ID ser igual ao UID
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+await setDoc(doc(db, "vendedores", user.uid), {
+    uid: user.uid,
+    email: email,
+    nome: document.getElementById('rNome').value,
+    role: "vendedor", // Padrão é vendedor
+    status: "pendente",
+    // ... restante dos campos
+});
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
         const firebaseConfig = { 
