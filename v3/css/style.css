@@ -65,3 +65,14 @@ input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #e2e8
 .slot-design { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: #94a3b8; }
 .slot-preview-img { width: 100%; height: 100%; object-fit: cover; }
 .filled { border: 2px solid var(--green); }
+
+.badge-vendedor {
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-top: 5px;
+    display: inline-block;
+}
+.badge-particular { background: #e2e8f0; color: #475569; }
+.badge-lojista { background: #fef3c7; color: #92400e; border: 1px solid var(--gold); }
