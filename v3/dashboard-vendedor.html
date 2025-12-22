@@ -3,67 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Vendedor | RePhone</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Meu Painel | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        .admin-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .status-badge { padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 800; }
-        .status-verified { background: #dcfce7; color: #16a34a; }
-        .ad-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
-        .btn-remove { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg); padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .btn-novo { background: var(--dark); color: white; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 13px; }
+        .anuncio-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 15px; align-items: center; }
+        .anuncio-card img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
+        .btn-sold { background: #dcfce7; color: #166534; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
+        .btn-edit { background: #f1f5f9; color: #475569; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
     </style>
 </head>
-<body style="background: #f8fafc;">
+<body>
 
-    <div style="padding: 20px;">
-        <header style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 style="font-weight: 900;">Olá, Vendedor #042</h2>
-                <p style="font-size: 12px; color: #64748b;">Membro desde Dez/2025 • Aracruz, ES</p>
-            </div>
-            <span class="status-badge status-verified">KYC APROVADO</span>
-        </header>
-
-        <div class="admin-card">
-            <h4 style="margin-bottom: 15px; font-size: 14px;">Meus Dados de Registro</h4>
-            <div style="font-size: 13px; color: #475569; line-height: 1.8;">
-                <p><strong>📍 Retirada:</strong> Rua Principal, Centro, Aracruz</p>
-                <p><strong>📞 WhatsApp:</strong> (27) 99999-9999</p>
-                <p><strong>🚚 Logística:</strong> Entrega em Aracruz e Ibiraçu</p>
-            </div>
+    <div class="header">
+        <div>
+            <h2 style="font-weight:900;">Meus Anúncios</h2>
+            <p id="vendedorNome" style="font-size:12px; color:#64748b;">Acessando RePhone...</p>
         </div>
-
-        <div class="admin-card">
-            <h4 style="margin-bottom: 15px; font-size: 14px;">Meus Anúncios no Radar</h4>
-            
-            <div class="ad-item">
-                <div>
-                    <strong style="display: block; font-size: 14px;">iPhone 13 128GB</strong>
-                    <small style="color: #64748b;">Visto por 124 pessoas</small>
-                </div>
-                <button class="btn-remove" onclick="solicitarRetirada('iPhone 13')">RETIRAR</button>
-            </div>
-
-            <div class="ad-item">
-                <div>
-                    <strong style="display: block; font-size: 14px;">iPhone 11 64GB</strong>
-                    <small style="color: #64748b;">Visto por 89 pessoas</small>
-                </div>
-                <button class="btn-remove" onclick="solicitarRetirada('iPhone 11')">RETIRAR</button>
-            </div>
-        </div>
-
-        <button onclick="window.location.href='vendedor.html'" class="btn-primary" style="width: 100%;">+ NOVO ANÚNCIO (RP MATCH)</button>
+        <a href="vendedor.html" class="btn-novo">+ Novo</a>
     </div>
 
-    <script>
-        function solicitarRetirada(modelo) {
-            const confirmacao = confirm(`Deseja solicitar a retirada do ${modelo} do Radar RePhone?`);
-            if(confirmacao) {
-                const msg = encodeURIComponent(`Olá RePhone Administrativo! Sou o Vendedor #042 e solicito a retirada do anúncio: ${modelo}. O aparelho já foi vendido.`);
-                window.open(`https://wa.me/5527999999999?text=${msg}`);
+    <div id="meusAnuncios">
+        </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+        // NOTA: Para este dashboard ser privado, o vendedor deve estar logado. 
+        // Abaixo uso uma lógica simplificada por "WhatsApp" para o exemplo.
+        const vZap = prompt("Digite seu WhatsApp cadastrado para acessar seus anúncios:");
+
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const q = query(collection(db, "anuncios"), where("whatsapp", "==", vZap));
+        
+        onSnapshot(q, snap => {
+            const container = document.getElementById('meusAnuncios');
+            container.innerHTML = snap.empty ? "<p>Você não possui anúncios.</p>" : "";
+            snap.forEach(d => {
+                const ad = d.data();
+                const card = document.createElement('div');
+                card.className = 'anuncio-card';
+                card.innerHTML = `
+                    <img src="${ad.fotos ? ad.fotos[0] : ''}">
+                    <div style="flex:1">
+                        <h4 style="font-size:14px;">${ad.modelo}</h4>
+                        <p style="font-size:12px; color:var(--green); font-weight:800;">R$ ${ad.preco}</p>
+                        <span style="font-size:10px; color:#94a3b8;">Status: ${ad.status}</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-sold" onclick="marcarVendido('${d.id}')">VENDIDO</button>
+                        <button class="btn-edit" onclick="editarPreco('${d.id}', '${ad.preco}')">EDITAR R$</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+
+        window.marcarVendido = async id => {
+            if(confirm("Parabéns pela venda! O anúncio será removido do radar.")) {
+                await updateDoc(doc(db, "anuncios", id), { status: "vendido" });
             }
-        }
+        };
+
+        window.editarPreco = async (id, precoAtual) => {
+            const novoPreco = prompt("Novo valor (R$):", precoAtual);
+            if(novoPreco) {
+                await updateDoc(doc(db, "anuncios", id), { preco: novoPreco });
+            }
+        };
     </script>
 </body>
 </html>
