@@ -3,154 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub Admin | RePhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Master Hub | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dark: #0f172a;
-            --gold: #d4af37;
-            --green: #16a34a;
-        }
-
-        body { 
-            background: var(--dark); 
-            color: white; 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh;
-        }
-
-        .hub-container {
-            width: 100%;
-            max-width: 500px;
-            padding: 40px 20px;
-        }
-
-        .logo-hub {
-            background: linear-gradient(135deg, #fdfcf0 0%, var(--gold) 100%);
-            color: var(--dark);
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 24px;
-            margin: 0 auto 20px;
-        }
-
-        h1 { text-align: center; font-size: 28px; font-weight: 900; margin-bottom: 10px; }
-        p { text-align: center; color: #94a3b8; margin-bottom: 40px; }
-
-        .admin-nav { display: grid; gap: 15px; }
-
-        .nav-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
-        }
-
-        .nav-card:hover { border-color: var(--gold); background: #263349; }
-
-        .icon-box { font-size: 24px; }
-
-        .info-box h3 { margin: 0; font-size: 18px; }
-        .info-box span { font-size: 13px; color: #94a3b8; }
-
-        .btn-logout {
-            margin-top: 40px;
-            background: transparent;
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            padding: 12px;
-            border-radius: 12px;
-            width: 100%;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        :root { --dark: #020617; --card: #1e293b; --gold: #d4af37; --green: #16a34a; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--dark); color: white; padding: 20px; }
         
-        .loading-overlay {
-            position: fixed; inset: 0; background: var(--dark); 
-            display: flex; align-items: center; justify-content: center; z-index: 9999;
-        }
+        /* Stats Dashboard */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; text-align: center; }
+        .stat-card h4 { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+        .stat-card p { font-size: 24px; font-weight: 900; color: var(--gold); }
+
+        .section-title { margin: 20px 0 10px; font-weight: 900; display: flex; justify-content: space-between; }
+        .btn-action { background: var(--card); border: 1px solid #334155; color: white; padding: 10px 15px; border-radius: 12px; text-decoration: none; font-size: 12px; font-weight: 700; }
+        
+        .list-container { background: var(--card); border-radius: 25px; overflow: hidden; margin-bottom: 20px; }
+        .list-item { padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .badge { font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 800; }
+        .badge-pendente { background: #fef3c7; color: #92400e; }
+        .badge-ativo { background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="loading-overlay">Verificando Admin...</div>
+    <header style="margin-bottom: 30px;">
+        <h1 style="font-weight:900;">Re<span style="color:var(--green)">Phone</span> Master</h1>
+        <p style="color:#64748b; font-size:12px;">Gestão Geral do Ecossistema</p>
+    </header>
 
-    <div class="hub-container">
-        <div class="logo-hub">RP</div>
-        <h1>Master Hub</h1>
-        <p>Gestão Aracruz & Curadoria</p>
-
-        <nav class="admin-nav">
-            <a href="admin-master.html" class="nav-card">
-                <div class="icon-box">⏳</div>
-                <div class="info-box">
-                    <h3>Fila de Curadoria</h3>
-                    <span>Aprovar ou rejeitar novos anúncios</span>
-                </div>
-            </a>
-
-            <a href="dashboard-vendedor.html" class="nav-card">
-                <div class="icon-box">👥</div>
-                <div class="info-box">
-                    <h3>Vendedores</h3>
-                    <span>Ver lista de parceiros ativos</span>
-                </div>
-            </a>
-
-            <a href="index.html" class="nav-card">
-                <div class="icon-box">🗺️</div>
-                <div class="info-box">
-                    <h3>Ver Radar</h3>
-                    <span>Visualizar o site como cliente</span>
-                </div>
-            </a>
-        </nav>
-
-        <button onclick="logout()" class="btn-logout">Sair do Sistema</button>
+    <div class="stats-grid">
+        <div class="stat-card"><h4>Vendedores</h4><p id="statVend">0</p></div>
+        <div class="stat-card"><h4>Anúncios Ativos</h4><p id="statAnun">0</p></div>
+        <div class="stat-card"><h4>Aguardando</h4><p id="statPend" style="color:#ef4444">0</p></div>
     </div>
+
+    <div class="section-title">
+        <span>Aprovação de Vendedores</span>
+        <a href="admin-master.html" class="btn-action">Gerenciar Anúncios →</a>
+    </div>
+
+    <div id="listaVendedores" class="list-container">
+        </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, updateDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4",
-            authDomain: "rephone-a0a80.firebaseapp.com",
-            projectId: "rephone-a0a80",
-            storageBucket: "rephone-a0a80.firebasestorage.app",
-            messagingSenderId: "431497247030",
-            appId: "1:431497247030:web:a943715e4acc04b8995b97"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Bloqueio de Segurança
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                window.location.href = 'admin-login.html';
-            } else {
-                document.getElementById('loader').style.display = 'none';
-            }
+        // Carregar Estatísticas
+        onSnapshot(collection(db, "anuncios"), snap => {
+            document.getElementById('statAnun').innerText = snap.docs.filter(d => d.data().status === 'aprovado').length;
+            document.getElementById('statPend').innerText = snap.docs.filter(d => d.data().status === 'pendente').length;
         });
 
-        window.logout = () => {
-            signOut(auth).then(() => window.location.href = 'admin-login.html');
+        // Listar e Gerenciar Vendedores
+        onSnapshot(collection(db, "vendedores"), snap => {
+            document.getElementById('statVend').innerText = snap.size;
+            const list = document.getElementById('listaVendedores');
+            list.innerHTML = "";
+            snap.forEach(vDoc => {
+                const v = vDoc.data();
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <p style="font-weight:700;">${v.nome}</p>
+                        <span class="badge ${v.status === 'ativo' ? 'badge-ativo' : 'badge-pendente'}">${v.status.toUpperCase()}</span>
+                    </div>
+                    <div>
+                        ${v.status === 'pendente' ? `<button onclick="alterarStatusVendedor('${vDoc.id}', 'ativo')" style="background:var(--green); color:white; border:none; padding:5px 10px; border-radius:5px; font-weight:700; cursor:pointer;">Aprovar</button>` : ''}
+                        <button onclick="removerVendedor('${vDoc.id}')" style="background:none; border:none; color:#ef4444; margin-left:10px; cursor:pointer;">✖</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        });
+
+        window.alterarStatusVendedor = async (id, status) => {
+            await updateDoc(doc(db, "vendedores", id), { status: status });
         };
     </script>
 </body>
