@@ -44,6 +44,20 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+// ... outros imports (Firestore)
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// TRAVA DE SEGURANÇA: Só deixa ver a página se estiver logado
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        // Se não houver usuário logado, manda para o login
+        window.location.href = "vendedor-login.html";
+    }
+});
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
