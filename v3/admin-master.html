@@ -2,141 +2,64 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curadoria | RePhone Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Curadoria | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --gold: #d4af37; --green: #16a34a; --red: #ef4444; --bg: #020617; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: white; padding: 20px; }
-
-        /* Navegação */
-        .admin-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .btn-voltar { background: #1e293b; color: white; border: 1px solid #334155; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 700; transition: 0.3s; }
-        .btn-voltar:hover { background: #334155; }
-
-        h2 { font-weight: 900; font-size: 22px; color: var(--gold); }
-        .status-badge { background: #1e293b; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 1px solid #334155; }
-
-        /* Cards de Anúncio */
-        .grid-pendentes { display: grid; gap: 20px; margin-top: 20px; }
-        .card-adm { background: #1e293b; border-radius: 25px; padding: 20px; border: 1px solid #334155; position: relative; }
-        
-        .info-aparelho { margin-bottom: 15px; }
-        .info-aparelho h3 { font-size: 18px; font-weight: 800; color: white; }
-        .info-aparelho p { font-size: 13px; color: #94a3b8; margin-top: 5px; }
-
-        /* Box do Vendedor */
-        .vendedor-box { 
-            background: rgba(15, 23, 42, 0.5); 
-            border: 1px dashed var(--gold); 
-            padding: 15px; 
-            border-radius: 15px; 
-            margin: 15px 0;
-            font-size: 12px;
-        }
-        .vendedor-box b { color: var(--gold); text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px; }
-
-        /* Botões de Ação */
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-action { border: none; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.3s; }
-        .btn-approve { background: var(--green); color: white; }
-        .btn-reject { background: #334155; color: #94a3b8; }
-        .btn-approve:hover { transform: scale(1.02); filter: brightness(1.1); }
-        .btn-reject:hover { background: var(--red); color: white; }
-
-        .vazio { text-align: center; padding: 50px; color: #475569; font-weight: 700; }
+        :root { --dark: #020617; --card: #1e293b; --gold: #d4af37; --green: #16a34a; --red: #ef4444; }
+        body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .card-adm { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #334155; }
+        .foto-preview { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; background: #0f172a; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .btn-app { background: var(--green); color: white; }
+        .btn-rej { background: #334155; color: #94a3b8; }
+        .price-tag { font-size: 20px; font-weight: 900; color: var(--gold); }
     </style>
 </head>
 <body>
-
-    <div class="admin-nav">
-        <a href="admin-hub.html" class="btn-voltar">← Painel Hub</a>
-        <div class="status-badge">FILTRO: PENDENTES</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <h2>Curadoria de Anúncios</h2>
+        <a href="admin-hub.html" style="color:white; text-decoration:none; font-size:12px;">← Voltar ao Hub</a>
     </div>
 
-    <header>
-        <h2>Curadoria RePhone</h2>
-        <p style="color: #64748b; font-size: 13px;">Analise os anúncios e dados de localização antes de publicar.</p>
-    </header>
-
-    <div id="listaPendentes" class="grid-pendentes">
-        <div class="vazio">Buscando novos anúncios...</div>
-    </div>
+    <div id="listaAnuncios" class="grid">Buscando novos anúncios...</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
-            authDomain: "rephone-a0a80.firebaseapp.com", 
-            projectId: "rephone-a0a80", 
-            storageBucket: "rephone-a0a80.firebasestorage.app", 
-            messagingSenderId: "431497247030", 
-            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Escutar anúncios pendentes em tempo real
         const q = query(collection(db, "anuncios"), where("status", "==", "pendente"));
-        
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById('listaPendentes');
-            if (snapshot.empty) {
-                container.innerHTML = '<div class="vazio">Nenhum anúncio aguardando aprovação.</div>';
-                return;
-            }
-
+        onSnapshot(q, snap => {
+            const container = document.getElementById('listaAnuncios');
+            if(snap.empty) { container.innerHTML = "Nada para aprovar no momento."; return; }
             container.innerHTML = "";
-            snapshot.forEach((item) => {
-                const ad = item.data();
-                const id = item.id;
-
+            snap.forEach(docSnap => {
+                const ad = docSnap.data();
+                const id = docSnap.id;
                 const card = document.createElement('div');
                 card.className = 'card-adm';
                 card.innerHTML = `
-                    <div class="info-aparelho">
-                        <h3>${ad.marca} ${ad.modelo}</h3>
-                        <p>Preço: <b>R$ ${ad.preco}</b> | Bateria: ${ad.bateria || 'N/A'}</p>
-                        <p style="font-style: italic;">"${ad.descricao}"</p>
-                    </div>
-
-                    <div class="vendedor-box">
-                        <b>DADOS DO VENDEDOR (SEGURANÇA):</b>
-                        <span>Tipo: ${ad.tipo === 'Lojista' ? '🏪 LOJA' : '👤 PARTICULAR'}</span><br>
-                        <span>WhatsApp: ${ad.whatsapp}</span><br>
-                        <span>Localização GPS: <a href="https://www.google.com/maps?q=${ad.localizacao || ''}" target="_blank" style="color:var(--gold)">Ver no Mapa 📍</a></span>
-                    </div>
-
+                    <img class="foto-preview" src="${ad.fotos ? ad.fotos[0] : ''}">
+                    <p style="font-size:10px; color:var(--gold); font-weight:800; text-transform:uppercase;">${ad.tipo}</p>
+                    <h3 style="margin:5px 0;">${ad.modelo}</h3>
+                    <div class="price-tag">R$ ${ad.preco}</div>
+                    <p style="font-size:12px; color:#94a3b8; margin-top:10px;">${ad.descricao}</p>
                     <div class="btn-group">
-                        <button class="btn-action btn-reject" onclick="rejeitarAnuncio('${id}')">RECUSAR</button>
-                        <button class="btn-action btn-approve" onclick="aprovarAnuncio('${id}')">APROVAR NO RADAR</button>
+                        <button class="btn btn-rej" onclick="rejeitarA('${id}')">RECUSAR</button>
+                        <button class="btn btn-app" onclick="aprovarA('${id}')">APROVAR NO RADAR</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         });
 
-        // Funções de Ação
-        window.aprovarAnuncio = async (id) => {
-            try {
-                const ref = doc(db, "anuncios", id);
-                await updateDoc(ref, { status: "aprovado" });
-                alert("Anúncio aprovado com sucesso!");
-            } catch (e) { alert("Erro ao aprovar."); }
-        };
-
-        window.rejeitarAnuncio = async (id) => {
-            if (confirm("Deseja realmente excluir permanentemente este anúncio?")) {
-                try {
-                    await deleteDoc(doc(db, "anuncios", id));
-                } catch (e) { alert("Erro ao excluir."); }
-            }
-        };
-
+        window.aprovarA = async id => await updateDoc(doc(db, "anuncios", id), { status: "aprovado" });
+        window.rejeitarA = async id => confirm("Excluir anúncio?") && await deleteDoc(doc(db, "anuncios", id));
     </script>
 </body>
 </html>
