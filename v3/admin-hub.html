@@ -2,148 +2,67 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Hub | RePhone Master</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Master Hub | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #020617; --card: #1e293b; --gold: #d4af37; --green: #16a34a; --blue: #3b82f6; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
-        body { background: var(--dark); color: white; padding: 20px; line-height: 1.6; }
-
-        .container { max-width: 800px; margin: 0 auto; }
-        
-        header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
-        .logo { font-size: 28px; font-weight: 900; color: white; }
-        .logo span { color: var(--green); }
-
-        /* Dashboard de Números */
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; text-align: center; }
-        .stat-box h3 { font-size: 10px; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
-        .stat-box p { font-size: 24px; font-weight: 900; color: var(--gold); }
-
-        /* Menu de Botões */
-        .menu-grid { display: grid; gap: 15px; }
-        .menu-item { 
-            background: var(--card); 
-            border: 1px solid #334155; 
-            padding: 20px; 
-            border-radius: 20px; 
-            display: flex; 
-            align-items: center; 
-            text-decoration: none; 
-            color: white; 
-            transition: 0.3s;
-        }
-        .menu-item:hover { border-color: var(--gold); background: #26334d; transform: translateY(-2px); }
-        
-        .icon-circle { 
-            width: 50px; 
-            height: 50px; 
-            background: rgba(255,255,255,0.05); 
-            border-radius: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 20px; 
-            margin-right: 20px; 
-        }
-
-        .text-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-        .text-content p { font-size: 12px; color: #94a3b8; }
-
-        .footer-action { text-align: center; margin-top: 40px; }
-        .btn-site { color: var(--gold); text-decoration: none; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--gold); }
+        :root { --dark: #020617; --card: #1e293b; --gold: #d4af37; --green: #16a34a; }
+        body { background: var(--dark); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #334155; }
+        .list-container { background: var(--card); border-radius: 20px; padding: 10px; }
+        .list-item { padding: 15px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .btn-aprov { background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .btn-del { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
+        .gps-link { color: var(--gold); font-size: 11px; text-decoration: none; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <header>
-            <div class="logo">Re<span>Phone</span> Master</div>
-            <p style="color: #64748b; font-size: 13px; margin-top: 5px;">Painel de Gestão e Segurança</p>
-        </header>
-
-        <div class="stats">
-            <div class="stat-box">
-                <h3>Vendedores</h3>
-                <p id="countVend">...</p>
-            </div>
-            <div class="stat-box">
-                <h3>Anúncios Ativos</h3>
-                <p id="countAtivos">...</p>
-            </div>
-            <div class="stat-box">
-                <h3>Para Analisar</h3>
-                <p id="countPend" style="color: #ef4444;">...</p>
-            </div>
-        </div>
-
-        <div class="menu-grid">
-            
-            <a href="admin-master.html" class="menu-item">
-                <div class="icon-circle">📱</div>
-                <div class="text-content">
-                    <h4>Curadoria de Anúncios</h4>
-                    <p>Aprovar, rejeitar ou excluir novos aparelhos enviados para o radar.</p>
-                </div>
-            </a>
-
-            <a href="admin-rephone-master.html" class="menu-item">
-                <div class="icon-circle">👥</div>
-                <div class="text-content">
-                    <h4>Gestão de Vendedores</h4>
-                    <p>Visualizar endereços, GPS e autorizar novos lojistas ou particulares.</p>
-                </div>
-            </a>
-
-            <a href="admin-login.html" class="menu-item">
-                <div class="icon-circle">🔐</div>
-                <div class="text-content">
-                    <h4>Acesso Restrito</h4>
-                    <p>Configurações de login e segurança do administrador master.</p>
-                </div>
-            </a>
-
-        </div>
-
-        <div class="footer-action">
-            <a href="index.html" class="btn-site">Ver Site Público (Radar)</a>
-        </div>
+    <h2>RePhone Master Hub</h2>
+    <div class="stats">
+        <div class="stat-box"><h3>Vendedores</h3><p id="countV">0</p></div>
+        <div class="stat-box"><h3>Ativos</h3><p id="countA">0</p></div>
+        <div class="stat-box"><h3>Aguardando</h3><p id="countP" style="color:red">0</p></div>
     </div>
+
+    <div style="margin-bottom:20px; display:flex; gap:10px;">
+        <a href="admin-master.html" style="background:var(--gold); color:black; padding:12px; border-radius:10px; text-decoration:none; font-weight:800;">Aprovar Anúncios →</a>
+    </div>
+
+    <h3>Gerenciar Vendedores</h3>
+    <div id="listaVendedores" class="list-container"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
-            authDomain: "rephone-a0a80.firebaseapp.com", 
-            projectId: "rephone-a0a80", 
-            storageBucket: "rephone-a0a80.firebasestorage.app", 
-            messagingSenderId: "431497247030", 
-            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
-        };
-
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Contador em tempo real de Vendedores
         onSnapshot(collection(db, "vendedores"), snap => {
-            document.getElementById('countVend').innerText = snap.size;
+            document.getElementById('countV').innerText = snap.size;
+            const list = document.getElementById('listaVendedores');
+            list.innerHTML = "";
+            snap.forEach(vDoc => {
+                const v = vDoc.data();
+                const id = vDoc.id;
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div>
+                        <b>${v.nome}</b> (${v.status})
+                        <a href="https://www.google.com/maps?q=${v.coords}" target="_blank" class="gps-link">📍 Ver Localização Exata</a>
+                    </div>
+                    <div>
+                        ${v.status === 'pendente' ? `<button class="btn-aprov" onclick="aprovarV('${id}')">Aprovar</button>` : ''}
+                        <button class="btn-del" onclick="deletarV('${id}')">Excluir</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
         });
 
-        // Contador em tempo real de Anúncios Ativos
-        const qAtivos = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-        onSnapshot(qAtivos, snap => {
-            document.getElementById('countAtivos').innerText = snap.size;
-        });
-
-        // Contador em tempo real de Pendências
-        const qPend = query(collection(db, "anuncios"), where("status", "==", "pendente"));
-        onSnapshot(qPend, snap => {
-            document.getElementById('countPend').innerText = snap.size;
-        });
+        window.aprovarV = async id => await updateDoc(doc(db, "vendedores", id), { status: "ativo" });
+        window.deletarV = async id => confirm("Deletar vendedor?") && await deleteDoc(doc(db, "vendedores", id));
     </script>
 </body>
 </html>
