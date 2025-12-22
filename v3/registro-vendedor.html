@@ -17,22 +17,19 @@
         .gps-box { background: #f0fdf4; padding: 15px; border-radius: 15px; border: 1px solid var(--green); margin-top: 20px; text-align: center; }
         .btn-reg { width: 100%; background: var(--dark); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; margin-top: 25px; cursor: pointer; }
         .btn-reg:disabled { background: #cbd5e1; cursor: not-allowed; }
-        .pass-info { font-size: 10px; color: #94a3b8; margin-top: 5px; margin-left: 5px; }
     </style>
 </head>
 <body>
     <div class="reg-card">
         <a href="index.html" style="text-decoration:none; color:var(--dark); font-size:12px; font-weight:bold;">← Voltar</a>
         <h2 style="margin-top:15px;">Criar Conta RePhone</h2>
-        <p style="font-size:12px; color:#64748b; margin-bottom:10px;">Cadastre-se para gerenciar seus próprios anúncios.</p>
-
+        
         <form id="formRegistro">
             <label>E-mail de Acesso</label>
             <input type="email" id="rEmail" placeholder="seu@email.com" required>
             
             <label>Criar Senha</label>
             <input type="password" id="rSenha" placeholder="Mínimo 6 caracteres" required>
-            <p class="pass-info">Esta senha será usada para entrar no seu painel.</p>
 
             <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
 
@@ -45,21 +42,10 @@
             <label>WhatsApp (DDD + Número)</label>
             <input type="tel" id="rZap" placeholder="Ex: 27999998888" required>
 
-            <label>Endereço e Número</label>
-            <input type="text" id="rRua" placeholder="Rua exemplo, 123" required>
-
-            <div class="grid-2">
-                <div><label>Bairro</label><input type="text" id="rBairro" required></div>
-                <div><label>CEP</label><input type="text" id="rCep" placeholder="00000-000" required></div>
-            </div>
-
             <div class="grid-2">
                 <div><label>Cidade</label><input type="text" id="rCidade" required></div>
                 <div><label>Estado</label><input type="text" id="rEstado" placeholder="Ex: ES" required></div>
             </div>
-
-            <label>Ponto de Referência</label>
-            <input type="text" id="rRef">
 
             <div class="gps-box">
                 <p style="font-size:11px; font-weight:700; color:var(--green);">LOCALIZAÇÃO DE SEGURANÇA</p>
@@ -74,17 +60,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-       // Em vez de usar addDoc, use setDoc para o ID ser igual ao UID
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-await setDoc(doc(db, "vendedores", user.uid), {
-    uid: user.uid,
-    email: email,
-    nome: document.getElementById('rNome').value,
-    role: "vendedor", // Padrão é vendedor
-    status: "pendente",
-    // ... restante dos campos
-});
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
         const firebaseConfig = { 
@@ -107,50 +83,43 @@ await setDoc(doc(db, "vendedores", user.uid), {
                 document.getElementById('gpsStatus').style.color = "var(--green)";
                 document.getElementById('btnFinalizar').disabled = false;
             }, () => { 
-                alert("A geolocalização é obrigatória para segurança da RePhone."); 
+                alert("A geolocalização é obrigatória para segurança."); 
             });
         };
 
         document.getElementById('formRegistro').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnFinalizar');
-            btn.innerText = "CRIANDO CONTA...";
+            btn.innerText = "CRIANDO...";
             btn.disabled = true;
 
-            const email = document.getElementById('rEmail').value;
-            const senha = document.getElementById('rSenha').value;
-
             try {
-                // 1. Criar usuário no Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-                const user = userCredential.user;
+                // 1. Cria o usuário no Auth
+                const userCred = await createUserWithEmailAndPassword(auth, document.getElementById('rEmail').value, document.getElementById('rSenha').value);
+                const user = userCred.user;
 
-                // 2. Salvar dados extras no Firestore
-                await addDoc(collection(db, "vendedores"), {
+                // 2. CORREÇÃO: Usa setDoc com o ID do documento sendo o UID do usuário
+                await setDoc(doc(db, "vendedores", user.uid), {
                     uid: user.uid,
-                    email: email,
+                    email: user.email,
                     nome: document.getElementById('rNome').value,
                     tipo: document.getElementById('rTipo').value,
                     zap: document.getElementById('rZap').value,
-                    rua: document.getElementById('rRua').value,
-                    bairro: document.getElementById('rBairro').value,
-                    cep: document.getElementById('rCep').value,
                     cidade: document.getElementById('rCidade').value,
                     estado: document.getElementById('rEstado').value,
-                    ref: document.getElementById('rRef').value,
                     coords: document.getElementById('rCoords').value,
-                    status: "pendente", // Admin precisa aprovar o vendedor
+                    role: "vendedor", // Usuário comum por padrão
+                    status: "pendente",
                     dataCadastro: new Date()
                 });
 
-                alert("Conta RePhone criada com sucesso! Entre para anunciar.");
+                alert("Conta criada! Faça login para continuar.");
                 window.location.href = "vendedor-login.html";
 
             } catch (error) {
-                console.error(error);
-                alert("Erro ao criar conta: " + error.message);
-                btn.innerText = "CRIAR CONTA E FINALIZAR";
+                alert("Erro: " + error.message);
                 btn.disabled = false;
+                btn.innerText = "CRIAR CONTA E FINALIZAR";
             }
         };
     </script>
