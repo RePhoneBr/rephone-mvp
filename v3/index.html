@@ -2,128 +2,151 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone | Radar Aracruz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RePhone | Radar de Match</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
-        .app-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-        .search-area { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); font-size: 14px; outline: none; }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-flat { background: #e2e8f0; color: var(--dark); border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .btn-match { background: var(--green); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .radar-box { display: none; text-align: center; padding: 40px 0; }
-        .radar-circle { width: 100px; height: 100px; border: 2px solid var(--green); border-radius: 50%; margin: 0 auto; position: relative; animation: pulse 1.5s infinite; }
-        .radar-line { width: 50%; height: 2px; background: var(--green); position: absolute; top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
-        .feed { padding: 20px; display: grid; gap: 20px; }
-        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; }
-        .badge-status { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1px solid #e2e8f0; z-index: 5; }
-        .badge-verificado { background: linear-gradient(135deg, var(--gold), #fff); color: var(--dark); padding: 4px 10px; border-radius: 20px; font-size: 9px; font-weight: 900; position: absolute; top: 15px; right: 15px; z-index: 5; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
-        .card img { width: 100%; height: 180px; object-fit: contain; background: var(--bg); border-radius: 18px; margin-bottom: 10px; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2000; align-items: flex-end; }
-        .match-window { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: 0.4s; }
-        .match-window.active { transform: translateY(0); }
-        .spec-tag { display: inline-block; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; margin: 4px 2px; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        
+        body { background: var(--bg); color: var(--dark); }
+
+        /* HEADER CORRIGIDO */
+        .main-header { 
+            background: var(--dark); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* LOGO ESTILIZADA */
+        .logo-text { 
+            color: #ffffff !important; 
+            font-weight: 900; 
+            font-size: 22px; 
+            text-decoration: none !important;
+            display: flex;
+            align-items: center;
+        }
+        .logo-text span { color: var(--green); }
+
+        .nav-btns { display: flex; gap: 10px; }
+
+        .btn-nav { 
+            font-size: 11px; 
+            font-weight: 700; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            transition: 0.2s;
+        }
+
+        .btn-reg { color: var(--gold); border: 1px solid var(--gold); }
+        .btn-vender { background: var(--green); color: white; }
+
+        /* FEED E CARDS */
+        .search-area { background: white; padding: 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 10px; }
+        .feed { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        
+        .card { background: white; border-radius: 20px; padding: 12px; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .badge-tipo { 
+            font-size: 9px; 
+            font-weight: 800; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            z-index: 2; 
+            text-transform: uppercase;
+        }
+        .Particular { background: #f1f5f9; color: #64748b; }
+        .Lojista { background: #fef3c7; color: #92400e; border: 1px solid var(--gold); }
+
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #f8fafc; border-radius: 12px; margin-top: 5px; }
+        .card h3 { font-size: 14px; margin-top: 12px; font-weight: 800; color: var(--dark); }
+        .price { color: var(--green); font-weight: 900; font-size: 17px; display: block; margin-top: 4px; }
+        
+        .no-results { grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; }
     </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand">...</div>
-    <div style="display:flex; gap:10px;">
-        <a href="registro-vendedor.html" style="color:var(--gold); text-decoration:none; font-size:11px; font-weight:700; border:1px solid var(--gold); padding:5px 10px; border-radius:8px;">Registrar Vendedor</a>
-        <a href="vendedor.html" style="color:white; text-decoration:none; font-size:11px; font-weight:700; background:var(--green); padding:5px 10px; border-radius:8px;">Anunciar</a>
-    </div>
-</header>
+
+    <header class="main-header">
+        <a href="index.html" class="logo-text">Re<span>Phone</span></a>
+        
+        <div class="nav-btns">
+            <a href="registro-vendedor.html" class="btn-nav btn-reg">REGISTRAR</a>
+            <a href="vendedor-login.html" class="btn-nav btn-vender">VENDER</a>
+        </div>
+    </header>
+
     <div class="search-area">
-        <div class="input-group">
-            <select id="searchMarca"><option value="">Marca</option><option>Apple</option><option>Samsung</option></select>
-            <input type="number" id="searchMaxPrice" placeholder="Valor até R$">
-        </div>
-        <input type="text" id="searchModel" placeholder="Qual modelo você busca?" style="margin-bottom:12px">
-        <div class="btn-row">
-            <button class="btn-flat" onclick="buscar(false)">Ver Todos</button>
-            <button class="btn-match" onclick="buscar(true)">✨ Ativar Match</button>
-        </div>
+        <h2 style="font-size: 16px; font-weight: 900;">Radar de Match</h2>
+        <p style="font-size: 11px; color: #64748b;">Encontre aparelhos verificados próximos a você</p>
     </div>
 
-    <div id="radarDisplay" class="radar-box">
-        <div class="radar-circle"><div class="radar-line"></div></div>
-        <p style="margin-top:15px; font-weight:800; color:var(--green); font-size:12px;">ESCANEANDO ARACRUZ...</p>
-    </div>
-
-    <main id="offersGrid" class="feed"></main>
-
-    <div id="overlayMatch" class="overlay" onclick="fecharMatch()">
-        <div class="match-window" id="windowMatch" onclick="event.stopPropagation()">
-            <div id="matchContent"></div>
-            <button id="btnZap" class="btn-match" style="width:100%; margin-top:20px; padding:18px;">CONVERSAR NO WHATSAPP</button>
-        </div>
-    </div>
+    <main id="radarGrid" class="feed">
+        <div class="no-results">Buscando ofertas no radar...</div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            messagingSenderId: "431497247030", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.buscar = async (radar) => {
-            const grid = document.getElementById('offersGrid');
-            grid.innerHTML = "";
-            if(radar) {
-                document.getElementById('radarDisplay').style.display = "block";
-                await new Promise(r => setTimeout(r, 2000));
-                document.getElementById('radarDisplay').style.display = "none";
+        async function carregarRadar() {
+            const grid = document.getElementById('radarGrid');
+            try {
+                const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    grid.innerHTML = '<div class="no-results">Nenhum aparelho disponível no radar no momento.</div>';
+                    return;
+                }
+
+                grid.innerHTML = "";
+                snap.forEach(doc => {
+                    const ad = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    // Fallback para imagem caso não exista
+                    const fotoUrl = (ad.fotos && ad.fotos.length > 0) ? ad.fotos[0] : 'https://via.placeholder.com/150?text=Sem+Foto';
+                    
+                    card.innerHTML = `
+                        <div class="badge-tipo ${ad.tipo}">${ad.tipo}</div>
+                        <img src="${fotoUrl}" alt="${ad.modelo}">
+                        <h3>${ad.modelo}</h3>
+                        <span class="price">R$ ${ad.preco}</span>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                console.error("Erro ao carregar:", e);
+                grid.innerHTML = '<div class="no-results">Erro ao conectar com o radar.</div>';
             }
-            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-            const snap = await getDocs(q);
-            snap.forEach(doc => {
-                const ad = doc.data();
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    ${ad.verificado ? '<div class="badge-verificado">✓ VERIFICADO</div>' : ''}
-                    <div class="badge-status">${ad.condicao}</div>
-                    <img src="${ad.fotos[0]}">
-                    <h4 style="font-weight:800;">${ad.marca} ${ad.modelo}</h4>
-                    <span style="color:var(--green); font-weight:900;">R$ ${ad.preco}</span>
-                `;
-                card.onclick = () => abrirVitrine(ad);
-                grid.appendChild(card);
-            });
-        };
+        }
 
-        window.abrirVitrine = (ad) => {
-            document.getElementById('matchContent').innerHTML = `
-                <h2 style="font-weight:900;">${ad.marca} ${ad.modelo}</h2>
-                <div style="margin:15px 0;">
-                    <span class="spec-tag">💾 ${ad.capacidade}</span>
-                    <span class="spec-tag">✨ ${ad.condicao}</span>
-                    <span class="spec-tag">🚚 ${ad.prazo}</span>
-                </div>
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; font-size:14px; border-left:4px solid var(--gold);">
-                    <strong>Detalhes:</strong><br>${ad.descricao}
-                </div>
-            `;
-            document.getElementById('overlayMatch').style.display = "flex";
-            setTimeout(() => document.getElementById('windowMatch').classList.add('active'), 10);
-            document.getElementById('btnZap').onclick = () => window.open(`https://wa.me/${ad.whatsapp}?text=Vi o anúncio do ${ad.modelo} no RePhone!`);
-        };
-
-        window.fecharMatch = () => {
-            document.getElementById('windowMatch').classList.remove('active');
-            setTimeout(() => document.getElementById('overlayMatch').style.display = "none", 400);
-        };
-        buscar(false);
+        carregarRadar();
     </script>
 </body>
 </html>
