@@ -1,127 +1,1025 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone | Radar Aracruz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
-        .app-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .logo-rp { background: linear-gradient(135deg, #fff, var(--gold)); color: var(--dark); width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-        .search-area { background: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: var(--bg); font-size: 14px; outline: none; }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-flat { background: #e2e8f0; color: var(--dark); border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-        .btn-match { background: var(--green); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .radar-box { display: none; text-align: center; padding: 40px 0; }
-        .radar-circle { width: 100px; height: 100px; border: 2px solid var(--green); border-radius: 50%; margin: 0 auto; position: relative; animation: pulse 1.5s infinite; }
-        .radar-line { width: 50%; height: 2px; background: var(--green); position: absolute; top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
-        .feed { padding: 20px; display: grid; gap: 20px; }
-        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; }
-        .badge-status { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1px solid #e2e8f0; z-index: 5; }
-        .badge-verificado { background: linear-gradient(135deg, var(--gold), #fff); color: var(--dark); padding: 4px 10px; border-radius: 20px; font-size: 9px; font-weight: 900; position: absolute; top: 15px; right: 15px; z-index: 5; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); }
-        .card img { width: 100%; height: 180px; object-fit: contain; background: var(--bg); border-radius: 18px; margin-bottom: 10px; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2000; align-items: flex-end; }
-        .match-window { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: 0.4s; }
-        .match-window.active { transform: translateY(0); }
-        .spec-tag { display: inline-block; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; margin: 4px 2px; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>RePhone — Lista de Espera</title>
+  <meta name="description" content="RePhone: marketplace com segurança como prioridade. O comprador define quanto quer pagar e o MATCH RePhone encontra ofertas mais justas e seguras. Entre na lista de espera." />
+
+  <!-- Favicons -->
+  <link rel="icon" href="assets/rephone-favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <style>
+    :root{
+      --bg:#ffffff; --surface:#ffffff; --text:#0f172a; --muted:#475569; --muted-2:#64748b;
+      --border: rgba(15, 23, 42, .10);
+      --shadow: 0 14px 40px rgba(15, 23, 42, .08);
+      --shadow-soft: 0 10px 24px rgba(15, 23, 42, .06);
+
+      --green:#16a34a; --green-2:#22c55e; --green-3:#15803d;
+
+      --radius:18px; --container:1120px;
+      --focus: 0 0 0 4px rgba(34,197,94,.25);
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(34,197,94,.10), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(22,163,74,.09), transparent 55%),
+                  var(--bg);
+      line-height:1.5;
+    }
+    a{ color:inherit; text-decoration:none; }
+    .container{ width:min(var(--container), calc(100% - 2rem)); margin:0 auto; }
+
+    /* Skip link */
+    .skip{
+      position:absolute; left:-999px; top:auto; width:1px; height:1px; overflow:hidden;
+    }
+    .skip:focus{
+      left:1rem; top:1rem; width:auto; height:auto;
+      padding:.7rem .9rem; border-radius:999px;
+      background:#fff; border:1px solid var(--border);
+      box-shadow: var(--focus), var(--shadow-soft);
+      z-index:200;
+    }
+
+    /* Topbar */
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-inner{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.6rem; font-weight:800; letter-spacing:-0.02em; }
+    .logo-img{
+      height:42px;
+      width:auto;
+      display:block;
+      filter: drop-shadow(0 6px 14px rgba(22,163,74,0.25));
+    }
+
+    .nav{ display:flex; align-items:center; gap:.8rem; }
+    .nav a{ font-size:.95rem; color:var(--muted); padding:.45rem .6rem; border-radius:12px; }
+    .nav a:hover{ background: rgba(15,23,42,.04); color:var(--text); }
+    .actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:.55rem;
+      border:1px solid var(--border);
+      background:#fff; color:var(--text);
+      border-radius:999px;
+      padding:.78rem 1.05rem;
+      font-weight:650; font-size:.95rem;
+      box-shadow: 0 8px 18px rgba(15,23,42,.05);
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 26px rgba(15,23,42,.08); }
+    .btn:active{ transform: translateY(0px); box-shadow: 0 8px 18px rgba(15,23,42,.06); }
+    .btn:focus-visible{ outline:none; box-shadow: var(--focus), 0 12px 26px rgba(15,23,42,.10); }
+
+    .btn-primary{
+      border-color: rgba(22,163,74,.25);
+      background: linear-gradient(135deg, var(--green-2), var(--green-3));
+      color:#fff;
+      box-shadow: 0 14px 30px rgba(22,163,74,.20);
+    }
+    .btn-primary:hover{ box-shadow: 0 18px 40px rgba(22,163,74,.26); }
+    .btn-ghost{ background: rgba(255,255,255,.7); }
+    .btn-link{ background:transparent; border-color:transparent; box-shadow:none; padding:.6rem .7rem; color:var(--muted); }
+    .btn-link:hover{ background: rgba(15,23,42,.04); color:var(--text); }
+
+    /* NEW: V3 button style (destaque secundário) */
+    .btn-v3{
+      border-color: rgba(15,23,42,.12);
+      background: rgba(15,23,42,.03);
+      color: var(--text);
+      box-shadow:none;
+    }
+    .btn-v3:hover{ background: rgba(15,23,42,.05); box-shadow: 0 12px 22px rgba(15,23,42,.07); }
+
+    /* Hero */
+    .hero{ padding: 3.2rem 0 2.2rem; }
+    .hero-grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:1.6rem; align-items:start; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.4rem .65rem; border-radius:999px;
+      border: 1px solid rgba(22,163,74,.22);
+      background: rgba(34,197,94,.10);
+      color:#14532d;
+      font-weight:650; font-size:.9rem;
+    }
+    .badge .dot{ width:10px; height:10px; border-radius:999px; background:var(--green-2); box-shadow: 0 0 0 4px rgba(34,197,94,.18); }
+
+    h1{ margin:.9rem 0 .75rem; font-size: clamp(2.1rem, 4vw, 3.2rem); line-height:1.05; letter-spacing:-0.04em; }
+    .lead{ color:var(--muted); font-size:1.05rem; max-width:52ch; margin:0 0 1.2rem; }
+    .hero-cta{ display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; margin-top:1rem; }
+    .micro{ font-size:.92rem; color:var(--muted-2); margin-top:.6rem; }
+
+    /* Sections + cards */
+    .section{ padding: 2.4rem 0; }
+    .section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1.2rem; }
+    .kicker{ color:var(--green-3); font-weight:750; letter-spacing:.02em; font-size:.92rem; text-transform:uppercase; }
+    h2{ margin:.35rem 0 0; font-size: clamp(1.35rem, 2.3vw, 2rem); letter-spacing:-0.03em; line-height:1.15; }
+    .subtext{ color:var(--muted); max-width:70ch; margin:.6rem 0 0; }
+
+    .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; }
+    .grid-2{ display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; }
+
+    .card{
+      background: rgba(255,255,255,.78);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 1.05rem;
+      position:relative; overflow:hidden;
+    }
+    .card::before{
+      content:""; position:absolute; width:220px; height:220px; border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(34,197,94,.22), transparent 60%);
+      top:-120px; right:-130px; pointer-events:none;
+    }
+    .card h3{ margin:0 0 .35rem; font-size:1.08rem; letter-spacing:-0.02em; }
+    .card p{ margin:0; color:var(--muted); font-size:.98rem; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:.45rem;
+      border-radius:999px; padding:.35rem .55rem;
+      font-size:.85rem; font-weight:650;
+      border:1px solid rgba(22,163,74,.18);
+      background: rgba(34,197,94,.10);
+      color:#14532d;
+      margin-bottom:.65rem;
+    }
+    .icon{
+      width:36px; height:36px; border-radius:12px;
+      background: rgba(34,197,94,.10);
+      border:1px solid rgba(22,163,74,.18);
+      display:grid; place-items:center;
+      margin-bottom:.75rem;
+    }
+    .icon svg{ width:18px; height:18px; }
+
+    /* NEW: V3 section */
+    .v3-strip{
+      border:1px solid rgba(15,23,42,.10);
+      background: rgba(255,255,255,.78);
+      border-radius: calc(var(--radius) + 6px);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem 1.1rem;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      flex-wrap:wrap;
+    }
+    .v3-strip strong{ letter-spacing:-0.02em; }
+    .v3-strip p{ margin:.25rem 0 0; color:var(--muted); }
+
+    /* Waitlist panel */
+    .panel{
+      background: rgba(255,255,255,.84);
+      border:1px solid rgba(22,163,74,.18);
+      border-radius: calc(var(--radius) + 6px);
+      box-shadow: var(--shadow);
+      padding:1.15rem;
+      position: sticky;
+      top: 86px;
+    }
+    .panel h3{ margin:0 0 .35rem; letter-spacing:-0.02em; }
+    .panel p{ margin:0 0 .95rem; color:var(--muted); }
+
+    /* Forms */
+    form{ display:grid; gap:.75rem; }
+    label{ font-weight:650; font-size:.95rem; }
+    .field{ display:grid; gap:.35rem; }
+    .input, textarea{
+      width:100%;
+      padding:.85rem .9rem;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      font-size:1rem;
+      color:var(--text);
+      outline:none;
+      transition: box-shadow .12s ease, border-color .12s ease;
+    }
+    .input:focus, textarea:focus{ box-shadow: var(--focus); border-color: rgba(34,197,94,.35); }
+
+    .radios{ display:flex; gap:.7rem; flex-wrap:wrap; }
+    .chip{
+      display:flex; align-items:center; gap:.55rem;
+      padding:.7rem .8rem;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.9);
+      cursor:pointer; user-select:none;
+      transition: transform .12s ease;
+    }
+    .chip:hover{ transform: translateY(-1px); }
+    .chip input{ accent-color: var(--green-2); }
+
+    .fineprint{ color:var(--muted-2); font-size:.9rem; margin:.45rem 0 0; }
+
+    .toast{
+      margin-top:.75rem;
+      padding:.8rem .9rem;
+      border-radius:14px;
+      border:1px solid rgba(22,163,74,.22);
+      background: rgba(34,197,94,.10);
+      color:#14532d;
+      font-weight:650;
+      display:none;
+    }
+
+    .quote{
+      padding: 1rem 1.1rem;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(22,163,74,.35);
+      background: rgba(34,197,94,.08);
+      color:#14532d;
+      font-weight:650;
+    }
+
+    /* FAQ */
+    details{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 10px 22px rgba(15,23,42,.05);
+      padding:.9rem 1rem;
+    }
+    details summary{
+      cursor:pointer;
+      font-weight:750;
+      letter-spacing:-0.02em;
+      list-style:none;
+    }
+    details summary::-webkit-details-marker{ display:none; }
+    details p{ margin:.65rem 0 0; color:var(--muted); }
+
+    /* MATCH badge */
+    .match-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding:.5rem .75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(22,163,74,.22);
+      background: rgba(34,197,94,.10);
+      color: #14532d;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      box-shadow: 0 10px 22px rgba(15,23,42,.06);
+    }
+    .match-badge .spark{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, rgba(34,197,94,.25), rgba(22,163,74,.18));
+      border: 1px solid rgba(22,163,74,.18);
+    }
+    .match-badge small{
+      font-weight: 700;
+      color: rgba(20,83,45,.85);
+      letter-spacing: 0;
+    }
+
+    /* Footer */
+    footer{
+      padding: 2.2rem 0 2.6rem;
+      border-top:1px solid var(--border);
+      margin-top:1.2rem;
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(8px);
+    }
+    .footer-grid{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; }
+    .footer-links{ display:flex; flex-wrap:wrap; gap:.8rem; color:var(--muted); font-weight:600; font-size:.95rem; }
+    .footer-links a{ padding:.35rem .5rem; border-radius:12px; }
+    .footer-links a:hover{ background: rgba(15,23,42,.04); color:var(--text); }
+
+    .footer-brand{ display:flex; align-items:center; gap:.6rem; }
+    .footer-logo{ height:32px; width:auto; opacity:.92; filter: drop-shadow(0 4px 10px rgba(22,163,74,0.18)); }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(15,23,42,.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding:1rem;
+      z-index:100;
+    }
+    .modal{
+      width:min(720px, 100%);
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.45);
+      border-radius:22px;
+      box-shadow: 0 30px 80px rgba(15,23,42,.25);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+      max-height: 86vh;
+    }
+    .modal-header{
+      padding:1rem 1.1rem;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
+    }
+    .modal-header h3{ margin:0; letter-spacing:-0.02em; }
+    .modal-header p{ margin:.35rem 0 0; color:var(--muted); font-size:.95rem; }
+    .modal-body{
+      padding:1rem 1.1rem 1.1rem;
+      overflow:auto;
+      max-height: calc(86vh - 76px);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .q{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:.9rem;
+      background: rgba(255,255,255,.86);
+      margin-bottom:.75rem;
+    }
+    .q legend{ font-weight:750; letter-spacing:-0.02em; margin-bottom:.55rem; }
+    .checks{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:.55rem .7rem;
+      margin-top:.55rem;
+    }
+    .check{
+      display:flex; align-items:flex-start; gap:.55rem;
+      padding:.55rem .6rem;
+      border-radius:14px;
+      border:1px solid rgba(15,23,42,.08);
+      background: rgba(15,23,42,.02);
+    }
+    .check input{ margin-top:.2rem; accent-color: var(--green-2); }
+    textarea{ min-height:90px; resize:vertical; }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:.6rem; padding-top:.2rem; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-grid{ grid-template-columns:1fr; }
+      .panel{ position:relative; top:0; }
+      .grid-3{ grid-template-columns:1fr; }
+      .grid-2{ grid-template-columns:1fr; }
+    }
+    @media (max-width: 560px){
+      .nav{ display:none; }
+      .btn{ width:100%; }
+      .hero-cta{ align-items:stretch; }
+      .checks{ grid-template-columns:1fr; }
+      .logo-img{ height:36px; }
+      .actions{ width:100%; }
+      .actions .btn{ width:auto; }
+      .actions .btn-primary{ flex:1; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; scroll-behavior:auto !important; }
+    }
+  </style>
 </head>
+
 <body>
-    <header class="app-header">
-        <div class="brand"><div class="logo-rp">RP</div><h1 style="color:white; font-size:20px;">Re<span style="color:var(--green)">Phone</span></h1></div>
-        <a href="vendedor.html" style="color:white; text-decoration:none; font-size:12px; font-weight:700;">Vender +</a>
-    </header>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
-    <div class="search-area">
-        <div class="input-group">
-            <select id="searchMarca"><option value="">Marca</option><option>Apple</option><option>Samsung</option></select>
-            <input type="number" id="searchMaxPrice" placeholder="Valor até R$">
-        </div>
-        <input type="text" id="searchModel" placeholder="Qual modelo você busca?" style="margin-bottom:12px">
-        <div class="btn-row">
-            <button class="btn-flat" onclick="buscar(false)">Ver Todos</button>
-            <button class="btn-match" onclick="buscar(true)">✨ Ativar Match</button>
-        </div>
+  <header class="topbar" role="banner">
+    <div class="container topbar-inner">
+      <a class="brand" href="#conteudo" aria-label="RePhone (início)">
+        <img src="assets/logo-rephone.png" alt="RePhone" class="logo-img">
+        <span>RePhone</span>
+      </a>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#seguranca">Segurança</a>
+        <a href="#match">MATCH RePhone</a>
+        <a href="#faq">FAQ</a>
+        <a href="#privacidade">Privacidade</a>
+      </nav>
+
+      <div class="actions">
+        <!-- NEW: link para V3 -->
+        <a class="btn btn-v3" href="/v3/" rel="noopener">Testar V3 →</a>
+
+        <button class="btn btn-link" type="button" id="openSurveyTop">Opinar (2 min)</button>
+        <a class="btn btn-primary" href="#waitlist">Lista de espera</a>
+      </div>
     </div>
+  </header>
 
-    <div id="radarDisplay" class="radar-box">
-        <div class="radar-circle"><div class="radar-line"></div></div>
-        <p style="margin-top:15px; font-weight:800; color:var(--green); font-size:12px;">ESCANEANDO ARACRUZ...</p>
-    </div>
+  <main id="conteudo">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge">
+            <span class="dot" aria-hidden="true"></span>
+            MVP em construção • acesso antecipado
+          </div>
 
-    <main id="offersGrid" class="feed"></main>
+          <div style="margin-top:.7rem;">
+            <span class="match-badge" aria-label="MATCH RePhone em desenvolvimento">
+              <span class="spark" aria-hidden="true">✦</span>
+              MATCH RePhone <small>— em desenvolvimento</small>
+            </span>
+          </div>
 
-    <div id="overlayMatch" class="overlay" onclick="fecharMatch()">
-        <div class="match-window" id="windowMatch" onclick="event.stopPropagation()">
-            <div id="matchContent"></div>
-            <button id="btnZap" class="btn-match" style="width:100%; margin-top:20px; padding:18px;">CONVERSAR NO WHATSAPP</button>
-        </div>
-    </div>
+          <h1>O marketplace que nasce com a segurança como prioridade.</h1>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+          <p class="lead">
+            Estamos criando uma nova forma de comprar e vender com mais confiança,
+            menos riscos e decisões mais inteligentes — e você pode ajudar a definir o que é essencial.
+          </p>
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#waitlist">Entrar na lista de espera <span aria-hidden="true">→</span></a>
+            <button class="btn btn-ghost" type="button" id="openSurveyHero">Responder perguntas rápidas</button>
 
-        window.buscar = async (radar) => {
-            const grid = document.getElementById('offersGrid');
-            grid.innerHTML = "";
-            if(radar) {
-                document.getElementById('radarDisplay').style.display = "block";
-                await new Promise(r => setTimeout(r, 2000));
-                document.getElementById('radarDisplay').style.display = "none";
-            }
-            const q = query(collection(db, "anuncios"), where("status", "==", "aprovado"));
-            const snap = await getDocs(q);
-            snap.forEach(doc => {
-                const ad = doc.data();
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    ${ad.verificado ? '<div class="badge-verificado">✓ VERIFICADO</div>' : ''}
-                    <div class="badge-status">${ad.condicao}</div>
-                    <img src="${ad.fotos[0]}">
-                    <h4 style="font-weight:800;">${ad.marca} ${ad.modelo}</h4>
-                    <span style="color:var(--green); font-weight:900;">R$ ${ad.preco}</span>
-                `;
-                card.onclick = () => abrirVitrine(ad);
-                grid.appendChild(card);
-            });
-        };
+            <!-- NEW: CTA para V3 -->
+            <a class="btn btn-v3" href="/v3/" rel="noopener">Conhecer a vitrine (V3) →</a>
+          </div>
 
-        window.abrirVitrine = (ad) => {
-            document.getElementById('matchContent').innerHTML = `
-                <h2 style="font-weight:900;">${ad.marca} ${ad.modelo}</h2>
-                <div style="margin:15px 0;">
-                    <span class="spec-tag">💾 ${ad.capacidade}</span>
-                    <span class="spec-tag">✨ ${ad.condicao}</span>
-                    <span class="spec-tag">🚚 ${ad.prazo}</span>
+          <p class="micro">Sem spam. Apenas novidades sobre o lançamento e acesso antecipado.</p>
+
+          <!-- NEW: strip V3 -->
+          <div class="section" style="padding-bottom:0;">
+            <div class="v3-strip" id="vitrine-v3">
+              <div>
+                <strong>Novo: Vitrine (V3) em testes</strong>
+                <p style="max-width:72ch;">
+                  A V3 simula a experiência final: busca, ofertas e MATCH — para validar o visual e o fluxo.
+                  O MVP continua coletando opiniões e lista de espera.
+                </p>
+              </div>
+              <div style="display:flex; gap:.6rem; flex-wrap:wrap;">
+                <a class="btn btn-ghost" id="btnV3Gate" href="#">Testar V3</a>
+                <button class="btn btn-primary" type="button" id="openSurveyV3">Opinar sobre a V3</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" style="padding-bottom:0;">
+            <div class="grid-2">
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l8 4v6c0 5-3.2 9.4-8 10-4.8-.6-8-5-8-10V6l8-4z" stroke="currentColor" stroke-width="2" />
+                    <path d="M9.5 12l1.8 1.8 3.8-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
-                <div style="background:#f8fafc; padding:15px; border-radius:15px; font-size:14px; border-left:4px solid var(--gold);">
-                    <strong>Detalhes:</strong><br>${ad.descricao}
-                </div>
-            `;
-            document.getElementById('overlayMatch').style.display = "flex";
-            setTimeout(() => document.getElementById('windowMatch').classList.add('active'), 10);
-            document.getElementById('btnZap').onclick = () => window.open(`https://wa.me/${ad.whatsapp}?text=Vi o anúncio do ${ad.modelo} no RePhone!`);
-        };
+                <h3>Confiança verificável</h3>
+                <p>Processos e sinais de segurança integrados à experiência, desde o primeiro contato.</p>
+              </div>
 
-        window.fecharMatch = () => {
-            document.getElementById('windowMatch').classList.remove('active');
-            setTimeout(() => document.getElementById('overlayMatch').style.display = "none", 400);
-        };
-        buscar(false);
-    </script>
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 22s7-4.4 7-11a7 7 0 10-14 0c0 6.6 7 11 7 11z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 11.5a2 2 0 100-4 2 2 0 000 4z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <h3>Contexto que protege</h3>
+                <p>Localização e padrões ajudam a reduzir anúncios suspeitos e aumentar previsibilidade.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel" id="waitlist" aria-label="Formulário de lista de espera">
+          <h3>Entre na lista de espera</h3>
+          <p>Receba acesso antecipado e participe das decisões que vão definir o futuro da plataforma.</p>
+
+          <form id="waitlistForm" novalidate>
+            <div class="field">
+              <label for="nome">Nome</label>
+              <input class="input" id="nome" name="nome" type="text" autocomplete="name" placeholder="Seu nome" required />
+            </div>
+
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input class="input" id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required />
+            </div>
+
+            <div class="field">
+              <label for="whatsapp">WhatsApp (opcional)</label>
+              <input class="input" id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel"
+                     placeholder="(DDD) 9XXXX-XXXX" />
+              <div class="fineprint">Opcional. Só usaremos se você autorizar receber mensagem no WhatsApp.</div>
+            </div>
+
+            <div class="field">
+              <span style="font-weight:650; font-size:.95rem;">Seu perfil</span>
+              <div class="radios" role="radiogroup" aria-label="Selecione seu perfil">
+                <label class="chip"><input type="radio" name="perfil" value="Comprador" required /> Comprador</label>
+                <label class="chip"><input type="radio" name="perfil" value="Vendedor" /> Vendedor</label>
+                <label class="chip"><input type="radio" name="perfil" value="Ambos" /> Ambos</label>
+              </div>
+            </div>
+
+            <div class="field" style="gap:.55rem;">
+              <label class="chip" style="border-radius:14px;">
+                <input type="checkbox" id="consentWhatsApp" />
+                Autorizo receber uma mensagem no WhatsApp (opcional)
+              </label>
+
+              <label class="chip" style="border-radius:14px;">
+                <input type="checkbox" id="consentLGPD" required />
+                Li e concordo com a <a href="#privacidade" style="text-decoration:underline;">Política de Privacidade</a>
+              </label>
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="waitlistBtn">
+              Quero acesso antecipado <span aria-hidden="true">→</span>
+            </button>
+
+            <p class="fineprint">Coletamos apenas o necessário para avisar sobre o lançamento e entender o que você considera essencial para segurança. Você pode pedir remoção a qualquer momento.</p>
+
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+            <div class="toast" id="waToast" role="status" aria-live="polite" style="display:none;"></div>
+
+            <div id="waCta" style="display:none; margin-top:.7rem;">
+              <a class="btn btn-ghost" id="waLink" target="_blank" rel="noopener">
+                Receber confirmação no WhatsApp
+              </a>
+              <div class="fineprint" style="margin-top:.45rem;">
+                Você será direcionado ao WhatsApp com uma mensagem pronta. O envio acontece apenas se você confirmar.
+              </div>
+            </div>
+
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="seguranca">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">Segurança</div>
+            <h2>Segurança pensada desde a base.</h2>
+            <p class="subtext">
+              Desde o início, estamos projetando a plataforma para operar com padrões elevados de segurança,
+              unindo tecnologia, processos e parceiros especializados — com foco em reduzir riscos antes mesmo da negociação.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="pill">🛂 KYC</div>
+            <h3>Verificação de identidade com parceiros especializados</h3>
+            <p>
+              A plataforma contará com processos de <strong>KYC (Know Your Customer)</strong> realizados por empresas
+              especializadas em verificação de identidade — reduzindo perfis falsos e aumentando responsabilidade.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="pill">📍 Localização</div>
+            <h3>Localização verificada como camada de confiança</h3>
+            <p>
+              Os anúncios considerarão informações de localização verificadas para validar origem,
+              reduzir suspeitas e apoiar decisões de visibilidade e priorização com mais segurança.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="pill">⚙️ Processamento</div>
+            <h3>Dinâmica inteligente de proteção</h3>
+            <p>
+              Sinais como comportamento, padrões de anúncio, contexto e status de verificação ajudam a orientar
+              decisões automáticas: prevenção de riscos, menos intervenção manual e experiência mais fluida.
+            </p>
+          </article>
+        </div>
+
+        <div class="section" style="padding-bottom:0;">
+          <div class="quote">Segurança não é um recurso adicional. É a base de toda a experiência.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="match">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">MATCH RePhone</div>
+            <h2>Conheça o MATCH RePhone.</h2>
+            <p class="subtext">
+              Um conceito em desenvolvimento para transformar a forma como a confiança é construída dentro de um marketplace.
+              Não é apenas verificação. Não é apenas intermediação. É uma nova camada de segurança inteligente.
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-ghost" type="button" id="openSurveyMatch">Quero participar da construção</button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 12h10M12 7v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>Uma camada extra de decisão</h3>
+            <p>
+              O MATCH RePhone nasce da combinação entre <strong>identidade verificada</strong>, <strong>contexto</strong>,
+              <strong>comportamento</strong> e <strong>inteligência de decisão</strong> — com foco no que realmente importa para confiar.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 9l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Mistério com propósito</h3>
+            <p>
+              O funcionamento final será definido a partir do que você considera essencial para uma compra segura.
+              Sua opinião ajuda a moldar regras, sinais e prioridades — antes do lançamento oficial.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="kicker">FAQ</div>
+            <h2>Perguntas comuns</h2>
+            <p class="subtext">Respostas rápidas para aumentar clareza e confiança.</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <details>
+            <summary>O que é o MATCH RePhone?</summary>
+            <p>
+              É um conceito em desenvolvimento para criar uma camada extra de confiança e decisão dentro do marketplace.
+              O formato final será construído com base no que usuários consideram essencial para segurança.
+            </p>
+          </details>
+
+          <details>
+            <summary>Meus dados ficam seguros?</summary>
+            <p>
+              No MVP, coletamos apenas o necessário para contato sobre o lançamento e para pesquisas de opinião.
+              Você sempre terá clareza do motivo da coleta e poderá solicitar remoção.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="section" id="privacidade">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Privacidade</div>
+          <h2>Transparência e LGPD</h2>
+          <p class="subtext">
+            Este é um MVP. Coletamos apenas o necessário para formar a lista de espera e entender o que você considera essencial para uma compra segura.
+            Não vendemos seus dados e não fazemos spam.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>O que coletamos</h3>
+          <p>
+            Nome, e-mail e perfil (comprador/vendedor). WhatsApp é opcional.
+            Também registramos informações técnicas como user agent para fins de melhoria do site e segurança.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Contato</h3>
+          <p>
+            Se precisar remover seu cadastro, entre em contato: rp.rephone@gmail.com.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer role="contentinfo">
+    <div class="container footer-grid">
+      <div class="footer-brand" aria-label="RePhone">
+        <img src="assets/logo-rephone.png" alt="RePhone" class="footer-logo">
+        <span style="font-weight:800; letter-spacing:-0.02em;">RePhone</span>
+      </div>
+
+      <div class="footer-links" aria-label="Links de rodapé">
+        <a href="#seguranca">Segurança</a>
+        <a href="#match">MATCH RePhone</a>
+        <a href="#waitlist">Lista de espera</a>
+        <a href="#" id="openSurveyFooter">Opinar</a>
+        <a href="/v3/">Vitrine (V3)</a>
+        <a href="#privacidade">Privacidade</a>
+      </div>
+
+      <div style="color:var(--muted); font-weight:600;">
+        Aracruz - Espírito Santo - Brasil  -  © <span id="year"></span> RePhone — Todos os direitos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL SURVEY -->
+  <div class="modal-backdrop" id="surveyBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="surveyTitle" aria-describedby="surveyDesc">
+      <div class="modal-header">
+        <div>
+          <h3 id="surveyTitle">Perguntas rápidas (2 min)</h3>
+          <p id="surveyDesc">Sua opinião ajuda a definir o que é essencial para uma compra segura — e como o MATCH RePhone deve funcionar.</p>
+        </div>
+        <button class="btn btn-link" type="button" id="closeSurvey" aria-label="Fechar">Fechar ✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="surveyForm">
+          <fieldset class="q">
+            <legend>O que mais te preocupa ao comprar online?</legend>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="medos" value="Golpes" /> Golpes / fraude</label>
+              <label class="check"><input type="checkbox" name="medos" value="Produto não entregue" /> Produto não entregue</label>
+              <label class="check"><input type="checkbox" name="medos" value="Produto diferente" /> Produto diferente do anúncio</label>
+              <label class="check"><input type="checkbox" name="medos" value="Perfil falso" /> Perfil falso</label>
+              <label class="check"><input type="checkbox" name="medos" value="Pagamento inseguro" /> Pagamento inseguro</label>
+              <label class="check"><input type="checkbox" name="medos" value="Sem suporte" /> Falta de suporte</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="q">
+            <legend>O que mais te faria confiar em uma plataforma?</legend>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="confianca" value="KYC" /> Identidade verificada (KYC)</label>
+              <label class="check"><input type="checkbox" name="confianca" value="Localização" /> Localização verificada</label>
+              <label class="check"><input type="checkbox" name="confianca" value="Mediação inteligente" /> Mediação inteligente</label>
+              <label class="check"><input type="checkbox" name="confianca" value="Reembolso" /> Garantia de reembolso</label>
+              <label class="check"><input type="checkbox" name="confianca" value="Suporte" /> Suporte rápido e claro</label>
+              <label class="check"><input type="checkbox" name="confianca" value="Avaliações avançadas" /> Avaliações avançadas</label>
+            </div>
+          </fieldset>
+
+          <div class="q">
+            <label for="comentarios" style="display:block; font-weight:750; letter-spacing:-0.02em; margin-bottom:.45rem;">
+              Se você pudesse pedir UMA coisa para tornar compras mais seguras, o que seria?
+            </label>
+            <textarea id="comentarios" name="comentarios" placeholder="Escreva aqui (opcional)"></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-ghost" type="button" id="cancelSurvey">Cancelar</button>
+            <button class="btn btn-primary" type="submit" id="surveyBtn">Enviar opinião</button>
+          </div>
+
+          <div class="toast" id="surveyToast" role="status" aria-live="polite" style="display:none;"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIG (SEU WEBHOOK) ======
+    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxBjE5A5qKMylmA2vXYLJ4o6spPPspIXkJ4NYWOasQgMcYCtv0Z0nCFzYIdGwW1umiT-g/exec";
+    const WHATSAPP_BUSINESS_NUMBER = "5527998205547";
+
+    // Util
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    $("#year").textContent = new Date().getFullYear();
+
+    function onlyDigits(str){ return String(str || "").replace(/\D+/g, ""); }
+
+    function buildWhatsAppLink(nome, perfil){
+      const text = encodeURIComponent(
+        `Oi! Eu sou ${nome} e acabei de entrar na lista de espera da RePhone (${perfil}). Quero receber novidades sobre o MATCH RePhone e o modelo de preço justo.`
+      );
+      return `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${text}`;
+    }
+
+    function getRadioValue(name){
+      const el = document.querySelector(\`input[name="\${name}"]:checked\`);
+      return el ? el.value : "";
+    }
+
+    function setToast(el, msg, kind="ok"){
+      el.style.display = "block";
+      el.textContent = msg;
+
+      if(kind === "ok"){
+        el.style.background = "rgba(34,197,94,.10)";
+        el.style.borderColor = "rgba(22,163,74,.22)";
+        el.style.color = "#14532d";
+      } else {
+        el.style.background = "rgba(15,23,42,.06)";
+        el.style.borderColor = "rgba(15,23,42,.12)";
+        el.style.color = "var(--text)";
+      }
+    }
+
+    async function postToWebhook(payload){
+      const res = await fetch(ENDPOINT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      const out = await res.json().catch(() => ({}));
+      if(!res.ok || !out.ok) throw new Error(out.error || "Falha ao enviar.");
+      return out;
+    }
+
+    // ====== WAITLIST SUBMIT ======
+    const waitlistForm = $("#waitlistForm");
+    const toast = $("#toast");
+    const waitlistBtn = $("#waitlistBtn");
+
+    waitlistForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nome = $("#nome").value.trim();
+      const email = $("#email").value.trim();
+      const whatsapp = $("#whatsapp") ? $("#whatsapp").value.trim() : "";
+      const perfil = getRadioValue("perfil");
+      const consentLGPD = $("#consentLGPD") ? $("#consentLGPD").checked : true;
+      const consentWhatsApp = $("#consentWhatsApp") ? $("#consentWhatsApp").checked : false;
+
+      const waCta = $("#waCta");
+      const waLink = $("#waLink");
+      const waToast = $("#waToast");
+      if(waCta) waCta.style.display = "none";
+      if(waToast) waToast.style.display = "none";
+
+      if(!nome || !email || !perfil){
+        setToast(toast, "⚠️ Preencha nome, e-mail e selecione um perfil.", "err");
+        return;
+      }
+
+      if(!consentLGPD){
+        setToast(toast, "⚠️ Para continuar, aceite a Política de Privacidade.", "err");
+        return;
+      }
+
+      if(consentWhatsApp && !onlyDigits(whatsapp)){
+        setToast(toast, "⚠️ Informe um WhatsApp válido ou desmarque a autorização.", "err");
+        return;
+      }
+
+      waitlistBtn.disabled = true;
+      waitlistBtn.style.opacity = "0.85";
+
+      try{
+        await postToWebhook({
+          type: "waitlist",
+          nome, email, perfil,
+          whatsapp: onlyDigits(whatsapp),
+          consentWhatsApp,
+          consentLGPD,
+          userAgent: navigator.userAgent
+        });
+
+        setToast(toast, "✅ Inscrição registrada! Em breve você receberá novidades.", "ok");
+
+        if(consentWhatsApp && waCta && waLink){
+          waLink.href = buildWhatsAppLink(nome, perfil);
+          waCta.style.display = "block";
+          if(waToast){
+            waToast.style.display = "block";
+            setToast(waToast, "📲 Quer confirmar no WhatsApp? Clique abaixo para abrir uma mensagem pronta.", "ok");
+          }
+        }
+
+        waitlistForm.reset();
+      } catch (err){
+        setToast(toast, "❌ Não foi possível registrar agora. Tente novamente.", "err");
+      } finally {
+        waitlistBtn.disabled = false;
+        waitlistBtn.style.opacity = "1";
+      }
+    });
+
+    // ====== SURVEY MODAL ======
+    const backdrop = $("#surveyBackdrop");
+    const closeSurvey = $("#closeSurvey");
+    const cancelSurvey = $("#cancelSurvey");
+    const surveyForm = $("#surveyForm");
+    const surveyToast = $("#surveyToast");
+    const surveyBtn = $("#surveyBtn");
+    let lastFocus = null;
+
+    function openModal(){
+      lastFocus = document.activeElement;
+      backdrop.style.display = "flex";
+      backdrop.setAttribute("aria-hidden", "false");
+      closeSurvey.focus();
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(){
+      backdrop.style.display = "none";
+      backdrop.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      surveyToast.style.display = "none";
+      surveyToast.textContent = "";
+      surveyForm.reset();
+      if(lastFocus) lastFocus.focus();
+    }
+
+    // Open triggers
+    ["#openSurveyTop","#openSurveyHero","#openSurveyMatch","#openSurveyFooter","#openSurveyV3"].forEach(id => {
+      const el = $(id);
+      if(el) el.addEventListener("click", (e) => { e.preventDefault(); openModal(); });
+    });
+
+    closeSurvey.addEventListener("click", closeModal);
+    cancelSurvey.addEventListener("click", closeModal);
+
+    backdrop.addEventListener("click", (e) => { if(e.target === backdrop) closeModal(); });
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && backdrop.style.display === "flex") closeModal();
+    });
+
+    // Focus trap
+    document.addEventListener("keydown", (e) => {
+      if(backdrop.style.display !== "flex" || e.key !== "Tab") return;
+      const focusables = $$('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])', backdrop)
+        .filter(el => !el.disabled && el.offsetParent !== null);
+      if(!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    });
+
+    // ====== SURVEY SUBMIT ======
+    surveyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const medos = $$('input[name="medos"]:checked', surveyForm).map(x => x.value);
+      const confianca = $$('input[name="confianca"]:checked', surveyForm).map(x => x.value);
+      const comentarios = $("#comentarios").value.trim();
+
+      surveyBtn.disabled = true;
+      surveyBtn.style.opacity = "0.85";
+
+      try{
+        await postToWebhook({
+          type: "survey",
+          medos, confianca, comentarios,
+          userAgent: navigator.userAgent
+        });
+
+        surveyToast.style.display = "block";
+        setToast(surveyToast, "✅ Obrigado! Sua opinião foi registrada.", "ok");
+        setTimeout(closeModal, 900);
+
+      } catch(err){
+        surveyToast.style.display = "block";
+        setToast(surveyToast, "❌ Não foi possível enviar sua opinião. Tente novamente.", "err");
+      } finally {
+        surveyBtn.disabled = false;
+        surveyBtn.style.opacity = "1";
+      }
+    });
+  </script>
+  <script>
+  const OWNER_WA = "5527998205547"; // seu WhatsApp
+
+  document.getElementById("btnV3Gate").addEventListener("click", function(e){
+    e.preventDefault();
+    const msg = encodeURIComponent(
+      "Olá! Quero acesso ao V3 do RePhone. Meu nome é: ______. Pode me liberar o código de acesso?"
+    );
+    window.open(`https://wa.me/${OWNER_WA}?text=${msg}`, "_blank");
+    alert("Pedido enviado no WhatsApp. Você receberá um código temporário para entrar.");
+  });
+  </script>
 </body>
 </html>
