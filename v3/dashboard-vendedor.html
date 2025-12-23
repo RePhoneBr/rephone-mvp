@@ -18,65 +18,59 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <div>
             <h2 style="font-weight:900;">Meus Anúncios</h2>
-            <p id="vendedorNome" style="font-size:12px; color:#64748b;">Acessando RePhone...</p>
+            <p id="vendedorNome" style="font-size:12px; color:#64748b;">Sincronizando...</p>
         </div>
-        <a href="vendedor.html" class="btn-novo">+ Novo</a>
+        <a href="vendedor.html" class="btn-novo">+ Novo Anúncio</a>
     </div>
 
-    <div id="meusAnuncios">
-        </div>
+    <div id="meusAnuncios"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-        // NOTA: Para este dashboard ser privado, o vendedor deve estar logado. 
-        // Abaixo uso uma lógica simplificada por "WhatsApp" para o exemplo.
-        const vZap = prompt("Digite seu WhatsApp cadastrado para acessar seus anúncios:");
+        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        const q = query(collection(db, "anuncios"), where("whatsapp", "==", vZap));
-        
-        onSnapshot(q, snap => {
-            const container = document.getElementById('meusAnuncios');
-            container.innerHTML = snap.empty ? "<p>Você não possui anúncios.</p>" : "";
-            snap.forEach(d => {
-                const ad = d.data();
-                const card = document.createElement('div');
-                card.className = 'anuncio-card';
-                card.innerHTML = `
-                    <img src="${ad.fotos ? ad.fotos[0] : ''}">
-                    <div style="flex:1">
-                        <h4 style="font-size:14px;">${ad.modelo}</h4>
-                        <p style="font-size:12px; color:var(--green); font-weight:800;">R$ ${ad.preco}</p>
-                        <span style="font-size:10px; color:#94a3b8;">Status: ${ad.status}</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:5px;">
-                        <button class="btn-sold" onclick="marcarVendido('${d.id}')">VENDIDO</button>
-                        <button class="btn-edit" onclick="editarPreco('${d.id}', '${ad.preco}')">EDITAR R$</button>
-                    </div>
-                `;
-                container.appendChild(card);
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "vendedor-login.html"; return; }
+
+            const vSnap = await getDoc(doc(db, "vendedores", user.uid));
+            if(vSnap.exists()) document.getElementById('vendedorNome').innerText = vSnap.data().nome;
+
+            const q = query(collection(db, "anuncios"), where("uid", "==", user.uid));
+            onSnapshot(q, snap => {
+                const container = document.getElementById('meusAnuncios');
+                container.innerHTML = snap.empty ? "<p>Você não possui anúncios ativos.</p>" : "";
+                snap.forEach(d => {
+                    const ad = d.data();
+                    const card = document.createElement('div');
+                    card.className = 'anuncio-card';
+                    card.innerHTML = `
+                        <img src="${ad.fotos ? ad.fotos[0] : ''}">
+                        <div style="flex:1">
+                            <h4 style="font-size:14px;">${ad.modelo}</h4>
+                            <p style="font-size:12px; color:var(--green); font-weight:800;">R$ ${ad.preco}</p>
+                            <span style="font-size:10px; color:#94a3b8;">Status: ${ad.status}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:5px;">
+                            <button class="btn-sold" onclick="marcarVendido('${d.id}')">VENDIDO</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
             });
         });
 
         window.marcarVendido = async id => {
-            if(confirm("Parabéns pela venda! O anúncio será removido do radar.")) {
+            if(confirm("Marcar como vendido? Ele sairá do site.")) {
                 await updateDoc(doc(db, "anuncios", id), { status: "vendido" });
-            }
-        };
-
-        window.editarPreco = async (id, precoAtual) => {
-            const novoPreco = prompt("Novo valor (R$):", precoAtual);
-            if(novoPreco) {
-                await updateDoc(doc(db, "anuncios", id), { preco: novoPreco });
             }
         };
     </script>
