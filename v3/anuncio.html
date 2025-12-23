@@ -9,47 +9,67 @@
     :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg); padding: 15px; line-height: 1.4; color: var(--dark); }
+
     .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .btn-back { text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; }
     .distancia-top { font-size: 11px; font-weight: 900; color: var(--green); background: #dcfce7; padding: 5px 10px; border-radius: 20px; }
+
     .panel { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; }
-    .gallery img { width: 100%; border-radius: 22px; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #f1f5f9; }
+    
+    /* CORREÇÃO DA FOTO: Agora ela aparece inteira */
+    .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; }
+    .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    
     .badge-tipo { display: inline-block; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 15px; color: var(--muted); }
+    
     h1 { font-size: 26px; font-weight: 900; margin: 10px 0 5px; letter-spacing: -1px; line-height: 1.1; }
     .price { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 20px; display: block; }
+
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
     .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 2px; }
     .info-box span { font-size: 14px; font-weight: 700; }
+
     .desc-box { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
     .desc-box h4 { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
     .desc-box p { font-size: 14px; color: #475569; line-height: 1.6; }
+
     .review-box { background: #fffef0; border: 1px solid #fde68a; border-radius: 20px; padding: 15px; margin-top: 20px; }
     .stars { color: #facc15; font-size: 16px; }
-    .btn-zap { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 20px; border-radius: 22px; text-decoration: none; font-weight: 900; font-size: 17px; margin-top: 20px; }
+
+    .btn-zap { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 20px; border-radius: 22px; text-decoration: none; font-weight: 900; font-size: 17px; margin-top: 20px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2); }
   </style>
 </head>
 <body>
+
   <div class="header-nav">
     <a href="index.html" class="btn-back">← Voltar</a>
     <div id="pDist" class="distancia-top">Localizando...</div>
   </div>
+
   <div class="panel" id="mainPanel" style="display:none;">
-    <div class="gallery"><img id="pImg" src=""></div>
+    <div class="gallery"><img id="pImg" src="" alt="Foto"></div>
+    
     <span id="pTipo" class="badge-tipo">--</span>
     <h1 id="pModelo">---</h1>
     <span class="price" id="pPreco">R$ ---</span>
+
     <div class="info-grid">
         <div class="info-box"><small>Marca</small><span id="pMarca">--</span></div>
         <div class="info-box"><small>Capacidade</small><span id="pCap">--</span></div>
-        <div class="info-box"><small>Bateria</small><span id="pBat">--</span>%</div>
+        <div class="info-box"><small>Saúde Bateria</small><span id="pBat">--</span>%</div>
         <div class="info-box"><small>Condição</small><span id="pCon">--</span></div>
     </div>
+
     <div class="desc-box" id="descContainer" style="display:none;">
         <h4>Sobre este aparelho</h4>
         <p id="pDesc">---</p>
     </div>
-    <div class="review-box"><div class="stars">★★★★★ <small style="color:#a16207; font-size:10px;">(Match Score)</small></div></div>
+
+    <div class="review-box">
+        <div class="stars">★★★★★ <small style="color:#a16207; font-size:10px; font-weight:700;">(Match Score RePhone)</small></div>
+    </div>
+
     <a href="" id="pZap" target="_blank" class="btn-zap">CHAMAR NO WHATSAPP</a>
   </div>
 
@@ -63,23 +83,39 @@
 
     const id = new URLSearchParams(window.location.search).get('id');
 
+    // Função para formatar preço (ex: 3500 -> 3.500,00)
+    function formatarMoeda(valor) {
+        return parseFloat(valor).toLocaleString('pt-br', { minimumFractionDigits: 2 });
+    }
+
     async function load() {
       if(!id) return;
       const snap = await getDoc(doc(db, "anuncios", id));
       if (snap.exists()) {
         const ad = snap.data();
+        const linkAnuncio = window.location.href; // Captura o link atual
+
         document.getElementById('pImg').src = ad.fotos[0];
         document.getElementById('pModelo').innerText = ad.modelo;
-        document.getElementById('pPreco').innerText = `R$ ${ad.preco}`;
+        document.getElementById('pPreco').innerText = `R$ ${formatarMoeda(ad.preco)}`;
         document.getElementById('pMarca').innerText = ad.marca || 'Apple';
         document.getElementById('pCap').innerText = ad.capacidade;
         document.getElementById('pBat').innerText = ad.bateria;
         document.getElementById('pCon').innerText = ad.condicao;
         document.getElementById('pTipo').innerText = ad.tipo || 'Particular';
-        document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=Vi o ${ad.modelo} no RePhone.`;
-        if(ad.descricao) { document.getElementById('pDesc').innerText = ad.descricao; document.getElementById('descContainer').style.display = 'block'; }
+        
+        // WhatsApp com Link Direto do Anúncio
+        const msg = encodeURIComponent(`Olá! Vi o ${ad.modelo} no RePhone por R$ ${formatarMoeda(ad.preco)}. Ainda está disponível?\n\nLink do anúncio: ${linkAnuncio}`);
+        document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
+        
+        if(ad.descricao) {
+            document.getElementById('pDesc').innerText = ad.descricao;
+            document.getElementById('descContainer').style.display = 'block';
+        }
+
         const vSnap = await getDoc(doc(db, "vendedores", ad.uid));
         if (vSnap.exists() && vSnap.data().coords) calcDist(vSnap.data().coords);
+        
         document.getElementById('mainPanel').style.display = 'block';
       }
     }
@@ -93,7 +129,9 @@
         const a = Math.sin(dLa/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;
         const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         document.getElementById('pDist').innerText = `📍 A ${dist.toFixed(1)} km`;
-      }, () => { document.getElementById('pDist').innerText = "📍 GPS Inativo"; });
+      }, () => {
+        document.getElementById('pDist').innerText = "📍 GPS Desativado";
+      });
     }
     load();
   </script>
