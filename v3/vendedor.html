@@ -2,95 +2,118 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Anunciar Aparelho | RePhone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anunciar | RePhone</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; color: var(--dark); }
-        .card { background: white; padding: 25px; border-radius: 25px; max-width: 550px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .vendedor-tag { background: #f1f5f9; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
-        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; outline: none; font-size: 14px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .termo-box { background: #fffef0; border: 1px solid #fde68a; padding: 15px; border-radius: 15px; margin-top: 25px; font-size: 11px; line-height: 1.4; color: #92400e; }
-        .checkbox-container { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; cursor: pointer; }
-        .checkbox-container input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
-        button { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; margin-top: 20px; }
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: var(--bg); color: var(--dark); padding: 15px 15px 100px 15px; /* Padding extra no fundo para a barra */ }
+
+        .card { background: white; padding: 20px; border-radius: 25px; width: 100%; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        /* Estilo dos campos (conforme anterior) */
+        h2 { font-weight: 900; font-size: 22px; margin-bottom: 5px; }
+        label { display: block; font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin: 15px 0 6px 5px; }
+        input, select, textarea { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* Botão Principal */
+        #btnPublicar { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 18px; border: none; font-weight: 800; font-size: 16px; margin-top: 20px; }
+        
+        /* BARRA DE NAVEGAÇÃO FIXA (ESTILO APP) */
+        .nav-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: var(--dark);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .nav-item.active { color: var(--green); }
+        .nav-item i { display: block; font-size: 18px; margin-bottom: 4px; }
+
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div id="loading" style="text-align:center; padding:20px;">
-            <p>Sincronizando perfil...</p>
-            <p id="errorMsg" style="color:red; font-size:12px; display:none; margin-top:10px;">Erro: Perfil não encontrado. Verifique se o seu cadastro está completo.</p>
+        <div id="loading" style="text-align:center; padding:30px;">
+            <p style="font-weight:700;">Carregando formulário...</p>
         </div>
 
         <div id="formConteudo" style="display:none;">
-            <div class="vendedor-tag">
-                <span>Vendedor: <b id="displayNome">...</b></span>
-                <span id="displayLocal" style="color:var(--green); font-weight:bold;">📍 Localização Ativa</span>
-            </div>
+            <h2>Novo Anúncio</h2>
+            <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Cadastre seu aparelho no radar.</p>
 
-            <h2 style="font-weight:900;">Novo Anúncio</h2>
-            <br>
             <form id="formAnuncio">
-                <div class="grid-3">
-                    <div><label>Marca</label><input type="text" id="pMarca" placeholder="Apple" required></div>
-                    <div style="grid-column: span 2;"><label>Modelo</label><input type="text" id="pModelo" placeholder="iPhone 13 Pro" required></div>
-                </div>
+                <label>Modelo do Aparelho</label>
+                <input type="text" id="pModelo" placeholder="Ex: iPhone 13 Pro Max" required>
 
-                <div class="grid-3">
-                    <div><label>Cor</label><input type="text" id="pCor" required></div>
-                    <div><label>Capacidade</label>
+                <div class="grid-2">
+                    <div>
+                        <label>Capacidade</label>
                         <select id="pCapacidade">
                             <option>128GB</option><option>256GB</option><option>512GB</option><option>1TB</option>
                         </select>
                     </div>
-                    <div><label>Bateria (%)</label><input type="number" id="pBateria" required></div>
+                    <div>
+                        <label>Saúde Bateria (%)</label>
+                        <input type="number" id="pBateria" placeholder="85" required>
+                    </div>
                 </div>
 
-                <label>Condição</label>
-                <select id="pCondicao">
-                    <option value="Usado">📱 Usado</option>
-                    <option value="Novo">✨ Novo</option>
-                    <option value="Recondicionado">🔧 Recondicionado</option>
-                </select>
+                <div class="grid-2">
+                    <div>
+                        <label>Preço (R$)</label>
+                        <input type="number" id="pPreco" placeholder="0.00" required>
+                    </div>
+                    <div>
+                        <label>Condição</label>
+                        <select id="pCondicao">
+                            <option>Usado</option><option>Novo</option>
+                        </select>
+                    </div>
+                </div>
 
-                <label>Preço (R$)</label>
-                <input type="number" id="pPreco" required>
-
-                <label>Fotos</label>
+                <label>Fotos do Aparelho</label>
                 <input type="file" id="pFotos" accept="image/*" multiple required>
 
-                <div class="termo-box">
-                    <strong>DECLARAÇÃO DE POSSE</strong><br><br>
-                    Eu, <span id="termoNome" style="font-weight:bold;"></span>, declaro que este aparelho é de minha propriedade lícita e assumo total responsabilidade civil e criminal. Local registrado: <span id="termoGPS"></span>.
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="aceitoTermo" required>
-                        <span>Concordo com os termos.</span>
-                    </label>
-                </div>
-
-                <button type="submit" id="btnPublicar">PUBLICAR NO RADAR</button>
+                <button type="submit" id="btnPublicar">PUBLICAR AGORA</button>
             </form>
         </div>
     </div>
+
+    <nav class="nav-bottom">
+        <a href="index.html" class="nav-item">🏠<br>Radar</a>
+        <a href="vendedor.html" class="nav-item active">➕<br>Anunciar</a>
+        <a href="dashboard-vendedor.html" class="nav-item">📊<br>Meus Docs</a>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
-            authDomain: "rephone-a0a80.firebaseapp.com", 
-            projectId: "rephone-a0a80", 
-            storageBucket: "rephone-a0a80.firebasestorage.app", 
-            messagingSenderId: "431497247030", 
-            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -99,46 +122,26 @@
         let dadosVendedor = null;
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = "vendedor-login.html";
-                return;
-            }
-
-            try {
-                const docRef = doc(db, "vendedores", user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    dadosVendedor = docSnap.data();
-                    document.getElementById('displayNome').innerText = dadosVendedor.nome;
-                    document.getElementById('termoNome').innerText = dadosVendedor.nome;
-                    document.getElementById('termoGPS').innerText = dadosVendedor.coords || "GPS não registrado";
-                    
-                    document.getElementById('loading').style.display = "none";
-                    document.getElementById('formConteudo').style.display = "block";
-                } else {
-                    document.getElementById('errorMsg').style.display = "block";
-                    console.error("Perfil não encontrado para o UID: ", user.uid);
-                }
-            } catch (err) {
-                document.getElementById('errorMsg').innerText = "Erro de conexão: " + err.message;
-                document.getElementById('errorMsg').style.display = "block";
+            if (!user) { window.location.href = "vendedor-login.html"; return; }
+            const docSnap = await getDoc(doc(db, "vendedores", user.uid));
+            if (docSnap.exists()) {
+                dadosVendedor = docSnap.data();
+                document.getElementById('loading').style.display = "none";
+                document.getElementById('formConteudo').style.display = "block";
             }
         });
 
         document.getElementById('formAnuncio').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnPublicar');
-            btn.innerText = "ENVIANDO FOTOS...";
-            btn.disabled = true;
+            btn.innerText = "ENVIANDO..."; btn.disabled = true;
 
             const files = document.getElementById('pFotos').files;
             const urls = [];
             
             try {
                 for (let file of files) {
-                    const fd = new FormData(); 
-                    fd.append("image", file);
+                    const fd = new FormData(); fd.append("image", file);
                     const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
                     const d = await res.json(); 
                     if(d.success) urls.push(d.data.url);
@@ -150,9 +153,7 @@
                     whatsapp: dadosVendedor.zap,
                     cidade: dadosVendedor.cidade,
                     tipo: dadosVendedor.tipo || "Particular",
-                    marca: document.getElementById('pMarca').value,
                     modelo: document.getElementById('pModelo').value,
-                    cor: document.getElementById('pCor').value,
                     capacidade: document.getElementById('pCapacidade').value,
                     condicao: document.getElementById('pCondicao').value,
                     bateria: document.getElementById('pBateria').value,
@@ -162,13 +163,16 @@
                     dataAnuncio: new Date()
                 });
 
-                alert("Anúncio publicado com sucesso no Radar!");
-                window.location.href = "dashboard-vendedor.html";
+                // OPÇÃO A: LIMPAR E FICAR NA PÁGINA
+                alert("Sucesso! Anúncio publicado.");
+                document.getElementById('formAnuncio').reset();
+                btn.innerText = "PUBLICAR OUTRO";
+                btn.disabled = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
 
             } catch (err) {
-                alert("Erro ao processar anúncio: " + err.message);
+                alert("Erro ao publicar: " + err.message);
                 btn.disabled = false;
-                btn.innerText = "PUBLICAR NO RADAR";
             }
         };
     </script>
