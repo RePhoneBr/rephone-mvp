@@ -8,36 +8,23 @@
         :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; color: var(--dark); }
         .card { background: white; padding: 25px; border-radius: 25px; max-width: 550px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        
         .vendedor-tag { background: #f1f5f9; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
-        
         label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
         input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; outline: none; font-size: 14px; }
-        
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        
-        /* TERMO DE RESPONSABILIDADE */
-        .termo-box { 
-            background: #fffef0; 
-            border: 1px solid #fde68a; 
-            padding: 15px; 
-            border-radius: 15px; 
-            margin-top: 25px; 
-            font-size: 11px; 
-            line-height: 1.4; 
-            color: #92400e; 
-        }
+        .termo-box { background: #fffef0; border: 1px solid #fde68a; padding: 15px; border-radius: 15px; margin-top: 25px; font-size: 11px; line-height: 1.4; color: #92400e; }
         .checkbox-container { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; cursor: pointer; }
         .checkbox-container input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
-
         button { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; margin-top: 20px; }
-        button:disabled { background: #cbd5e1; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div id="loading">Sincronizando perfil...</div>
+        <div id="loading" style="text-align:center; padding:20px;">
+            <p>Sincronizando perfil...</p>
+            <p id="errorMsg" style="color:red; font-size:12px; display:none; margin-top:10px;">Erro: Perfil não encontrado. Verifique se o seu cadastro está completo.</p>
+        </div>
 
         <div id="formConteudo" style="display:none;">
             <div class="vendedor-tag">
@@ -45,64 +32,43 @@
                 <span id="displayLocal" style="color:var(--green); font-weight:bold;">📍 Localização Ativa</span>
             </div>
 
-            <h2 style="font-weight:900;">Detalhes do Aparelho</h2>
+            <h2 style="font-weight:900;">Novo Anúncio</h2>
             
             <form id="formAnuncio">
                 <div class="grid-3">
-                    <div>
-                        <label>Marca</label>
-                        <input type="text" id="pMarca" placeholder="Ex: Apple" required>
-                    </div>
-                    <div style="grid-column: span 2;">
-                        <label>Modelo exato</label>
-                        <input type="text" id="pModelo" placeholder="Ex: iPhone 14 Pro Max" required>
-                    </div>
+                    <div><label>Marca</label><input type="text" id="pMarca" placeholder="Apple" required></div>
+                    <div style="grid-column: span 2;"><label>Modelo</label><input type="text" id="pModelo" placeholder="iPhone 13 Pro" required></div>
                 </div>
 
                 <div class="grid-3">
-                    <div>
-                        <label>Cor</label>
-                        <input type="text" id="pCor" placeholder="Ex: Titânio" required>
-                    </div>
-                    <div>
-                        <label>Capacidade</label>
+                    <div><label>Cor</label><input type="text" id="pCor" required></div>
+                    <div><label>Capacidade</label>
                         <select id="pCapacidade">
-                            <option>64GB</option><option>128GB</option><option>256GB</option>
-                            <option>512GB</option><option>1TB</option>
+                            <option>128GB</option><option>256GB</option><option>512GB</option>
                         </select>
                     </div>
-                    <div>
-                        <label>Saúde Bateria</label>
-                        <input type="number" id="pBateria" placeholder="%" required>
-                    </div>
+                    <div><label>Bateria (%)</label><input type="number" id="pBateria" required></div>
                 </div>
 
-                <label>Condição do Aparelho</label>
+                <label>Condição</label>
                 <select id="pCondicao">
-                    <option value="Usado">📱 Usado (Original)</option>
-                    <option value="Novo">✨ Novo (Lacrado)</option>
-                    <option value="Recondicionado">🔧 Recondicionado (Grade A)</option>
+                    <option value="Usado">📱 Usado</option>
+                    <option value="Novo">✨ Novo</option>
+                    <option value="Recondicionado">🔧 Recondicionado</option>
                 </select>
 
-                <label>Preço de Venda (R$)</label>
-                <input type="number" id="pPreco" placeholder="Ex: 4500" required>
+                <label>Preço (R$)</label>
+                <input type="number" id="pPreco" required>
 
-                <label>Descrição Complementar</label>
-                <textarea id="pDesc" rows="2" placeholder="Ex: Único dono, com NF e caixa..."></textarea>
-
-                <label>Fotos Reais do Produto</label>
+                <label>Fotos</label>
                 <input type="file" id="pFotos" accept="image/*" multiple required>
 
                 <div class="termo-box">
-                    <strong>DECLARAÇÃO DE POSSE E RESPONSABILIDADE</strong><br>
-                    Eu, <span id="termoNome" style="text-decoration: underline; font-weight:bold;"></span>, 
-                    declaro para os devidos fins que o aparelho acima descrito é de minha propriedade e procedência lícita. 
-                    Assumo total responsabilidade civil e criminal sobre a veracidade das informações e sobre qualquer evento futuro relacionado a este anúncio. 
-                    Estou ciente que minha localização (<span id="termoGPS"></span>) foi registrada para fins de segurança da plataforma RePhone.
-
+                    <strong>DECLARAÇÃO DE POSSE</strong><br>
+                    Eu, <span id="termoNome" style="font-weight:bold;"></span>, declaro que este aparelho é de minha propriedade lícita e assumo total responsabilidade civil e criminal. Local registrado: <span id="termoGPS"></span>.
                     <label class="checkbox-container">
                         <input type="checkbox" id="aceitoTermo" required>
-                        <span>Li e concordo com os termos de posse e responsabilidade.</span>
+                        <span>Concordo com os termos.</span>
                     </label>
                 </div>
 
@@ -116,7 +82,15 @@
         import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            messagingSenderId: "431497247030", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -125,27 +99,41 @@
         let dadosVendedor = null;
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user) { window.location.href = "vendedor-login.html"; }
-            else {
-                const snap = await getDoc(doc(db, "vendedores", user.uid));
-                if (snap.exists()) {
-                    dadosVendedor = snap.data();
+            if (!user) {
+                window.location.href = "vendedor-login.html";
+                return;
+            }
+
+            try {
+                // Tenta buscar o documento com o ID do usuário (UID)
+                const docRef = doc(db, "vendedores", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    dadosVendedor = docSnap.data();
                     document.getElementById('displayNome').innerText = dadosVendedor.nome;
                     document.getElementById('termoNome').innerText = dadosVendedor.nome;
-                    document.getElementById('termoGPS').innerText = dadosVendedor.coords;
+                    document.getElementById('termoGPS').innerText = dadosVendedor.coords || "GPS não registrado";
+                    
                     document.getElementById('loading').style.display = "none";
                     document.getElementById('formConteudo').style.display = "block";
+                } else {
+                    // Se não encontrar, mostra o erro
+                    document.getElementById('errorMsg').style.display = "block";
+                    console.error("UID não encontrado no Firestore: ", user.uid);
                 }
+            } catch (err) {
+                document.getElementById('errorMsg').innerText = "Erro de conexão: " + err.message;
+                document.getElementById('errorMsg').style.display = "block";
             }
         });
 
         document.getElementById('formAnuncio').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnPublicar');
-            btn.innerText = "VALIDANDO E ENVIANDO...";
+            btn.innerText = "ENVIANDO FOTOS...";
             btn.disabled = true;
 
-            // Upload ImgBB
             const files = document.getElementById('pFotos').files;
             const urls = [];
             for (let file of files) {
@@ -160,8 +148,6 @@
                     vendedorNome: dadosVendedor.nome,
                     whatsapp: dadosVendedor.zap,
                     cidade: dadosVendedor.cidade,
-                    coordsOrigem: dadosVendedor.coords,
-                    tipoVendedor: dadosVendedor.tipo,
                     marca: document.getElementById('pMarca').value,
                     modelo: document.getElementById('pModelo').value,
                     cor: document.getElementById('pCor').value,
@@ -169,16 +155,14 @@
                     condicao: document.getElementById('pCondicao').value,
                     bateria: document.getElementById('pBateria').value,
                     preco: document.getElementById('pPreco').value,
-                    descricao: document.getElementById('pDesc').value,
                     fotos: urls,
-                    termoAceito: true,
-                    dataAnuncio: new Date(),
-                    status: "pendente"
+                    status: "pendente",
+                    dataAnuncio: new Date()
                 });
-                alert("Anúncio publicado! Aguarde a moderação.");
+                alert("Anúncio enviado!");
                 window.location.href = "dashboard-vendedor.html";
             } catch (err) {
-                alert("Erro ao salvar. Tente novamente.");
+                alert("Erro ao salvar anúncio.");
                 btn.disabled = false;
             }
         };
