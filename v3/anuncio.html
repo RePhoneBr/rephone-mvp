@@ -12,12 +12,12 @@
 
         /* HEADER */
         .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .btn-back { text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; }
-        .badge-verificado { font-size: 11px; font-weight: 900; color: var(--green); background: #dcfce7; padding: 5px 12px; border-radius: 20px; }
+        .btn-back { text-decoration: none; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+        .badge-verificado { font-size: 11px; font-weight: 900; color: var(--green); background: #dcfce7; padding: 6px 14px; border-radius: 20px; }
 
         .panel { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
-        /* FOTO SEM CORTES */
+        /* FOTO DO IMGBB */
         .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
@@ -25,7 +25,7 @@
         .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 15px; display: block; }
         .price { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 25px; display: block; }
 
-        /* GRID DE INFORMAÇÕES TÉCNICAS - ORDEM SOLICITADA */
+        /* GRID TÉCNICO - ORDEM DEFINIDA */
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
         .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
         .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 4px; }
@@ -35,6 +35,7 @@
         .desc-box h4 { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
         .desc-box p { font-size: 14px; color: #475569; line-height: 1.6; }
 
+        /* BOTÃO WHATSAPP */
         .btn-zap { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 20px; border-radius: 22px; text-decoration: none; font-weight: 900; font-size: 17px; margin-top: 25px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2); }
     </style>
 </head>
@@ -42,7 +43,7 @@
 
     <div class="header-nav">
         <a href="index.html" class="btn-back">← Voltar ao Radar</a>
-        <div id="pVendedorTipo" class="badge-verificado">CARREGANDO...</div>
+        <div id="pVendedorTipo" class="badge-verificado">ANALISANDO VENDEDOR...</div>
     </div>
 
     <div class="panel" id="mainPanel" style="display:none;">
@@ -67,10 +68,10 @@
 
         <div class="desc-box">
             <h4>Descrição do Vendedor</h4>
-            <p id="pDesc">O vendedor não forneceu uma descrição detalhada.</p>
+            <p id="pDesc">Sem descrição adicional.</p>
         </div>
 
-        <a href="" id="pZap" target="_blank" class="btn-zap">NEGOCIAR AGORA</a>
+        <a href="" id="pZap" target="_blank" class="btn-zap">NEGOCIAR AGORA NO WHATSAPP</a>
     </div>
 
     <script type="module">
@@ -91,46 +92,55 @@
         const idAnuncio = urlParams.get('id');
 
         async function carregarAnuncio() {
-            if (!idAnuncio) return;
-
-            const docRef = doc(db, "anuncios", idAnuncio);
-            const snap = await getDoc(docRef);
-
-            if (snap.exists()) {
-                const ad = snap.data();
-
-                // Cabeçalho e Foto
-                document.getElementById('pImg').src = ad.fotos[0];
-                document.getElementById('pModeloHeader').innerText = ad.modelo;
-                document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-                document.getElementById('pLocal').innerText = `📍 ${ad.cidade || 'Local não informado'}`;
-                
-                // Preenchimento do Grid na Ordem Solicitada
-                document.getElementById('pMarca').innerText = ad.marca || '--';
-                document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
-                document.getElementById('pCor').innerText = ad.cor || '--';
-                document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
-                document.getElementById('pCondicao').innerText = ad.condicao || '--';
-                document.getElementById('pEstado').innerText = ad.estado || ad.conservacao || '--';
-                document.getElementById('pBateria').innerText = ad.bateria || '--';
-                document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
-                
-                // Selo do Vendedor
-                const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
-                document.getElementById('pVendedorTipo').innerText = tipoTxt;
-
-                if (ad.descricao) document.getElementById('pDesc').innerText = ad.descricao;
-
-                // WhatsApp
-                const msg = encodeURIComponent(`Olá! Vi o ${ad.modelo} no RePhone por R$ ${ad.preco}. Ainda está disponível?`);
-                document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
-
-                document.getElementById('mainPanel').style.display = 'block';
-            } else {
-                alert("Anúncio não encontrado.");
+            if (!idAnuncio) {
                 window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "anuncios", idAnuncio);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    const ad = snap.data();
+
+                    // Preenchimento de Imagem e Cabeçalho
+                    document.getElementById('pImg').src = ad.fotos[0];
+                    document.getElementById('pModeloHeader').innerText = ad.modelo;
+                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
+                    document.getElementById('pLocal').innerText = `📍 ${ad.cidade || 'Localização não informada'}`;
+                    
+                    // Preenchimento do Grid (Ordem solicitada)
+                    document.getElementById('pMarca').innerText = ad.marca || '--';
+                    document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
+                    document.getElementById('pCor').innerText = ad.cor || '--';
+                    document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
+                    document.getElementById('pCondicao').innerText = ad.condicao || '--';
+                    document.getElementById('pEstado').innerText = ad.estado || '--';
+                    document.getElementById('pBateria').innerText = ad.bateria || '--';
+                    document.getElementById('pGarantia').innerText = ad.garantia || 'Consulte o vendedor';
+                    
+                    // Tipo de Vendedor
+                    const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
+                    document.getElementById('pVendedorTipo').innerText = tipoTxt;
+
+                    if (ad.descricao) document.getElementById('pDesc').innerText = ad.descricao;
+
+                    // Link do WhatsApp com mensagem automática
+                    const textoZap = `Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}. Ainda está disponível?`;
+                    document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(textoZap)}`;
+
+                    document.getElementById('mainPanel').style.display = 'block';
+                } else {
+                    alert("Este anúncio não existe mais.");
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error("Erro ao carregar:", error);
+                alert("Erro de conexão com o banco de dados.");
             }
         }
+
         carregarAnuncio();
     </script>
 </body>
