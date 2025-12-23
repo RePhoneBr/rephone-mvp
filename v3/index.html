@@ -81,7 +81,7 @@
         <a href="index.html" class="logo">Re<span>Phone</span></a>
         <div class="nav-btns">
             <a href="registro-vendedor.html" class="btn-header btn-reg">Registrar</a>
-            <a href="dashboard-vendedor.html" class="btn-header btn-vend">Vender</a>
+            <a href="vendedor-login.html" class="btn-header btn-vend">Vender</a>
         </div>
     </header>
 
@@ -153,34 +153,58 @@
 
         window.fazerMatch = () => {
             const circle = document.getElementById('mCircle');
+            const mStatus = document.getElementById('mText');
             const mod = document.getElementById('matchModelo').value.toLowerCase();
             const pMax = parseFloat(document.getElementById('matchPreco').value.replace(/\D/g, '')) || Infinity;
 
-            if(!mod) return alert("Digite um modelo.");
+            if(!mod) return alert("Digite o modelo que deseja.");
 
             circle.className = "status-circle searching";
-            document.getElementById('mText').innerText = "CALCULANDO VANTAGEM...";
+            mStatus.innerText = "CALCULANDO MELHOR VANTAGEM...";
 
             setTimeout(() => {
-                let candidatos = todosAnuncios.filter(a => a.modelo.toLowerCase().includes(mod) && parseFloat(a.preco) <= pMax);
+                let candidatos = todosAnuncios.filter(a => a.modelo.toLowerCase().includes(mod));
 
-                if(candidatos.length > 0) {
-                    candidatos.forEach(ad => {
-                        let score = 0;
-                        if(ad.condicao === "Novo" || ad.condicao === "Lacrado") score += 500;
-                        if(ad.estado === "Excelente") score += 300;
-                        score += (10000 - parseFloat(ad.preco)) / 10;
-                        if(ad.tipoVendedor === "lojista") score += 200;
-                        ad.matchScore = score;
-                    });
-
-                    candidatos.sort((a, b) => b.matchScore - a.matchScore);
-                    showMatchPopup(candidatos[0]);
-                    circle.className = "status-circle"; circle.style.background = "#16a34a";
-                } else {
-                    circle.className = "status-circle"; circle.style.background = "#ef4444";
-                    alert("Nenhuma oferta encontrada.");
+                if (candidatos.length === 0) {
+                    circle.className = "status-circle";
+                    circle.style.background = "#ef4444";
+                    mStatus.innerText = "NENHUM MODELO ENCONTRADO.";
+                    return;
                 }
+
+                let dentroDoPreco = candidatos.filter(a => parseFloat(a.preco) <= pMax);
+                let listaParaProcessar;
+                let ehAlternativa = false;
+
+                if (dentroDoPreco.length > 0) {
+                    listaParaProcessar = dentroDoPreco;
+                    mStatus.innerText = "MATCH ENCONTRADO!";
+                } else {
+                    listaParaProcessar = candidatos;
+                    ehAlternativa = true;
+                    mStatus.innerText = "EXIBINDO MELHOR ALTERNATIVA...";
+                }
+
+                listaParaProcessar.forEach(ad => {
+                    let score = 0;
+                    if(ad.condicao === "Novo" || ad.condicao === "Lacrado") score += 1000;
+                    if(ad.estado === "Excelente") score += 500;
+                    if(ad.estado === "Ótimo") score += 300;
+                    const diffPreco = Math.abs(parseFloat(ad.preco) - pMax);
+                    score += (100000 - diffPreco) / 100;
+                    if(ad.tipoVendedor === "lojista") score += 200;
+                    ad.matchScore = score;
+                });
+
+                listaParaProcessar.sort((a, b) => b.matchScore - a.matchScore);
+                const vencedor = listaParaProcessar[0];
+                
+                const labelPopup = document.querySelector('.match-label');
+                if(labelPopup) labelPopup.innerText = ehAlternativa ? "MELHOR OPÇÃO!" : "MATCH!";
+
+                showMatchPopup(vencedor);
+                circle.className = "status-circle"; 
+                circle.style.background = "#16a34a";
             }, 1500);
         };
 
