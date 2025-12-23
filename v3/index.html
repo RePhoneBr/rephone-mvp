@@ -90,14 +90,15 @@
             lista.forEach(ad => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `
-                    <div class="badge-tipo">${ad.tipo || 'Particular'}</div>
-                    <img src="${ad.fotos ? ad.fotos[0] : ''}">
-                    <h3>${ad.modelo}</h3>
-                    <p style="font-size:11px; color:#64748b;">${ad.capacidade} • Bateria ${ad.bateria}%<br>📍 ${ad.cidade}</p>
-                    <span class="price">R$ ${ad.preco}</span>
-                    <a href="https://wa.me/55${ad.whatsapp}?text=Vi o ${ad.modelo} no RePhone. Ainda está disponível?" target="_blank" class="btn-zap-card">WHATSAPP</a>
-                `;
+               card.innerHTML = `
+    <a href="anuncio.html?id=${ad.id}" style="text-decoration:none; color:inherit;">
+        <div class="badge-tipo">${ad.tipo || 'Particular'}</div>
+        <img src="${ad.fotos ? ad.fotos[0] : ''}">
+        <h3>${ad.modelo}</h3>
+        <p style="font-size:11px; color:#64748b;">${ad.capacidade} • Bateria ${ad.bateria}%</p>
+        <span class="price">R$ ${ad.preco}</span>
+    </a>
+`;
                 grid.appendChild(card);
             });
         }
