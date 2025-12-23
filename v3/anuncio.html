@@ -3,62 +3,147 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <title>Anúncio — RePhone V3</title>
-  <link rel="icon" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Detalhes do Aparelho | RePhone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --dark: #0f172a; --green: #16a34a; --muted: #64748b; --bg: #f8fafc; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+    body { background: var(--bg); color: var(--dark); padding-bottom: 40px; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header-mini { padding: 15px 0; display: flex; align-items: center; justify-content: space-between; }
+    .btn-back { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 700; }
+    
+    .panel { background: white; border-radius: 30px; padding: 25px; shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .main-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+    
+    .gallery img { width: 100%; border-radius: 20px; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #eee; }
+    
+    h1 { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
+    .price-tag { font-size: 32px; font-weight: 900; color: var(--green); margin: 15px 0; }
+    
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; background: #f1f5f9; }
+    .badge-verif { background: #dcfce7; color: #166534; }
+
+    .analysis-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 20px; margin-top: 25px; }
+    .stars { color: #facc15; font-size: 18px; }
+    
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; font-size: 14px; }
+    .info-item b { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+    .btn-zap { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 20px; border-radius: 18px; text-decoration: none; font-weight: 900; font-size: 16px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <div class="container topbar">
-      <a class="brand" href="index.html">
-        <img src="assets/logo-rephone.svg" alt="RePhone" />
-        <div>
-          <strong>RePhone</strong>
-          <small>Voltar para vitrine</small>
-        </div>
-      </a>
-      <div class="search-wrap">
-        <a class="btn btn-ghost" href="index.html">← Voltar</a>
-      </div>
+
+  <div class="container">
+    <div class="header-mini">
+        <a href="index.html" class="btn-back">← Voltar para vitrine</a>
+        <span id="distanciaText" style="font-size: 12px; font-weight: 800; color: var(--green);">Calculando distância...</span>
     </div>
-  </header>
 
-  <main class="container" style="padding:1.4rem 0 2.4rem;">
-    <div class="panel">
-      <h3 id="title">Carregando anúncio…</h3>
-      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
-        <div style="flex:0 0 260px;">
-          <div class="media" style="height:240px; border-radius:18px; overflow:hidden;">
-            <img id="img" src="assets/phone-placeholder.svg" alt="" style="max-height:220px;" />
-          </div>
+    <div class="panel" id="conteudoAnuncio" style="display:none;">
+      <div class="main-info">
+        <div class="gallery">
+          <img id="mainImg" src="" alt="Foto do aparelho">
         </div>
 
-        <div style="flex:1; min-width:260px;">
-          <div class="price" id="price" style="font-size:1.45rem;">—</div>
-          <div class="meta" id="meta" style="margin-top:.4rem;">—</div>
-          <div class="badges" id="badges" style="margin-top:.7rem;"></div>
+        <div>
+          <div class="badge-row">
+            <span id="badgeTipo" class="badge">Particular</span>
+            <span class="badge badge-verif">✅ Procedência Checada</span>
+          </div>
+          <h1 id="modeloTitle">Carregando...</h1>
+          <div class="price-tag" id="precoText">R$ ---</div>
+          
+          <div class="info-grid">
+            <div class="info-item"><b>Saúde Bateria</b> <span id="infoBateria">--</span>%</div>
+            <div class="info-item"><b>Capacidade</b> <span id="infoCapacidade">--</span></div>
+            <div class="info-item"><b>Condição</b> <span id="infoCondicao">--</span></div>
+            <div class="info-item"><b>Localização</b> <span id="infoCidade">--</span></div>
+          </div>
 
-          <div style="margin-top:1rem; border:1px solid rgba(15,23,42,.10); border-radius:18px; padding:.95rem; background:rgba(255,255,255,.86);">
-            <div style="font-weight:950; letter-spacing:-.02em;">Opinião técnica RePhone (futuro)</div>
-            <div style="margin-top:.45rem; color:var(--muted); font-weight:700;">
-              No produto final, aqui entra o Assistente Técnico neutro (CTR). No V3, mantemos apenas a estrutura.
+          <div class="analysis-box">
+            <div style="margin-bottom:10px;">
+                <b style="font-size:12px;">Avaliação do Anúncio:</b>
+                <div class="stars">★★★★★</div>
+            </div>
+            <div>
+                <b style="font-size:12px;">Oportunidade de Preço:</b>
+                <div class="stars" id="starsPreco">★★★★★</div>
             </div>
           </div>
 
-          <div style="margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap;">
-            <button class="btn btn-primary" type="button">Continuar (fluxo futuro)</button>
-            <button class="btn btn-ghost" type="button">Salvar</button>
-          </div>
+          <a href="#" id="linkZap" target="_blank" class="btn-zap">CHAMAR NO WHATSAPP</a>
         </div>
       </div>
-
-      <div style="margin-top:1rem; color:var(--muted); font-weight:700;">
-        Descrição (simulada): anúncio demonstrativo do V3 para validar experiência de vitrine + MATCH.
-      </div>
     </div>
-  </main>
+  </div>
 
-  <script src="js/anuncio.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const adId = urlParams.get('id');
+
+    async function carregarDetalhes() {
+      if (!adId) return;
+
+      const docRef = doc(db, "anuncios", adId);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()) {
+        const ad = snap.data();
+        
+        // Preenche os campos
+        document.getElementById('modeloTitle').innerText = ad.modelo;
+        document.getElementById('precoText').innerText = `R$ ${ad.preco}`;
+        document.getElementById('mainImg').src = ad.fotos[0];
+        document.getElementById('infoBateria').innerText = ad.bateria;
+        document.getElementById('infoCapacidade').innerText = ad.capacidade;
+        document.getElementById('infoCondicao').innerText = ad.condicao;
+        document.getElementById('infoCidade').innerText = ad.cidade;
+        document.getElementById('badgeTipo').innerText = ad.tipo || "Particular";
+        document.getElementById('linkZap').href = `https://wa.me/55${ad.whatsapp}?text=Olá, vi seu ${ad.modelo} no RePhone e tenho interesse!`;
+
+        // Busca localização do vendedor para calcular distância
+        const vSnap = await getDoc(doc(db, "vendedores", ad.uid));
+        if (vSnap.exists() && vSnap.data().coords) {
+            calcularDistancia(vSnap.data().coords);
+        } else {
+            document.getElementById('distanciaText').innerText = "📍 Localização não disponível";
+        }
+
+        document.getElementById('conteudoAnuncio').style.display = "block";
+      }
+    }
+
+    function calcularDistancia(coordsVendedor) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const [lat1, lon1] = coordsVendedor.split(',').map(Number);
+        const lat2 = pos.coords.latitude;
+        const lon2 = pos.coords.longitude;
+
+        const R = 6371; // Raio da Terra em km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const d = R * c;
+
+        document.getElementById('distanciaText').innerText = `📍 Aprox. ${d.toFixed(1)} km de você`;
+      }, () => {
+        document.getElementById('distanciaText').innerText = "📍 Ative o GPS para ver a distância";
+      });
+    }
+
+    carregarDetalhes();
+  </script>
 </body>
 </html>
