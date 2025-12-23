@@ -10,6 +10,7 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); color: var(--dark); }
         
+        /* BLOQUEIO DESKTOP */
         #mobileOnly { 
             display:none; 
             position:fixed; 
@@ -27,6 +28,7 @@
         .qr-container img { width: 150px; height: 150px; border: 5px solid white; border-radius: 15px; }
         .qr-container p { color: #16a34a; font-weight: 900; font-size: 12px; margin-top: 10px; letter-spacing: 1px; }
 
+        /* INTERFACE */
         .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
         .logo span { color: var(--green); }
@@ -37,6 +39,7 @@
         
         .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
         .hero h1 { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        
         .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
         .match-card label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
         .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 20px; font-size: 15px; outline: none; }
@@ -60,7 +63,7 @@
     <div id="mobileOnly">
         <div class="bloqueio-content">
             <div class="qr-container">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.rephone.com.br" alt="QR Code RePhone">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rephone-a0a80.web.app" alt="QR Code RePhone">
                 <p>ESCANEIE PARA ACESSAR NO CELULAR</p>
             </div>
         </div>
@@ -114,6 +117,9 @@
             renderizar(todosAnuncios);
         });
 
+        // Função de formatação para o card
+        function format(v) { return parseFloat(v).toLocaleString('pt-br'); }
+
         function renderizar(lista) {
             const grid = document.getElementById('radarGrid');
             grid.innerHTML = lista.length === 0 ? '<p style="padding:20px; color:#94a3b8;">Nenhum anúncio encontrado.</p>' : "";
@@ -127,7 +133,7 @@
                         <img src="${ad.fotos ? ad.fotos[0] : ''}">
                         <h3>${ad.modelo}</h3>
                         <p style="font-size:10px; color:#64748b; margin-top:3px;">${ad.capacidade} • Bateria ${ad.bateria}%</p>
-                        <span class="price">R$ ${ad.preco}</span>
+                        <span class="price">R$ ${format(ad.preco)}</span>
                     </a>
                 `;
                 grid.appendChild(card);
@@ -138,6 +144,7 @@
             const mod = document.getElementById('matchModelo').value.toLowerCase();
             const inputPreco = document.getElementById('matchPreco').value;
             const vMax = parseFloat(inputPreco.replace(/\D/g, '')) || Infinity;
+
             const filtrados = todosAnuncios.filter(a => {
                 const modeloMatch = a.modelo.toLowerCase().includes(mod);
                 const precoNum = parseFloat(String(a.preco).replace(/\D/g, ''));
@@ -150,6 +157,7 @@
             document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             const chipId = (tipo === 'Todos') ? 'chip-Todos' : 'chip-Lojista';
             document.getElementById(chipId).classList.add('active');
+
             if (tipo === 'Todos') renderizar(todosAnuncios);
             else renderizar(todosAnuncios.filter(a => a.tipo === tipo));
         };
