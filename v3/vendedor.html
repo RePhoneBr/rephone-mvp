@@ -1,6 +1,149 @@
-// ... (mantenha o HTML e CSS original)
-// NO SCRIPT, mude a parte do addDoc para:
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Anunciar Aparelho | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; color: var(--dark); }
+        .card { background: white; padding: 25px; border-radius: 25px; max-width: 550px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .vendedor-tag { background: #f1f5f9; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; outline: none; font-size: 14px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .termo-box { background: #fffef0; border: 1px solid #fde68a; padding: 15px; border-radius: 15px; margin-top: 25px; font-size: 11px; line-height: 1.4; color: #92400e; }
+        .checkbox-container { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; cursor: pointer; }
+        .checkbox-container input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+        button { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div id="loading" style="text-align:center; padding:20px;">
+            <p>Sincronizando perfil...</p>
+            <p id="errorMsg" style="color:red; font-size:12px; display:none; margin-top:10px;">Erro: Perfil não encontrado. Verifique se o seu cadastro está completo.</p>
+        </div>
+
+        <div id="formConteudo" style="display:none;">
+            <div class="vendedor-tag">
+                <span>Vendedor: <b id="displayNome">...</b></span>
+                <span id="displayLocal" style="color:var(--green); font-weight:bold;">📍 Localização Ativa</span>
+            </div>
+
+            <h2 style="font-weight:900;">Novo Anúncio</h2>
+            <br>
+            <form id="formAnuncio">
+                <div class="grid-3">
+                    <div><label>Marca</label><input type="text" id="pMarca" placeholder="Apple" required></div>
+                    <div style="grid-column: span 2;"><label>Modelo</label><input type="text" id="pModelo" placeholder="iPhone 13 Pro" required></div>
+                </div>
+
+                <div class="grid-3">
+                    <div><label>Cor</label><input type="text" id="pCor" required></div>
+                    <div><label>Capacidade</label>
+                        <select id="pCapacidade">
+                            <option>128GB</option><option>256GB</option><option>512GB</option><option>1TB</option>
+                        </select>
+                    </div>
+                    <div><label>Bateria (%)</label><input type="number" id="pBateria" required></div>
+                </div>
+
+                <label>Condição</label>
+                <select id="pCondicao">
+                    <option value="Usado">📱 Usado</option>
+                    <option value="Novo">✨ Novo</option>
+                    <option value="Recondicionado">🔧 Recondicionado</option>
+                </select>
+
+                <label>Preço (R$)</label>
+                <input type="number" id="pPreco" required>
+
+                <label>Fotos</label>
+                <input type="file" id="pFotos" accept="image/*" multiple required>
+
+                <div class="termo-box">
+                    <strong>DECLARAÇÃO DE POSSE</strong><br><br>
+                    Eu, <span id="termoNome" style="font-weight:bold;"></span>, declaro que este aparelho é de minha propriedade lícita e assumo total responsabilidade civil e criminal. Local registrado: <span id="termoGPS"></span>.
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="aceitoTermo" required>
+                        <span>Concordo com os termos.</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="btnPublicar">PUBLICAR NO RADAR</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            messagingSenderId: "431497247030", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const IMGBB_KEY = "a4405be3b982f9aad88589728a3d949c";
+
+        let dadosVendedor = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "vendedor-login.html";
+                return;
+            }
+
             try {
+                const docRef = doc(db, "vendedores", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    dadosVendedor = docSnap.data();
+                    document.getElementById('displayNome').innerText = dadosVendedor.nome;
+                    document.getElementById('termoNome').innerText = dadosVendedor.nome;
+                    document.getElementById('termoGPS').innerText = dadosVendedor.coords || "GPS não registrado";
+                    
+                    document.getElementById('loading').style.display = "none";
+                    document.getElementById('formConteudo').style.display = "block";
+                } else {
+                    document.getElementById('errorMsg').style.display = "block";
+                    console.error("Perfil não encontrado para o UID: ", user.uid);
+                }
+            } catch (err) {
+                document.getElementById('errorMsg').innerText = "Erro de conexão: " + err.message;
+                document.getElementById('errorMsg').style.display = "block";
+            }
+        });
+
+        document.getElementById('formAnuncio').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnPublicar');
+            btn.innerText = "ENVIANDO FOTOS...";
+            btn.disabled = true;
+
+            const files = document.getElementById('pFotos').files;
+            const urls = [];
+            
+            try {
+                for (let file of files) {
+                    const fd = new FormData(); 
+                    fd.append("image", file);
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+                    const d = await res.json(); 
+                    if(d.success) urls.push(d.data.url);
+                }
+
                 await addDoc(collection(db, "anuncios"), {
                     uid: auth.currentUser.uid,
                     vendedorNome: dadosVendedor.nome,
@@ -15,10 +158,19 @@
                     bateria: document.getElementById('pBateria').value,
                     preco: document.getElementById('pPreco').value,
                     fotos: urls,
-                    status: "aprovado", // <--- AGORA VAI DIRETO PARA O INDEX
+                    status: "aprovado",
                     dataAnuncio: new Date()
                 });
-                alert("Anúncio publicado no Radar!");
+
+                alert("Anúncio publicado com sucesso no Radar!");
                 window.location.href = "dashboard-vendedor.html";
+
             } catch (err) {
-// ... (resto do código igual)
+                alert("Erro ao processar anúncio: " + err.message);
+                btn.disabled = false;
+                btn.innerText = "PUBLICAR NO RADAR";
+            }
+        };
+    </script>
+</body>
+</html>
