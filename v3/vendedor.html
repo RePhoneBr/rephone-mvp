@@ -8,104 +8,117 @@
     <style>
         :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--dark); padding: 15px 15px 120px 15px; }
+
+        .card { background: white; padding: 25px; border-radius: 30px; width: 100%; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         
-        body { background: var(--bg); color: var(--dark); padding: 15px 15px 100px 15px; /* Padding extra no fundo para a barra */ }
+        h2 { font-weight: 900; font-size: 24px; letter-spacing: -1px; margin-bottom: 5px; }
+        .vendedor-info { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px; font-size: 11px; font-weight: 700; }
 
-        .card { background: white; padding: 20px; border-radius: 25px; width: 100%; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-
-        /* Estilo dos campos (conforme anterior) */
-        h2 { font-weight: 900; font-size: 22px; margin-bottom: 5px; }
         label { display: block; font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; margin: 15px 0 6px 5px; }
-        input, select, textarea { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 15px; }
+        input, select, textarea { width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 15px; background: #fff; color: var(--dark); }
+        textarea { resize: none; height: 80px; }
+        
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        /* Botão Principal */
-        #btnPublicar { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 18px; border: none; font-weight: 800; font-size: 16px; margin-top: 20px; }
-        
-        /* BARRA DE NAVEGAÇÃO FIXA (ESTILO APP) */
-        .nav-bottom {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            background: var(--dark);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            border-radius: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 1000;
-        }
+        /* Termo de Responsabilidade */
+        .termo-box { background: #fffef0; border: 1px solid #fde68a; padding: 15px; border-radius: 18px; margin-top: 25px; font-size: 12px; line-height: 1.5; color: #92400e; }
+        .check-group { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-weight: 800; cursor: pointer; }
+        .check-group input { width: 22px; height: 22px; }
 
-        .nav-item {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: 800;
-            text-align: center;
-            text-transform: uppercase;
-        }
+        #btnPublicar { width: 100%; background: var(--dark); color: white; padding: 18px; border-radius: 18px; border: none; font-weight: 900; font-size: 16px; margin-top: 20px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }
 
+        /* Barra de Navegação */
+        .nav-bottom { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: var(--dark); display: flex; justify-content: space-around; padding: 15px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; }
+        .nav-item { color: #94a3b8; text-decoration: none; font-size: 10px; font-weight: 800; text-align: center; text-transform: uppercase; }
         .nav-item.active { color: var(--green); }
-        .nav-item i { display: block; font-size: 18px; margin-bottom: 4px; }
-
+        .nav-item span { display: block; font-size: 18px; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <div id="loading" style="text-align:center; padding:30px;">
-            <p style="font-weight:700;">Carregando formulário...</p>
-        </div>
+        <div id="loading">Sincronizando perfil...</div>
 
         <div id="formConteudo" style="display:none;">
+            <div class="vendedor-info">
+                <span>VENDEDOR: <b id="nomeVend">...</b></span>
+                <span id="statusGPS" style="color: var(--green);">📍 LOCALIZANDO...</span>
+            </div>
+
             <h2>Novo Anúncio</h2>
-            <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Cadastre seu aparelho no radar.</p>
+            <p style="color:var(--muted); font-size:13px; margin-bottom:10px;">Preencha todos os detalhes para o Match.</p>
 
             <form id="formAnuncio">
+                <div class="grid-2">
+                    <div>
+                        <label>Marca</label>
+                        <select id="pMarca">
+                            <option>Apple</option><option>Samsung</option><option>Xiaomi</option><option>Outros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Tipo de Vendedor</label>
+                        <select id="pTipo">
+                            <option value="Particular">Particular</option>
+                            <option value="Lojista">Lojista</option>
+                        </select>
+                    </div>
+                </div>
+
                 <label>Modelo do Aparelho</label>
-                <input type="text" id="pModelo" placeholder="Ex: iPhone 13 Pro Max" required>
+                <input type="text" id="pModelo" placeholder="Ex: iPhone 14 Pro Max" required>
 
                 <div class="grid-2">
                     <div>
                         <label>Capacidade</label>
                         <select id="pCapacidade">
-                            <option>128GB</option><option>256GB</option><option>512GB</option><option>1TB</option>
+                            <option>64GB</option><option>128GB</option><option>256GB</option><option>512GB</option><option>1TB</option>
                         </select>
                     </div>
                     <div>
-                        <label>Saúde Bateria (%)</label>
-                        <input type="number" id="pBateria" placeholder="85" required>
+                        <label>Bateria (%)</label>
+                        <input type="number" id="pBateria" placeholder="90" required>
                     </div>
                 </div>
 
                 <div class="grid-2">
                     <div>
                         <label>Preço (R$)</label>
-                        <input type="number" id="pPreco" placeholder="0.00" required>
+                        <input type="number" id="pPreco" placeholder="4500" required>
                     </div>
                     <div>
                         <label>Condição</label>
                         <select id="pCondicao">
-                            <option>Usado</option><option>Novo</option>
+                            <option>Excelente / Novo</option><option>Bom (Sinais de uso)</option><option>Vitrine</option>
                         </select>
                     </div>
                 </div>
 
-                <label>Fotos do Aparelho</label>
+                <label>Descrição Opcional</label>
+                <textarea id="pDescricao" placeholder="Fale sobre garantia, nota fiscal, se tem caixa ou acessórios..."></textarea>
+
+                <label>Fotos (Até 5 fotos)</label>
                 <input type="file" id="pFotos" accept="image/*" multiple required>
 
-                <button type="submit" id="btnPublicar">PUBLICAR AGORA</button>
+                <div class="termo-box">
+                    <strong>DECLARAÇÃO DE PROCEDÊNCIA</strong><br>
+                    Eu, <span id="declaranteNome">...</span>, declaro que este aparelho é de origem lícita e que as fotos são reais. Localização registrada para cálculo de distância.
+                    <label class="check-group">
+                        <input type="checkbox" id="aceitoTermo" required>
+                        <span>CONCORDO E ACEITO</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="btnPublicar">PUBLICAR NO RADAR</button>
             </form>
         </div>
     </div>
 
     <nav class="nav-bottom">
-        <a href="index.html" class="nav-item">🏠<br>Radar</a>
-        <a href="vendedor.html" class="nav-item active">➕<br>Anunciar</a>
-        <a href="dashboard-vendedor.html" class="nav-item">📊<br>Meus Docs</a>
+        <a href="index.html" class="nav-item"><span>🏠</span>Radar</a>
+        <a href="vendedor.html" class="nav-item active"><span>➕</span>Anunciar</a>
+        <a href="dashboard-vendedor.html" class="nav-item"><span>📊</span>Meus Docs</a>
     </nav>
 
     <script type="module">
@@ -126,6 +139,9 @@
             const docSnap = await getDoc(doc(db, "vendedores", user.uid));
             if (docSnap.exists()) {
                 dadosVendedor = docSnap.data();
+                document.getElementById('nomeVend').innerText = dadosVendedor.nome;
+                document.getElementById('declaranteNome').innerText = dadosVendedor.nome;
+                document.getElementById('statusGPS').innerText = dadosVendedor.coords ? "📍 GPS OK" : "📍 S/ LOCALIZAÇÃO";
                 document.getElementById('loading').style.display = "none";
                 document.getElementById('formConteudo').style.display = "block";
             }
@@ -134,7 +150,7 @@
         document.getElementById('formAnuncio').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnPublicar');
-            btn.innerText = "ENVIANDO..."; btn.disabled = true;
+            btn.innerText = "SUBINDO IMAGENS..."; btn.disabled = true;
 
             const files = document.getElementById('pFotos').files;
             const urls = [];
@@ -152,26 +168,28 @@
                     vendedorNome: dadosVendedor.nome,
                     whatsapp: dadosVendedor.zap,
                     cidade: dadosVendedor.cidade,
-                    tipo: dadosVendedor.tipo || "Particular",
+                    coords: dadosVendedor.coords, // A localização vem do perfil do vendedor
+                    marca: document.getElementById('pMarca').value,
+                    tipo: document.getElementById('pTipo').value,
                     modelo: document.getElementById('pModelo').value,
                     capacidade: document.getElementById('pCapacidade').value,
                     condicao: document.getElementById('pCondicao').value,
                     bateria: document.getElementById('pBateria').value,
                     preco: document.getElementById('pPreco').value,
+                    descricao: document.getElementById('pDescricao').value,
                     fotos: urls,
                     status: "aprovado",
-                    dataAnuncio: new Date()
+                    data: new Date()
                 });
 
-                // OPÇÃO A: LIMPAR E FICAR NA PÁGINA
-                alert("Sucesso! Anúncio publicado.");
+                alert("Match pronto! Aparelho publicado com sucesso.");
                 document.getElementById('formAnuncio').reset();
                 btn.innerText = "PUBLICAR OUTRO";
                 btn.disabled = false;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
             } catch (err) {
-                alert("Erro ao publicar: " + err.message);
+                alert("Erro: " + err.message);
                 btn.disabled = false;
             }
         };
