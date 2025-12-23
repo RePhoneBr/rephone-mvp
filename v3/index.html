@@ -3,32 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RePhone | Radar de Ofertas</title>
+    <title>RePhone | A melhor oferta do jeito certo</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --text-muted: #64748b; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); color: var(--dark); }
         
-        /* HEADER E BLOQUEIO MANTIDOS */
-        #mobileOnly { display:none; position:fixed; inset:0; background: #0f172a url('https://i.ibb.co/WWMXXz6c/logo.jpg') no-repeat center center; background-size: cover; z-index:9999; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:50px; }
+        #mobileOnly { 
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            background: #0f172a url('https://i.ibb.co/WWMXXz6c/logo.jpg') no-repeat center center;
+            background-size: cover;
+            z-index:9999; 
+            flex-direction:column; 
+            align-items:center; 
+            justify-content:flex-end; 
+            padding-bottom:50px;
+        }
+        
         .bloqueio-content { text-align: center; background: rgba(0, 0, 0, 0.4); padding: 20px; border-radius: 20px; backdrop-filter: blur(5px); }
+        .qr-container img { width: 150px; height: 150px; border: 5px solid white; border-radius: 15px; }
+        .qr-container p { color: #16a34a; font-weight: 900; font-size: 12px; margin-top: 10px; letter-spacing: 1px; }
+
         .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
         .logo span { color: var(--green); }
         .nav-btns { display: flex; gap: 8px; }
         .btn-header { font-size: 11px; font-weight: 800; padding: 10px 15px; border-radius: 10px; text-decoration: none; text-transform: uppercase; }
+        .btn-reg { color: #d4af37; border: 1px solid #d4af37; }
         .btn-vend { background: var(--green); color: white; }
         
-        /* ESTRUTURA DO FEED */
+        .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
+        .hero h1 { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .match-card label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+        .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 20px; font-size: 15px; outline: none; }
+        .btn-match { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
+        
         .section-title { padding: 20px; font-size: 24px; font-weight: 900; }
+        .filter-scroll { display: flex; gap: 10px; padding: 0 20px 20px; overflow-x: auto; scrollbar-width: none; }
+        .filter-chip { padding: 10px 20px; border-radius: 20px; background: white; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .filter-chip.active { background: #dcfce7; border-color: var(--green); color: var(--green); }
+        
         .feed { padding: 0 15px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
-        /* CORREÇÃO DO CARD E DA FOTO */
+        /* CORREÇÃO DOS CARDS */
         .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; }
         
         .img-container { width: 100%; aspect-ratio: 1/1; background: #f1f5f9; border-radius: 18px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-        .card img { max-width: 100%; max-height: 100%; object-fit: contain; } /* CORREÇÃO: Foto inteira sem cortes */
+        .card img { max-width: 100%; max-height: 100%; object-fit: contain; } /* Foto sem cortes */
         
         .card .info-top { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
         .card h3 { font-size: 13px; font-weight: 800; line-height: 1.2; min-height: 32px; }
@@ -41,14 +66,39 @@
 </head>
 <body>
 
+    <div id="mobileOnly">
+        <div class="bloqueio-content">
+            <div class="qr-container">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rephone-a0a80.web.app" alt="QR Code RePhone">
+                <p>ESCANEIE PARA ACESSAR NO CELULAR</p>
+            </div>
+        </div>
+    </div>
+
     <header class="main-header">
         <a href="index.html" class="logo">Re<span>Phone</span></a>
         <div class="nav-btns">
+            <a href="registro-vendedor.html" class="btn-header btn-reg">Registrar</a>
             <a href="vendedor-login.html" class="btn-header btn-vend">Vender</a>
         </div>
     </header>
 
+    <section class="hero">
+        <h1>A melhor oferta, do jeito certo.</h1>
+        <div class="match-card">
+            <label>Modelo desejado</label>
+            <input type="text" id="matchModelo" placeholder="Ex: iPhone 11">
+            <label>Até quanto quer pagar?</label>
+            <input type="text" id="matchPreco" placeholder="R$ 2500">
+            <button class="btn-match" onclick="fazerMatch()">Buscar oportunidade</button>
+        </div>
+    </section>
+
     <h2 class="section-title">Radar RePhone</h2>
+    <div class="filter-scroll">
+        <button id="chip-Todos" class="filter-chip active" onclick="filtrar('Todos')">Todos</button>
+        <button id="chip-Lojista" class="filter-chip" onclick="filtrar('Lojista')">Lojistas</button>
+    </div>
 
     <main id="radarGrid" class="feed"></main>
 
@@ -60,17 +110,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Formatação de preço para o card
+        let todosAnuncios = [];
+
+        function checkDevice() {
+            if (window.innerWidth >= 1024) document.getElementById('mobileOnly').style.display = 'flex';
+            else document.getElementById('mobileOnly').style.display = 'none';
+        }
+        window.onload = checkDevice; window.onresize = checkDevice;
+
         function formatPreco(v) { 
-            return parseFloat(v).toLocaleString('pt-br', { minimumFractionDigits: 0 }); 
+            return parseFloat(v).toLocaleString('pt-br'); 
         }
 
         onSnapshot(query(collection(db, "anuncios"), where("status", "==", "aprovado")), (snap) => {
+            todosAnuncios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderizar(todosAnuncios);
+        });
+
+        function renderizar(lista) {
             const grid = document.getElementById('radarGrid');
-            grid.innerHTML = "";
+            grid.innerHTML = lista.length === 0 ? '<p style="padding:20px; color:#94a3b8;">Nenhum anúncio encontrado.</p>' : "";
             
-            snap.docs.forEach(doc => {
-                const ad = { id: doc.id, ...doc.data() };
+            lista.forEach(ad => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
@@ -88,7 +149,28 @@
                 `;
                 grid.appendChild(card);
             });
-        });
+        }
+
+        window.fazerMatch = () => {
+            const mod = document.getElementById('matchModelo').value.toLowerCase();
+            const inputPreco = document.getElementById('matchPreco').value;
+            const vMax = parseFloat(inputPreco.replace(/\D/g, '')) || Infinity;
+            
+            const filtrados = todosAnuncios.filter(a => {
+                const modeloMatch = a.modelo.toLowerCase().includes(mod);
+                const precoNum = parseFloat(String(a.preco).replace(/\D/g, ''));
+                return modeloMatch && precoNum <= vMax;
+            });
+            renderizar(filtrados);
+        };
+
+        window.filtrar = (tipo) => {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            const chipId = (tipo === 'Todos') ? 'chip-Todos' : 'chip-Lojista';
+            document.getElementById(chipId).classList.add('active');
+            if (tipo === 'Todos') renderizar(todosAnuncios);
+            else renderizar(todosAnuncios.filter(a => a.tipo === tipo));
+        };
     </script>
 </body>
 </html>
