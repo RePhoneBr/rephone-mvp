@@ -10,9 +10,44 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); color: var(--dark); }
         
-        /* BLOQUEIO DESKTOP */
-        #mobileOnly { display:none; position:fixed; inset:0; background: #0f172a; z-index:9999; color:white; padding:40px; text-align:center; flex-direction:column; align-items:center; justify-content:center; }
+        /* BLOQUEIO DESKTOP COM BACKGROUND PERSONALIZADO */
+        #mobileOnly { 
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            background: #0f172a url('https://i.ibb.co/WWMXXz6c/logo.jpg') no-repeat center center;
+            background-size: cover;
+            z-index:9999; 
+            flex-direction:column; 
+            align-items:center; 
+            justify-content:flex-end; 
+            padding-bottom:50px;
+        }
         
+        .bloqueio-content {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .qr-container img {
+            width: 150px;
+            height: 150px;
+            border: 5px solid white;
+            border-radius: 15px;
+        }
+
+        .qr-container p {
+            color: #16a34a;
+            font-weight: 900;
+            font-size: 12px;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* INTERFACE MOBILE */
         .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
         .logo span { color: var(--green); }
@@ -20,13 +55,16 @@
         .btn-header { font-size: 11px; font-weight: 800; padding: 10px 15px; border-radius: 10px; text-decoration: none; text-transform: uppercase; }
         .btn-reg { color: #d4af37; border: 1px solid #d4af37; }
         .btn-vend { background: var(--green); color: white; }
+        
         .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
         .hero h1 { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
         .hero p { color: var(--text-muted); font-size: 15px; margin-bottom: 25px; line-height: 1.4; }
+        
         .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
         .match-card label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
         .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 20px; font-size: 15px; outline: none; }
         .btn-match { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
+        
         .section-title { padding: 20px; font-size: 24px; font-weight: 900; }
         .filter-scroll { display: flex; gap: 10px; padding: 0 20px 20px; overflow-x: auto; scrollbar-width: none; }
         .filter-chip { padding: 10px 20px; border-radius: 20px; background: white; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; }
@@ -43,52 +81,13 @@
 <body>
 
     <div id="mobileOnly">
-    <div class="bloqueio-content">
-        <div class="qr-container">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.rephone.com.br" alt="QR Code Real">
-            <p>ESCANEIE PARA ACESSAR</p>
+        <div class="bloqueio-content">
+            <div class="qr-container">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rephone-a0a80.web.app" alt="QR Code RePhone">
+                <p>ESCANEIE PARA ACESSAR NO CELULAR</p>
+            </div>
         </div>
     </div>
-</div>
-
-<style>
-    #mobileOnly {
-        display: none;
-        position: fixed;
-        inset: 0;
-        /* Substitua o URL abaixo pelo link da imagem final que você salvou */
-        background: url('https://i.ibb.co/WWMXXz6c/logo.jpg') no-repeat center center;
-        background-size: cover;
-        z-index: 9999;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-end; /* Empurra o QR Code real para a parte de baixo */
-        padding-bottom: 50px;
-    }
-
-    .bloqueio-content {
-        text-align: center;
-        background: rgba(0, 0, 0, 0.4); /* Leve sombra para destacar o QR Code */
-        padding: 20px;
-        border-radius: 20px;
-        backdrop-filter: blur(5px);
-    }
-
-    .qr-container img {
-        width: 150px;
-        height: 150px;
-        border: 5px solid white;
-        border-radius: 15px;
-    }
-
-    .qr-container p {
-        color: #16a34a;
-        font-weight: 900;
-        font-size: 12px;
-        margin-top: 10px;
-        letter-spacing: 1px;
-    }
-</style>
 
     <header class="main-header">
         <a href="index.html" class="logo">Re<span>Phone</span></a>
@@ -111,8 +110,8 @@
 
     <h2 class="section-title">Radar RePhone</h2>
     <div class="filter-scroll">
-        <button class="filter-chip active" onclick="filtrar('Todos')">Todos</button>
-        <button class="filter-chip" onclick="filtrar('Lojista')">Lojistas</button>
+        <button id="chip-Todos" class="filter-chip active" onclick="filtrar('Todos')">Todos</button>
+        <button id="chip-Lojista" class="filter-chip" onclick="filtrar('Lojista')">Lojistas</button>
     </div>
 
     <main id="radarGrid" class="feed"></main>
@@ -127,13 +126,15 @@
 
         let todosAnuncios = [];
 
-        // Trava Mobile
+        // Trava de Dispositivo
         function checkDevice() {
             if (window.innerWidth >= 1024) document.getElementById('mobileOnly').style.display = 'flex';
             else document.getElementById('mobileOnly').style.display = 'none';
         }
-        window.onload = checkDevice; window.onresize = checkDevice;
+        window.onload = checkDevice; 
+        window.onresize = checkDevice;
 
+        // Escuta em tempo real (Apenas aprovados)
         onSnapshot(query(collection(db, "anuncios"), where("status", "==", "aprovado")), (snap) => {
             todosAnuncios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderizar(todosAnuncios);
@@ -141,7 +142,8 @@
 
         function renderizar(lista) {
             const grid = document.getElementById('radarGrid');
-            grid.innerHTML = lista.length === 0 ? '<p style="padding:20px; color:#94a3b8;">Nenhum anúncio.</p>' : "";
+            grid.innerHTML = lista.length === 0 ? '<p style="padding:20px; color:#94a3b8;">Nenhum anúncio encontrado.</p>' : "";
+            
             lista.forEach(ad => {
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -160,14 +162,25 @@
 
         window.fazerMatch = () => {
             const mod = document.getElementById('matchModelo').value.toLowerCase();
-            const vMax = parseFloat(document.getElementById('matchPreco').value.replace(/\D/g, '')) || Infinity;
-            renderizar(todosAnuncios.filter(a => a.modelo.toLowerCase().includes(mod) && parseFloat(String(a.preco).replace(/\D/g, '')) <= vMax));
+            const inputPreco = document.getElementById('matchPreco').value;
+            // Remove R$ e pontos para comparar números puros
+            const vMax = parseFloat(inputPreco.replace(/\D/g, '')) || Infinity;
+
+            const filtrados = todosAnuncios.filter(a => {
+                const modeloMatch = a.modelo.toLowerCase().includes(mod);
+                const precoNum = parseFloat(String(a.preco).replace(/\D/g, ''));
+                return modeloMatch && precoNum <= vMax;
+            });
+            renderizar(filtrados);
         };
 
         window.filtrar = (tipo) => {
             document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            renderizar(tipo === 'Todos' ? todosAnuncios : todosAnuncios.filter(a => a.tipo === tipo));
+            const chipId = (tipo === 'Todos') ? 'chip-Todos' : 'chip-Lojista';
+            document.getElementById(chipId).classList.add('active');
+
+            if (tipo === 'Todos') renderizar(todosAnuncios);
+            else renderizar(todosAnuncios.filter(a => a.tipo === tipo));
         };
     </script>
 </body>
