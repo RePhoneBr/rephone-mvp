@@ -7,155 +7,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); padding: 15px; line-height: 1.4; color: var(--dark); }
+
+    .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .btn-back { text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; }
+    .distancia-top { font-size: 11px; font-weight: 900; color: var(--green); background: #dcfce7; padding: 5px 10px; border-radius: 20px; }
+
+    .panel { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; }
+    .gallery img { width: 100%; border-radius: 22px; aspect-ratio: 1/1; object-fit: cover; border: 1px solid #f1f5f9; }
     
-    * { 
-        margin:0; padding:0; box-sizing:border-box; 
-        font-family:'Inter', sans-serif; 
-        -webkit-tap-highlight-color: transparent; 
-    }
+    .badge-tipo { display: inline-block; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 15px; color: var(--muted); }
+    
+    h1 { font-size: 26px; font-weight: 900; margin: 10px 0 5px; letter-spacing: -1px; line-height: 1.1; }
+    .price { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 20px; display: block; }
 
-    body { 
-        background: var(--bg); 
-        padding: 15px; 
-        line-height: 1.4;
-        color: var(--dark);
-    }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
+    .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 2px; }
+    .info-box span { font-size: 14px; font-weight: 700; }
 
-    /* Cabeçalho de Navegação */
-    .header-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        padding: 5px 0;
-    }
+    /* NOVO CAMPO: DESCRIÇÃO */
+    .desc-box { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+    .desc-box h4 { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .desc-box p { font-size: 14px; color: #475569; line-height: 1.6; }
 
-    .btn-back { 
-        text-decoration: none; 
-        color: var(--muted); 
-        font-size: 13px; 
-        font-weight: 800; 
-        text-transform: uppercase;
-    }
-
-    .distancia-top {
-        font-size: 11px;
-        font-weight: 900;
-        color: var(--green);
-        background: #dcfce7;
-        padding: 5px 10px;
-        border-radius: 20px;
-    }
-
-    /* Painel Principal */
-    .panel { 
-        background: white; 
-        border-radius: 30px; 
-        padding: 20px; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        width: 100%;
-    }
-
-    .gallery img { 
-        width: 100%; 
-        border-radius: 22px; 
-        aspect-ratio: 1/1; 
-        object-fit: cover; 
-        border: 1px solid #f1f5f9;
-    }
-
-    .badge-tipo {
-        display: inline-block;
-        background: #f1f5f9;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 10px;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-top: 15px;
-        color: var(--muted);
-    }
-
-    h1 { 
-        font-size: 26px; 
-        font-weight: 900; 
-        margin: 10px 0 5px; 
-        letter-spacing: -1px;
-        line-height: 1.1;
-    }
-
-    .price { 
-        font-size: 32px; 
-        font-weight: 900; 
-        color: var(--green); 
-        margin-bottom: 20px;
-        display: block;
-    }
-
-    /* Grade de Informações TÉCNICAS */
-    .info-grid { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 12px; 
-        margin-bottom: 20px; 
-    }
-
-    .info-box { 
-        background: #f8fafc; 
-        padding: 15px; 
-        border-radius: 18px; 
-        border: 1px solid #e2e8f0; 
-    }
-
-    .info-box small { 
-        font-size: 9px; 
-        color: var(--muted); 
-        text-transform: uppercase; 
-        font-weight: 800; 
-        display: block;
-        margin-bottom: 2px;
-    }
-
-    .info-box span { 
-        font-size: 15px; 
-        font-weight: 700; 
-    }
-
-    /* Caixa de Avaliação */
-    .review-box {
-        background: #fffef0;
-        border: 1px solid #fde68a;
-        border-radius: 20px;
-        padding: 15px;
-        margin-top: 10px;
-    }
-
-    .review-title {
-        font-size: 11px;
-        font-weight: 800;
-        color: #92400e;
-        text-transform: uppercase;
-        display: block;
-        margin-bottom: 5px;
-    }
-
+    .review-box { background: #fffef0; border: 1px solid #fde68a; border-radius: 20px; padding: 15px; margin-top: 20px; }
     .stars { color: #facc15; font-size: 16px; }
 
-    /* Botão WhatsApp */
-    .btn-zap { 
-        display: block; 
-        width: 100%; 
-        background: #25d366; 
-        color: white; 
-        text-align: center; 
-        padding: 20px; 
-        border-radius: 22px; 
-        text-decoration: none; 
-        font-weight: 900; 
-        font-size: 17px; 
-        margin-top: 20px; 
-        box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
-    }
+    .btn-zap { display: block; width: 100%; background: #25d366; color: white; text-align: center; padding: 20px; border-radius: 22px; text-decoration: none; font-weight: 900; font-size: 17px; margin-top: 20px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2); }
   </style>
 </head>
 <body>
@@ -173,18 +53,22 @@
     <span class="price" id="pPreco">R$ ---</span>
 
     <div class="info-grid">
+        <div class="info-box"><small>Marca</small><span id="pMarca">--</span></div>
         <div class="info-box"><small>Capacidade</small><span id="pCap">--</span></div>
         <div class="info-box"><small>Saúde Bateria</small><span id="pBat">--</span>%</div>
         <div class="info-box"><small>Condição</small><span id="pCon">--</span></div>
-        <div class="info-box"><small>Cidade</small><span id="pCid">--</span></div>
+    </div>
+
+    <div class="desc-box" id="descContainer" style="display:none;">
+        <h4>Sobre este aparelho</h4>
+        <p id="pDesc">---</p>
     </div>
 
     <div class="review-box">
-        <span class="review-title">Match Score RePhone</span>
-        <div class="stars">★★★★★ <small style="color:#a16207; font-size:10px; font-weight:700;">(Ótimo Preço)</small></div>
+        <div class="stars">★★★★★ <small style="color:#a16207; font-size:10px; font-weight:700;">(Match Score RePhone)</small></div>
     </div>
 
-    <a href="" id="pZap" target="_blank" class="btn-zap">ABRIR WHATSAPP</a>
+    <a href="" id="pZap" target="_blank" class="btn-zap">CHAMAR NO WHATSAPP</a>
   </div>
 
   <script type="module">
@@ -205,16 +89,21 @@
         document.getElementById('pImg').src = ad.fotos[0];
         document.getElementById('pModelo').innerText = ad.modelo;
         document.getElementById('pPreco').innerText = `R$ ${ad.preco}`;
+        document.getElementById('pMarca').innerText = ad.marca || 'Apple';
         document.getElementById('pCap').innerText = ad.capacidade;
         document.getElementById('pBat').innerText = ad.bateria;
         document.getElementById('pCon').innerText = ad.condicao;
-        document.getElementById('pCid').innerText = ad.cidade || 'Não informada';
         document.getElementById('pTipo').innerText = ad.tipo || 'Particular';
-        document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=Olá! Tenho interesse no ${ad.modelo} que vi no RePhone.`;
+        document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=Vi o ${ad.modelo} no RePhone. Ainda está disponível?`;
         
+        // Exibir descrição se existir
+        if(ad.descricao) {
+            document.getElementById('pDesc').innerText = ad.descricao;
+            document.getElementById('descContainer').style.display = 'block';
+        }
+
         const vSnap = await getDoc(doc(db, "vendedores", ad.uid));
         if (vSnap.exists() && vSnap.data().coords) calcDist(vSnap.data().coords);
-        else document.getElementById('pDist').innerText = "📍 S/ Localização";
         
         document.getElementById('mainPanel').style.display = 'block';
       }
