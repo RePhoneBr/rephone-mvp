@@ -2,35 +2,101 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Painel | RePhone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meus Anúncios | RePhone</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
-        body { background: var(--bg); padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .btn-novo { background: var(--dark); color: white; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 13px; }
-        .anuncio-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; display: flex; gap: 15px; align-items: center; }
-        .anuncio-card img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
-        .btn-sold { background: #dcfce7; color: #166534; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
-        .btn-edit { background: #f1f5f9; color: #475569; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
+        :root { --dark: #0f172a; --green: #16a34a; --red: #ef4444; --bg: #f8fafc; --muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: var(--bg); color: var(--dark); padding: 20px 20px 100px 20px; }
+
+        header { margin-bottom: 25px; }
+        h1 { font-weight: 900; font-size: 26px; letter-spacing: -1px; }
+        p.subtitle { color: var(--muted); font-size: 13px; }
+
+        /* Lista de Anúncios */
+        .ad-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .ad-item { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .ad-item img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
+        
+        .ad-info { flex: 1; }
+        .ad-info h3 { font-size: 15px; font-weight: 800; }
+        .ad-info p { font-size: 12px; color: var(--muted); }
+        .ad-info .price { color: var(--green); font-weight: 900; font-size: 14px; margin-top: 2px; display: block; }
+
+        .btn-delete { 
+            background: #fee2e2; 
+            color: var(--red); 
+            border: none; 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            cursor: pointer;
+        }
+
+        /* BARRA DE NAVEGAÇÃO FIXA (PADRÃO) */
+        .nav-bottom {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: var(--dark);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .nav-item.active { color: var(--green); }
+        .nav-item span { display: block; font-size: 18px; margin-bottom: 4px; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div>
-            <h2 style="font-weight:900;">Meus Anúncios</h2>
-            <p id="vendedorNome" style="font-size:12px; color:#64748b;">Sincronizando...</p>
-        </div>
-        <a href="vendedor.html" class="btn-novo">+ Novo Anúncio</a>
-    </div>
 
-    <div id="meusAnuncios"></div>
+    <header>
+        <h1>Meus Aparelhos</h1>
+        <p class="subtitle" id="vendedorNome">Carregando perfil...</p>
+    </header>
+
+    <div id="listaAnuncios" class="ad-list">
+        </div>
+
+    <nav class="nav-bottom">
+        <a href="index.html" class="nav-item"><span>🏠</span>Radar</a>
+        <a href="vendedor.html" class="nav-item"><span>➕</span>Anunciar</a>
+        <a href="dashboard-vendedor.html" class="nav-item active"><span>📊</span>Meus Docs</a>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
@@ -40,37 +106,42 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = "vendedor-login.html"; return; }
-
+            
+            // Buscar nome do vendedor
             const vSnap = await getDoc(doc(db, "vendedores", user.uid));
-            if(vSnap.exists()) document.getElementById('vendedorNome').innerText = vSnap.data().nome;
+            if(vSnap.exists()) document.getElementById('vendedorNome').innerText = "Vendedor: " + vSnap.data().nome;
 
+            // Escutar anúncios do usuário
             const q = query(collection(db, "anuncios"), where("uid", "==", user.uid));
-            onSnapshot(q, snap => {
-                const container = document.getElementById('meusAnuncios');
-                container.innerHTML = snap.empty ? "<p>Você não possui anúncios ativos.</p>" : "";
+            onSnapshot(q, (snap) => {
+                const container = document.getElementById('listaAnuncios');
+                if (snap.empty) {
+                    container.innerHTML = '<div class="empty-state">Você ainda não tem anúncios ativos.</div>';
+                    return;
+                }
+                
+                container.innerHTML = "";
                 snap.forEach(d => {
                     const ad = d.data();
-                    const card = document.createElement('div');
-                    card.className = 'anuncio-card';
-                    card.innerHTML = `
+                    const item = document.createElement('div');
+                    item.className = 'ad-item';
+                    item.innerHTML = `
                         <img src="${ad.fotos ? ad.fotos[0] : ''}">
-                        <div style="flex:1">
-                            <h4 style="font-size:14px;">${ad.modelo}</h4>
-                            <p style="font-size:12px; color:var(--green); font-weight:800;">R$ ${ad.preco}</p>
-                            <span style="font-size:10px; color:#94a3b8;">Status: ${ad.status}</span>
+                        <div class="ad-info">
+                            <h3>${ad.modelo}</h3>
+                            <p>${ad.capacidade} • Bateria ${ad.bateria}%</p>
+                            <span class="price">R$ ${ad.preco}</span>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:5px;">
-                            <button class="btn-sold" onclick="marcarVendido('${d.id}')">VENDIDO</button>
-                        </div>
+                        <button class="btn-delete" onclick="deletar('${d.id}')">🗑️</button>
                     `;
-                    container.appendChild(card);
+                    container.appendChild(item);
                 });
             });
         });
 
-        window.marcarVendido = async id => {
-            if(confirm("Marcar como vendido? Ele sairá do site.")) {
-                await updateDoc(doc(db, "anuncios", id), { status: "vendido" });
+        window.deletar = async (id) => {
+            if (confirm("Deseja remover este anúncio do Radar?")) {
+                await deleteDoc(doc(db, "anuncios", id));
             }
         };
     </script>
