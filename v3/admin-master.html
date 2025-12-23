@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Master | RePhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark: #0f172a; --green: #16a34a; --red: #ef4444; --bg: #f1f5f9; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--dark); padding: 15px; display: none; /* Escondido até validar login */ }
+        
+        .header-adm { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; }
+        .stat-card small { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .stat-card h2 { font-size: 24px; font-weight: 900; color: var(--dark); }
+
+        .admin-section { background: white; border-radius: 25px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .admin-section h3 { font-weight: 900; margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 10px; color: #64748b; }
+        td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-weight: 800; font-size: 9px; text-transform: uppercase; }
+        .bg-pending { background: #fef9c3; color: #854d0e; }
+        .bg-live { background: #dcfce7; color: #166534; }
+
+        .btn-action { padding: 8px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: 12px; margin-right: 5px; }
+        .btn-del { background: #fee2e2; color: var(--red); }
+        .btn-approve { background: var(--green); color: white; }
+        
+        .img-preview { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #eee; }
+    </style>
+</head>
+<body>
+
+    <div class="header-adm">
+        <div>
+            <h1 style="font-weight: 900; font-size: 24px;">Console Master</h1>
+            <p style="color: #64748b; font-size: 12px;" id="userEmail">Validando...</p>
+        </div>
+        <button onclick="logout()" style="background:none; border:none; color:var(--red); font-weight:800; font-size:12px;">SAIR</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <small>Anúncios Ativos</small>
+            <h2 id="countAds">0</h2>
+        </div>
+        <div class="stat-card">
+            <small>Parceiros</small>
+            <h2 id="countVends">0</h2>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>Moderação de Inventário</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aparelho</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAnuncios"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="admin-section">
+        <h3>Lista de Vendedores</h3>
+        <div id="listaVendedores"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // TRAVA DE SEGURANÇA
+        const EMAIL_MESTRE = "rp.rephone@gmail.com";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === EMAIL_MESTRE) {
+                document.body.style.display = "block";
+                document.getElementById('userEmail').innerText = "Logado como: " + user.email;
+                carregarDados();
+            } else {
+                alert("Acesso Negado. Apenas o Administrador Mestre pode ver esta página.");
+                window.location.href = "vendedor-login.html";
+            }
+        });
+
+        function carregarDados() {
+            // Monitorar Anúncios
+            onSnapshot(collection(db, "anuncios"), (snap) => {
+                document.getElementById('countAds').innerText = snap.size;
+                const tbody = document.getElementById('listaAnuncios');
+                tbody.innerHTML = "";
+                snap.forEach(d => {
+                    const ad = d.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="${ad.fotos ? ad.fotos[0] : ''}" class="img-preview">
+                                <b>${ad.modelo}</b>
+                            </div>
+                        </td>
+                        <td>R$ ${ad.preco}</td>
+                        <td><span class="badge ${ad.status === 'aprovado' ? 'bg-live' : 'bg-pending'}">${ad.status}</span></td>
+                        <td style="white-space:nowrap;">
+                            <button class="btn-action btn-approve" onclick="mudarStatus('${d.id}', 'aprovado')">✓</button>
+                            <button class="btn-action btn-del" onclick="deletarAd('${d.id}')">✕</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+
+            // Monitorar Vendedores
+            onSnapshot(collection(db, "vendedores"), (snap) => {
+                document.getElementById('countVends').innerText = snap.size;
+                const container = document.getElementById('listaVendedores');
+                container.innerHTML = "";
+                snap.forEach(d => {
+                    const v = d.data();
+                    const div = document.createElement('div');
+                    div.style = "padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; font-size: 13px;";
+                    div.innerHTML = `
+                        <span><b>${v.nome}</b></span>
+                        <span style="color:var(--green); font-weight:700;">${v.cidade}</span>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        window.mudarStatus = async (id, status) => {
+            await updateDoc(doc(db, "anuncios", id), { status: status });
+        };
+
+        window.deletarAd = async (id) => {
+            if(confirm("Deseja apagar este anúncio para sempre?")) {
+                await deleteDoc(doc(db, "anuncios", id));
+            }
+        };
+
+        window.logout = () => {
+            signOut(auth).then(() => window.location.href = "vendedor-login.html");
+        };
+    </script>
+</body>
+</html>
