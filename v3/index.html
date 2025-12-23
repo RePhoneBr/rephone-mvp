@@ -6,12 +6,11 @@
     <title>RePhone | Match Inteligente</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --text-muted: #64748b; }
+        :root { --dark: #0f172a; --green: #16a34a; --green-light: #4ade80; --bg: #f8fafc; --text-muted: #64748b; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--dark); }
+        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
         
-        /* HEADER E BLOQUEIO */
-        #mobileOnly { display:none; position:fixed; inset:0; background: #0f172a; z-index:9999; flex-direction:column; align-items:center; justify-content:center; }
+        /* HEADER */
         .main-header { background: var(--dark); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
         .logo span { color: var(--green); }
@@ -20,38 +19,60 @@
         .btn-reg { color: #d4af37; border: 1px solid #d4af37; }
         .btn-vend { background: var(--green); color: white; }
         
-        /* HERO E MATCH CARD */
+        /* HERO & MATCH CARD */
         .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
-        .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
-        .match-card label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
-        .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 20px; font-size: 15px; outline: none; }
-        
-        /* O CÍRCULO DE STATUS RECUPERADO */
+        .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
         .match-status-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .status-circle { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; transition: all 0.5s ease; }
-        .status-text { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Animação de pulso enquanto aguarda */
+        .status-circle { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
         .searching { background: #94a3b8; animation: pulse 1s infinite; }
-        .found { background: var(--green); box-shadow: 0 0 10px var(--green); }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-        .btn-match { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; transition: 0.3s; }
-        .btn-match:active { transform: scale(0.98); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         
-        /* FEED E CARDS */
+        .match-card label { display: block; font-weight: 800; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 15px; font-size: 15px; outline: none; }
+        .btn-match { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
+
+        /* RADAR GRID */
         .section-title { padding: 20px; font-size: 24px; font-weight: 900; }
-        .feed { padding: 0 15px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .feed { padding: 0 15px 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        /* CARD PROFISSIONAL */
         .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; }
-        .img-container { width: 100%; aspect-ratio: 1/1; background: #f1f5f9; border-radius: 18px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+        .badge-tipo { position: absolute; top: 18px; left: 18px; font-size: 8px; font-weight: 900; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.9); border: 1px solid #e2e8f0; z-index: 10; }
+        .img-container { width: 100%; aspect-ratio: 1/1; background: #f1f5f9; border-radius: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
         .card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
         .info-top { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
         .card h3 { font-size: 13px; font-weight: 800; margin: 4px 0; min-height: 32px; }
         .status-row { display: flex; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; }
         .badge-condicao { font-size: 8px; font-weight: 800; padding: 3px 6px; border-radius: 4px; background: #eff6ff; color: #1e40af; text-transform: uppercase; }
         .badge-cor { font-size: 8px; font-weight: 800; padding: 3px 6px; border-radius: 4px; background: #f1f5f9; color: var(--text-muted); text-transform: uppercase; }
+        
+        .details { font-size: 10px; color: var(--text-muted); font-weight: 600; }
         .location { font-size: 10px; color: var(--green); font-weight: 700; margin-top: 5px; }
         .price { font-size: 17px; font-weight: 900; color: var(--green); margin-top: 8px; }
+
+        /* MODAL DE MATCH INFERIOR */
+        #matchPopup { 
+            position: fixed; bottom: -100%; left: 0; width: 100%; 
+            background: var(--dark); color: white; padding: 25px; 
+            border-radius: 30px 30px 0 0; z-index: 2000;
+            transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 -10px 40px rgba(22, 163, 74, 0.4);
+        }
+        #matchPopup.active { bottom: 0; }
+        .match-label { 
+            font-size: 24px; font-weight: 900; letter-spacing: 2px; text-align: center; display: block;
+            animation: colorShift 1.5s infinite alternate;
+        }
+        @keyframes colorShift {
+            0% { color: var(--green); text-shadow: 0 0 5px var(--green); }
+            100% { color: var(--green-light); text-shadow: 0 0 20px var(--green-light); }
+        }
+        .match-content { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-top: 15px; }
+        .match-content img { width: 70px; height: 70px; border-radius: 12px; object-fit: contain; background: white; }
+        .match-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-view { background: var(--green); color: white; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: 800; text-align: center; }
+        .btn-close { background: rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -68,27 +89,33 @@
         <div class="match-card">
             <div class="match-status-container">
                 <div id="mCircle" class="status-circle"></div>
-                <div id="mText" class="status-text">Aguardando definição...</div>
+                <div id="mText" style="font-size: 11px; font-weight: 800; color: #64748b;">AGUARDANDO BUSCA...</div>
             </div>
-
             <label>Modelo desejado</label>
-            <input type="text" id="matchModelo" placeholder="Ex: iPhone 13">
-            
-            <label>Até quanto quer pagar?</label>
-            <input type="text" id="matchPreco" placeholder="R$ 3500">
-            
-            <button class="btn-match" onclick="fazerMatch()">Buscar oportunidade</button>
+            <input type="text" id="matchModelo" placeholder="Ex: iPhone 13 Pro">
+            <label>Preço Máximo</label>
+            <input type="text" id="matchPreco" placeholder="Ex: 4000">
+            <button class="btn-match" onclick="fazerMatch()">BUSCAR OPORTUNIDADE</button>
         </div>
     </section>
 
     <h2 class="section-title">Radar RePhone</h2>
     <main id="radarGrid" class="feed"></main>
 
+    <div id="matchPopup">
+        <span class="match-label">MATCH!</span>
+        <div class="match-content" id="matchData"></div>
+        <div class="match-actions">
+            <button class="btn-close" onclick="closeMatch()">FECHAR</button>
+            <a href="#" id="matchLink" class="btn-view">VER AGORA</a>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -107,14 +134,16 @@
                 card.className = 'card';
                 card.innerHTML = `
                     <a href="anuncio.html?id=${ad.id}" style="text-decoration:none; color:inherit;">
+                        <div class="badge-tipo">${ad.tipoVendedor || 'Particular'}</div>
                         <div class="img-container"><img src="${ad.fotos ? ad.fotos[0] : ''}"></div>
-                        <div class="info-top">${ad.marca || 'Smartphone'}</div>
+                        <div class="info-top">${ad.marca}</div>
                         <h3>${ad.modelo}</h3>
                         <div class="status-row">
                             <span class="badge-condicao">${ad.condicao}</span>
                             <span class="badge-cor">${ad.cor}</span>
                         </div>
-                        <div class="location">📍 ${ad.cidade || 'Local'}</div>
+                        <div class="details">${ad.capacidade} • Bateria ${ad.bateria}%</div>
+                        <div class="location">📍 ${ad.cidade}</div>
                         <span class="price">R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}</span>
                     </a>
                 `;
@@ -122,36 +151,54 @@
             });
         }
 
-        // LÓGICA DO MATCH COM CÍRCULO E DELAY
         window.fazerMatch = () => {
             const circle = document.getElementById('mCircle');
-            const txt = document.getElementById('mText');
             const mod = document.getElementById('matchModelo').value.toLowerCase();
-            const precoMax = parseFloat(document.getElementById('matchPreco').value.replace(/\D/g, '')) || Infinity;
+            const pMax = parseFloat(document.getElementById('matchPreco').value.replace(/\D/g, '')) || Infinity;
 
-            // Inicia animação cinza
+            if(!mod) return alert("Digite um modelo.");
+
             circle.className = "status-circle searching";
-            txt.innerText = "Analisando mercado...";
+            document.getElementById('mText').innerText = "CALCULANDO VANTAGEM...";
 
             setTimeout(() => {
-                const filtrados = todosAnuncios.filter(a => {
-                    const mMatch = a.modelo.toLowerCase().includes(mod);
-                    const pNum = parseFloat(a.preco);
-                    return mMatch && pNum <= precoMax;
-                });
+                let candidatos = todosAnuncios.filter(a => a.modelo.toLowerCase().includes(mod) && parseFloat(a.preco) <= pMax);
 
-                if(filtrados.length > 0) {
-                    circle.className = "status-circle found";
-                    txt.innerText = "Melhor oferta encontrada!";
-                    renderizar(filtrados);
-                    document.getElementById('radarGrid').scrollIntoView({ behavior: 'smooth' });
+                if(candidatos.length > 0) {
+                    candidatos.forEach(ad => {
+                        let score = 0;
+                        if(ad.condicao === "Novo" || ad.condicao === "Lacrado") score += 500;
+                        if(ad.estado === "Excelente") score += 300;
+                        score += (10000 - parseFloat(ad.preco)) / 10;
+                        if(ad.tipoVendedor === "lojista") score += 200;
+                        ad.matchScore = score;
+                    });
+
+                    candidatos.sort((a, b) => b.matchScore - a.matchScore);
+                    showMatchPopup(candidatos[0]);
+                    circle.className = "status-circle"; circle.style.background = "#16a34a";
                 } else {
-                    circle.className = "status-circle";
-                    circle.style.background = "#ef4444"; // Vermelho se não achar
-                    txt.innerText = "Nenhuma oferta no seu perfil.";
+                    circle.className = "status-circle"; circle.style.background = "#ef4444";
+                    alert("Nenhuma oferta encontrada.");
                 }
-            }, 1200); // Delay para efeito visual
+            }, 1500);
         };
+
+        function showMatchPopup(ad) {
+            const data = document.getElementById('matchData');
+            data.innerHTML = `
+                <img src="${ad.fotos[0]}">
+                <div style="flex:1">
+                    <h4 style="font-size:16px">${ad.modelo}</h4>
+                    <p style="font-size:11px; color:#94a3b8">${ad.cidade} • ${ad.condicao}</p>
+                    <div style="color:var(--green-light); font-weight:900; font-size:18px">R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}</div>
+                </div>
+            `;
+            document.getElementById('matchLink').href = `anuncio.html?id=${ad.id}`;
+            document.getElementById('matchPopup').classList.add('active');
+        }
+
+        window.closeMatch = () => document.getElementById('matchPopup').classList.remove('active');
     </script>
 </body>
 </html>
