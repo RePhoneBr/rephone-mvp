@@ -43,14 +43,52 @@
 <body>
 
     <div id="mobileOnly">
-        <div style="font-size: 60px;">📱</div>
-        <h1 style="font-weight:900; margin-top:20px;">Exclusivo Mobile</h1>
-        <p style="margin: 20px 0; color: #94a3b8; font-size:14px;">O RePhone foi desenhado para uso em movimento. <br>Acesse pelo celular para usar o GPS e dar match.</p>
-        <div style="background:white; padding:10px; border-radius:15px; margin: 15px 0;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rephone-a0a80.web.app" alt="QR Code">
+    <div class="bloqueio-content">
+        <div class="qr-container">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rephone-a0a80.web.app" alt="QR Code Real">
+            <p>ESCANEIE PARA ACESSAR</p>
         </div>
-        <p style="color:var(--green); font-size:10px; font-weight:900;">ESCANEIE PARA ACESSAR</p>
     </div>
+</div>
+
+<style>
+    #mobileOnly {
+        display: none;
+        position: fixed;
+        inset: 0;
+        /* Substitua o URL abaixo pelo link da imagem final que você salvou */
+        background: url('https://files.oaiusercontent.com/file-VvW7Y2XvG6j7X8X9X0X1X2') no-repeat center center;
+        background-size: cover;
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end; /* Empurra o QR Code real para a parte de baixo */
+        padding-bottom: 50px;
+    }
+
+    .bloqueio-content {
+        text-align: center;
+        background: rgba(0, 0, 0, 0.4); /* Leve sombra para destacar o QR Code */
+        padding: 20px;
+        border-radius: 20px;
+        backdrop-filter: blur(5px);
+    }
+
+    .qr-container img {
+        width: 150px;
+        height: 150px;
+        border: 5px solid white;
+        border-radius: 15px;
+    }
+
+    .qr-container p {
+        color: #16a34a;
+        font-weight: 900;
+        font-size: 12px;
+        margin-top: 10px;
+        letter-spacing: 1px;
+    }
+</style>
 
     <header class="main-header">
         <a href="index.html" class="logo">Re<span>Phone</span></a>
