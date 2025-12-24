@@ -115,8 +115,18 @@
                     const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
                     document.getElementById('pVendedorTipo').innerText = tipoTxt;
 
-                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}. Ainda está disponível?`);
-                    document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
+                    // Captura o link da página atual onde o usuário está vendo o anúncio
+const linkAnuncio = window.location.href;
+
+// Monta a mensagem incluindo o modelo, preço e o link direto
+const msg = encodeURIComponent(
+    `Olá! Vi seu anúncio do ${ad.marca} ${ad.modelo} ${ad.cor} no RePhone por R$ ${ad.preco}.\n\n` +
+    `Link do anúncio: ${linkAnuncio}\n\n` +
+    `Ainda está disponível?`
+);
+
+// Aplica o link ao botão de WhatsApp
+document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
 
                     document.getElementById('mainPanel').style.display = 'block';
                 } else {
