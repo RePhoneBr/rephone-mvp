@@ -18,8 +18,10 @@
         
         input, select, textarea { 
             width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; 
-            background: white; font-size: 15px; outline: none;
+            background: white; font-size: 15px; outline: none; font-family: inherit;
         }
+        
+        input[readonly] { background: #f1f5f9; color: var(--muted); cursor: not-allowed; }
 
         .photo-upload {
             width: 100%; aspect-ratio: 16/9; background: #f1f5f9; border: 2px dashed #cbd5e1;
@@ -49,11 +51,16 @@
             <div class="photo-upload" onclick="document.getElementById('fileInput').click()">
                 <img id="preview" style="display:none;">
                 <div id="uploadPlaceholder">
-                    <span style="font-size: 30px;">📸</span><br>
+                    <span style="font-size: 30px;">📸</span>
                     <span style="font-size: 12px; font-weight: 700; color: #64748b;">Tirar ou Anexar</span>
                 </div>
             </div>
             <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+        </div>
+
+        <div class="form-group">
+            <label>Seu WhatsApp (Automático)</label>
+            <input type="text" id="whatsapp" readonly placeholder="Carregando...">
         </div>
 
         <div class="form-group">
@@ -112,19 +119,27 @@
             <label>Garantia</label>
             <input type="text" id="garantia" placeholder="Ex: 6 meses">
         </div>
-<div class="form-group">
-    <label>Seu WhatsApp (com DDD)</label>
-    <input type="number" id="whatsapp" placeholder="Ex: 11999999999">
-</div>
+
+        <div class="form-group">
+            <label>Descrição do Anúncio</label>
+            <textarea id="descricao" rows="4" placeholder="Conte detalhes sobre o estado do aparelho, riscos ou acessórios inclusos..."></textarea>
+        </div>
+
         <button class="btn-save" id="btnSubmit" onclick="salvarAnuncio()">PUBLICAR NO RADAR</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -133,13 +148,24 @@
         let userLogado = null;
         let fotoArquivo = null;
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) { 
                 userLogado = user; 
+                
+                // Buscar WhatsApp do perfil do vendedor
+                try {
+                    const userDoc = await getDoc(doc(db, "vendedores", user.uid));
+                    if (userDoc.exists()) {
+                        document.getElementById('whatsapp').value = userDoc.data().whatsapp;
+                    }
+                } catch (e) { console.error("Erro ao buscar perfil", e); }
+
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('app').style.display = 'block';
                 obterCidade();
-            } else { window.location.href = 'vendedor-login.html'; }
+            } else { 
+                window.location.href = 'vendedor-login.html'; 
+            }
         });
 
         async function obterCidade() {
@@ -169,18 +195,12 @@
             btn.disabled = true; btn.innerText = "SUBINDO IMAGEM...";
 
             try {
-                // UPLOAD PARA IMGBB
                 const formData = new FormData();
                 formData.append("image", fotoArquivo);
-                
-                const resImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: "POST",
-                    body: formData
-                });
+                const resImg = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
                 const dataImg = await resImg.json();
                 const urlFinal = dataImg.data.url;
 
-                // SALVAR NO FIRESTORE
                 await addDoc(collection(db, "anuncios"), {
                     vendedorId: userLogado.uid,
                     marca: document.getElementById('marca').value,
@@ -193,18 +213,19 @@
                     preco: document.getElementById('preco').value,
                     cidade: document.getElementById('cidade').value,
                     garantia: document.getElementById('garantia').value,
+                    descricao: document.getElementById('descricao').value,
+                    whatsapp: document.getElementById('whatsapp').value,
                     fotos: [urlFinal],
                     status: "aprovado",
-                    tipoVendedor: "particular", // Pode ser ajustado conforme o perfil
-                    whatsapp: document.getElementById('whatsapp').value,
+                    tipoVendedor: "particular",
                     dataCriacao: new Date()
                 });
 
-                alert("Sucesso!");
+                alert("Anúncio publicado!");
                 window.location.href = 'index.html';
             } catch (e) {
                 alert("Erro ao publicar.");
-                btn.disabled = false;
+                btn.disabled = false; btn.innerText = "PUBLICAR NO RADAR";
             }
         };
     </script>
