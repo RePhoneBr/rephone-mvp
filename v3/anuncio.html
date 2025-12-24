@@ -247,40 +247,6 @@
         }
     }
     carregarAnuncio();
-                
-            // Regra do Raio de Segurança
-            let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
-            localTxt.innerText = `📍 ${ad.cidade} (${distanciaFinal})`;
-        }, () => {
-            // Caso o usuário negue o GPS
-            localTxt.innerText = `📍 ${ad.cidade}`;
-        });
-    } else {
-        localTxt.innerText = `📍 ${ad.cidade}`;
-    }
-} else {
-    // Se não houver o campo 'coords'
-    localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
-}
-
-                    document.getElementById('pMarca').innerText = ad.marca || '--';
-                    document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
-                    document.getElementById('pCor').innerText = ad.cor || '--';
-                    document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
-                    document.getElementById('pCondicao').innerText = ad.condicao || '--';
-                    document.getElementById('pEstado').innerText = ad.estado || '--';
-                    document.getElementById('pBateria').innerText = ad.bateria || '--';
-                    document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
-                    document.getElementById('pDesc').innerText = ad.descricao || '';
-
-                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}`);
-                    document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
-
-                    document.getElementById('mainPanel').style.display = 'block';
-                }
-            } catch (error) { console.error(error); }
-        }
-        carregarAnuncio();
     </script>
 </body>
 </html>
