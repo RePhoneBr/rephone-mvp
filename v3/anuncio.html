@@ -6,17 +6,21 @@
     <title>Detalhes do Aparelho | RePhone</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; --blue: #3b82f6; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); padding: 15px; color: var(--dark); }
         .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .btn-back { text-decoration: none; color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        .badge-verificado { font-size: 11px; font-weight: 900; color: var(--green); background: #dcfce7; padding: 6px 14px; border-radius: 20px; }
+        
+        /* Estilos dos Badges Dinâmicos */
+        .badge-verificado { font-size: 11px; font-weight: 900; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; }
+        .status-lojista { color: var(--blue); background: #dbeafe; } /* Azul para verificado */
+        .status-particular { color: var(--muted); background: #f1f5f9; } /* Cinza para comum */
+
         .panel { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        /* Ordem das informações */
         h1 { font-size: 26px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
         .seller-name { font-size: 16px; font-weight: 700; color: var(--dark); display: block; margin-top: 5px; }
         .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 5px; display: block; }
@@ -45,7 +49,7 @@
         </div>
         
         <h1 id="pModeloHeader">---</h1>
-        <span id="pNomeVendedor" class="seller-name">Vendedor: ---</span>
+        <span id="pNomeVendedor" class="seller-name">Vendedor: Carregando...</span>
         <span id="pLocal" class="location-tag">📍 ---</span>
         <span class="price" id="pPreco">R$ ---</span>
 
@@ -85,7 +89,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const idAnuncio = urlParams.get('id');
 
-        // Função de Haversine para calcular KM
         function calcularKM(lat1, lon1, lat2, lon2) {
             const R = 6371; 
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -105,33 +108,43 @@
 
                 if (snap.exists()) {
                     const ad = snap.data();
+                    const vendedorId = ad.vendedorId || ad.uid;
 
-                    // Preenchimento de dados
+                    // --- CORREÇÃO: BUSCAR DADOS REAIS DO VENDEDOR ---
+                    const vDoc = await getDoc(doc(db, "vendedores", vendedorId));
+                    if (vDoc.exists()) {
+                        const vData = vDoc.data();
+                        
+                        // Define o nome vindo do perfil do vendedor
+                        document.getElementById('pNomeVendedor').innerText = `Vendedor: ${vData.nome || 'Particular'}`;
+                        
+                        // Define o selo vindo do status do vendedor
+                        const selo = document.getElementById('pVendedorTipo');
+                        if (vData.status === 'verificado') {
+                            selo.innerText = '🏢 LOJISTA VERIFICADO';
+                            selo.className = 'badge-verificado status-lojista';
+                        } else {
+                            selo.innerText = '👤 VENDEDOR PARTICULAR';
+                            selo.className = 'badge-verificado status-particular';
+                        }
+                    }
+
+                    // Preenchimento do restante dos dados
                     document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
                     document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
-                    
-                    // Mostra o nome real do vendedor salvo no anúncio
-                    document.getElementById('pNomeVendedor').innerText = `Vendedor: ${ad.vendedorNome || 'Particular'}`;
-                    
                     document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
                     
-                    // Localização com Raio de Segurança
                     const localTxt = document.getElementById('pLocal');
                     if (ad.lat && ad.lng) {
                         navigator.geolocation.getCurrentPosition((pos) => {
                             const km = calcularKM(pos.coords.latitude, pos.coords.longitude, ad.lat, ad.lng);
-                            
-                            // RAIO DE SEGURANÇA: Menos de 0.5km não mostra a distância exata
                             let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
                             localTxt.innerText = `📍 ${ad.cidade} (${distanciaFinal})`;
                         }, () => {
                             localTxt.innerText = `📍 ${ad.cidade}`;
                         });
-                    } else {
-                        localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
                     }
 
-                    // Detalhes Técnicos
                     document.getElementById('pMarca').innerText = ad.marca || '--';
                     document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
                     document.getElementById('pCor').innerText = ad.cor || '--';
@@ -142,11 +155,7 @@
                     document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
                     document.getElementById('pDesc').innerText = ad.descricao || '';
 
-                    const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
-                    document.getElementById('pVendedorTipo').innerText = tipoTxt;
-
-                    // WhatsApp com link do anúncio
-                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}\n\nAinda está disponível?`);
+                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}`);
                     document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
 
                     document.getElementById('mainPanel').style.display = 'block';
