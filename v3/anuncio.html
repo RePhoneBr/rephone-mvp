@@ -136,21 +136,44 @@
                     
                     // ... dentro do carregarAnuncio() onde você recebe o "ad" ...
 
+// Localização com Raio de Segurança e Tratamento de Coords (String)
 const localTxt = document.getElementById('pLocal');
 
-// Verifica se o campo 'coords' existe (formato: "lat,lng")
 if (ad.coords) {
-    // Separa a string pela vírgula e converte para números
     const partes = ad.coords.split(',');
     const adLat = parseFloat(partes[0]);
     const adLng = parseFloat(partes[1]);
 
     if (!isNaN(adLat) && !isNaN(adLng)) {
+        // Opções para forçar o GPS a ser mais preciso e rápido
+        const gpsOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+
         navigator.geolocation.getCurrentPosition((pos) => {
             const userLat = pos.coords.latitude;
             const userLng = pos.coords.longitude;
             
             const km = calcularKM(userLat, userLng, adLat, adLng);
+            
+            let textoDistancia;
+            if (km < 0.5) {
+                textoDistancia = "Muito perto de você";
+            } else {
+                textoDistancia = `a ${km.toFixed(1)} km de você`;
+            }
+            
+            localTxt.innerText = `📍 ${ad.cidade} (${textoDistancia})`;
+
+        }, (error) => {
+            // Plano B: Se o GPS falhar, mostra apenas a cidade
+            console.warn("GPS falhou:", error.message);
+            localTxt.innerText = `📍 ${ad.cidade}`;
+        }, gpsOptions);
+    } else {
+        localTxt.innerText = `📍 ${ad.cidade}`;
+    }
+} else {
+    localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+}
             
             // Regra do Raio de Segurança
             let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
