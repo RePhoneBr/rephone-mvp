@@ -6,47 +6,51 @@
     <title>Admin Master | RePhone Console</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #10b981; --red: #ef4444; --bg: #f8fafc; --blue: #3b82f6; }
+        :root { --dark: #0f172a; --green: #10b981; --red: #ef4444; --bg: #f8fafc; --blue: #3b82f6; --muted: #64748b; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); color: var(--dark); padding: 20px; display: none; }
         
         /* Layout */
         .header-adm { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
         
         /* Cards */
-        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .stat-card small { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-card small { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-card h2 { font-size: 28px; font-weight: 900; margin-top: 5px; }
 
-        .admin-section { background: white; border-radius: 24px; padding: 25px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .admin-section h3 { font-weight: 900; margin-bottom: 20px; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-section { background: white; border-radius: 24px; padding: 25px; border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        .admin-section h3 { font-weight: 900; margin-bottom: 20px; font-size: 18px; color: var(--dark); border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
         
-        /* Tabelas e Listas */
+        /* Tabelas */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px; color: #64748b; font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
+        th { text-align: left; padding: 12px; color: var(--muted); font-size: 12px; text-transform: uppercase; }
         td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
 
-        .vendedor-item { cursor: pointer; transition: all 0.2s; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
-        .vendedor-item:hover { background: #f1f5f9; transform: translateX(5px); }
+        /* Lista Vendedores */
+        .vendedor-item { cursor: pointer; transition: 0.2s; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 1px solid #f1f5f9; }
+        .vendedor-item:hover { background: #f8fafc; border-color: var(--blue); }
 
         /* Badges e Botões */
-        .badge { padding: 5px 10px; border-radius: 8px; font-weight: 700; font-size: 10px; text-transform: uppercase; }
+        .badge { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 10px; text-transform: uppercase; }
         .bg-pending { background: #fef9c3; color: #854d0e; }
         .bg-live { background: #dcfce7; color: #166534; }
         .bg-verified { background: #dbeafe; color: #1e40af; }
 
-        .btn-action { padding: 10px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .btn-approve { background: var(--green); color: white; }
+        .btn-action { padding: 8px 12px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .btn-approve { background: var(--green); color: white; margin-right: 5px; }
         .btn-del { background: #fee2e2; color: var(--red); }
-        .btn-action:hover { opacity: 0.8; transform: scale(1.05); }
-
+        
         /* Modal */
-        #modalVendedor { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.8); z-index: 1000; padding: 20px; }
-        .modal-content { background: white; max-width: 600px; margin: 5% auto; border-radius: 30px; padding: 30px; position: relative; max-height: 80vh; overflow-y: auto; }
-        .close-modal { position: absolute; right: 25px; top: 25px; font-size: 24px; cursor: pointer; font-weight: 900; }
+        #modalVendedor { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.9); z-index: 1000; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-content { background: white; max-width: 650px; margin: 2% auto; border-radius: 30px; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .close-modal { position: absolute; right: 25px; top: 25px; font-size: 28px; cursor: pointer; font-weight: 900; color: var(--muted); }
 
-        .img-preview { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; }
+        .info-box-detalhes { background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin: 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-box-detalhes p { font-size: 13px; color: #475569; border-bottom: 1px solid #edf2f7; padding-bottom: 5px; }
+        .info-box-detalhes strong { color: var(--dark); text-transform: capitalize; }
+
+        .img-preview { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -54,23 +58,28 @@
     <div id="modalVendedor">
         <div class="modal-content">
             <span class="close-modal" onclick="fecharModal()">&times;</span>
-            <h2 id="mNome" style="font-weight: 900; font-size: 24px;">Nome</h2>
-            <p id="mEmail" style="color: #64748b; margin-bottom: 15px;">Email</p>
+            <small style="color: var(--blue); font-weight: 800; text-transform: uppercase;">Perfil do Parceiro</small>
+            <h2 id="mNome" style="font-weight: 900; font-size: 28px; letter-spacing: -1px;">Nome do Vendedor</h2>
             
-            <div id="mStats" style="display: flex; gap: 10px; margin-bottom: 25px;">
-                <span id="mStatusBadge" class="badge">---</span>
-                <button id="btnVerificarVendedor" class="btn-action btn-approve" style="font-size: 10px;">VERIFICAR AGORA</button>
+            <div id="mDetalhesVendedor" class="info-box-detalhes">
+                </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; padding: 0 5px;">
+                <div id="mStats">
+                    <span id="mStatusBadge" class="badge">PENDENTE</span>
+                </div>
+                <button id="btnVerificarVendedor" class="btn-action btn-approve" style="padding: 12px 25px; display:none;">EFETUAR VERIFICAÇÃO</button>
             </div>
 
-            <h4 style="font-weight: 900; margin-bottom: 10px; font-size: 14px; text-transform: uppercase;">Anúncios deste usuário</h4>
-            <div id="mListaAds"></div>
+            <h4 style="font-weight: 900; margin-bottom: 15px; font-size: 15px; color: var(--dark);">ANÚNCIOS ATIVOS NO RADAR</h4>
+            <div id="mListaAds" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
     </div>
 
     <div class="header-adm">
         <div>
             <h1 style="font-weight: 900; font-size: 28px; letter-spacing: -1px;">Console Master</h1>
-            <p style="color: #64748b; font-size: 13px;" id="userEmail">Autenticando...</p>
+            <p id="userEmail" style="color: var(--muted); font-size: 13px;">Validando acesso...</p>
         </div>
         <button onclick="logout()" style="background:#fff; border:1px solid #e2e8f0; padding: 10px 20px; border-radius:12px; color:var(--red); font-weight:800; cursor:pointer;">SAIR</button>
     </div>
@@ -81,17 +90,17 @@
             <h2 id="countAds">0</h2>
         </div>
         <div class="stat-card">
-            <small>Parceiros Totais</small>
+            <small>Parceiros Registrados</small>
             <h2 id="countVends">0</h2>
         </div>
         <div class="stat-card">
-            <small>Aguardando Moderação</small>
+            <small>Aguardando Aprovação</small>
             <h2 id="countPending" style="color:var(--red)">0</h2>
         </div>
     </div>
 
     <div class="admin-section">
-        <h3>Últimos Anúncios</h3>
+        <h3>Moderação de Inventário</h3>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -108,86 +117,90 @@
     </div>
 
     <div class="admin-section">
-        <h3>Parceiros Registrados <small>(Clique para gerenciar)</small></h3>
+        <h3>Diretório de Parceiros <small style="font-weight: 400; font-size: 12px; color: var(--muted); margin-left: 10px;">(Clique para ver ficha completa)</small></h3>
         <div id="listaVendedores"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+            authDomain: "rephone-a0a80.firebaseapp.com", 
+            projectId: "rephone-a0a80", 
+            storageBucket: "rephone-a0a80.firebasestorage.app", 
+            appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+        };
+        
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
 
         const EMAIL_MESTRE = "rp.rephone@gmail.com";
-        let adsLocais = [];
+        let todosAnuncios = [];
 
+        // Proteção de Acesso
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === EMAIL_MESTRE) {
                 document.body.style.display = "block";
-                document.getElementById('userEmail').innerText = "Admin: " + user.email;
-                carregarEstatisticas();
-                carregarListas();
+                document.getElementById('userEmail').innerText = "Logado como Master: " + user.email;
+                iniciarMonitoramento();
             } else {
                 window.location.href = "vendedor-login.html";
             }
         });
 
-        function carregarEstatisticas() {
+        function iniciarMonitoramento() {
+            // Monitorar Estatísticas e Lista de Anúncios (Tempo Real)
             onSnapshot(collection(db, "anuncios"), (snap) => {
+                todosAnuncios = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 document.getElementById('countAds').innerText = snap.size;
+                
                 let pendentes = 0;
-                snap.forEach(d => { if(d.data().status === 'pendente') pendentes++; });
-                document.getElementById('countPending').innerText = pendentes;
-                adsLocais = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            });
-            onSnapshot(collection(db, "vendedores"), (snap) => {
-                document.getElementById('countVends').innerText = snap.size;
-            });
-        }
-
-        function carregarListas() {
-            // Monitorar Anúncios
-            onSnapshot(collection(db, "anuncios"), (snap) => {
                 const tbody = document.getElementById('listaAnuncios');
                 tbody.innerHTML = "";
-                snap.forEach(d => {
-                    const ad = d.data();
+
+                snap.forEach(docSnap => {
+                    const ad = docSnap.data();
+                    if(ad.status === 'pendente') pendentes++;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>
                             <div style="display:flex; align-items:center; gap:12px;">
                                 <img src="${ad.fotos ? ad.fotos[0] : ''}" class="img-preview">
-                                <div><b>${ad.modelo}</b><br><small style="color:#64748b">${ad.marca}</small></div>
+                                <div><b>${ad.modelo}</b><br><small style="color:var(--muted)">${ad.marca || 'Smartphone'}</small></div>
                             </div>
                         </td>
-                        <td><b>R$ ${ad.preco}</b></td>
+                        <td><b>R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}</b></td>
                         <td><span class="badge ${ad.status === 'aprovado' ? 'bg-live' : 'bg-pending'}">${ad.status}</span></td>
                         <td>
-                            <button class="btn-action btn-approve" onclick="mudarStatus('${d.id}', 'aprovado')">✓</button>
-                            <button class="btn-action btn-del" onclick="deletarAd('${d.id}')">✕</button>
+                            <button class="btn-action btn-approve" onclick="mudarStatus('${docSnap.id}', 'aprovado')">Aprovar</button>
+                            <button class="btn-action btn-del" onclick="deletarAd('${docSnap.id}')">Excluir</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
+                document.getElementById('countPending').innerText = pendentes;
             });
 
             // Monitorar Vendedores
             onSnapshot(collection(db, "vendedores"), (snap) => {
+                document.getElementById('countVends').innerText = snap.size;
                 const container = document.getElementById('listaVendedores');
                 container.innerHTML = "";
-                snap.forEach(d => {
-                    const v = d.data();
+
+                snap.forEach(docSnap => {
+                    const v = docSnap.data();
                     const div = document.createElement('div');
                     div.className = "vendedor-item";
-                    div.onclick = () => abrirVendedor(d.id, v);
+                    div.onclick = () => abrirVendedor(docSnap.id, v);
                     div.innerHTML = `
                         <div>
-                            <b style="font-size:15px">${v.nome}</b><br>
-                            <small style="color:#64748b">${v.cidade} • ${v.whatsapp || 'Sem Whats'}</small>
+                            <b style="font-size:15px">${v.nome || 'Sem Nome'}</b><br>
+                            <small style="color:var(--muted)">${v.cidade || 'Localização não informada'}</small>
                         </div>
                         <span class="badge ${v.status === 'verificado' ? 'bg-verified' : 'bg-pending'}">${v.status || 'pendente'}</span>
                     `;
@@ -196,55 +209,72 @@
             });
         }
 
-        // Funções de Gerenciamento
-        window.abrirVendedor = (uid, v) => {
+        // FUNÇÃO MASTER: ABRE MODAL COM TODOS OS DADOS DO VENDEDOR
+        window.abrirVendedor = (uid, dadosVendedor) => {
             document.getElementById('modalVendedor').style.display = 'block';
-            document.getElementById('mNome').innerText = v.nome;
-            document.getElementById('mEmail').innerText = `Cidade: ${v.cidade} | WhatsApp: ${v.whatsapp}`;
+            document.getElementById('mNome').innerText = dadosVendedor.nome || "Vendedor";
             
-            const badge = document.getElementById('mStatusBadge');
-            badge.innerText = v.status || 'pendente';
-            badge.className = `badge ${v.status === 'verificado' ? 'bg-verified' : 'bg-pending'}`;
-
-            // Botão para verificar vendedor
-            const btnVerificar = document.getElementById('btnVerificarVendedor');
-            btnVerificar.onclick = () => verificarVendedor(uid);
-            btnVerificar.style.display = v.status === 'verificado' ? 'none' : 'block';
-
-            // Filtrar anúncios deste vendedor
-            const listaAds = document.getElementById('mListaAds');
-            listaAds.innerHTML = "";
-            const adsFiltrados = adsLocais.filter(ad => ad.vendedorId === uid || ad.uid === uid);
+            // Preencher campos dinâmicos (Puxa tudo o que existir no documento)
+            const boxDetalhes = document.getElementById('mDetalhesVendedor');
+            boxDetalhes.innerHTML = "";
             
-            if(adsFiltrados.length === 0) listaAds.innerHTML = "<p style='font-size:12px; color:#64748b'>Nenhum anúncio encontrado.</p>";
-            
-            adsFiltrados.forEach(ad => {
-                const item = document.createElement('div');
-                item.style = "padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center";
-                item.innerHTML = `<span>${ad.modelo}</span> <b>R$ ${ad.preco}</b>`;
-                listaAds.appendChild(item);
+            // Organiza as chaves do objeto para exibição
+            Object.entries(dadosVendedor).forEach(([chave, valor]) => {
+                if (chave !== "nome" && typeof valor !== 'object') {
+                    const p = document.createElement('p');
+                    p.innerHTML = `<strong>${chave.replace('_', ' ')}:</strong> ${valor}`;
+                    boxDetalhes.appendChild(p);
+                }
             });
+
+            // Status e Verificação
+            const badge = document.getElementById('mStatusBadge');
+            badge.innerText = dadosVendedor.status || 'pendente';
+            badge.className = `badge ${dadosVendedor.status === 'verificado' ? 'bg-verified' : 'bg-pending'}`;
+
+            const btnVerificar = document.getElementById('btnVerificarVendedor');
+            btnVerificar.style.display = dadosVendedor.status === 'verificado' ? 'none' : 'block';
+            btnVerificar.onclick = () => realizarVerificacao(uid);
+
+            // Lista Anúncios específicos deste Vendedor
+            const mLista = document.getElementById('mListaAds');
+            mLista.innerHTML = "";
+            const filtrados = todosAnuncios.filter(ad => ad.vendedorId === uid || ad.uid === uid);
+
+            if(filtrados.length === 0) {
+                mLista.innerHTML = "<p style='color:var(--muted); font-size:13px;'>Este parceiro não possui anúncios ativos.</p>";
+            } else {
+                filtrados.forEach(ad => {
+                    const div = document.createElement('div');
+                    div.style = "background:#f1f5f9; padding:12px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; font-size:13px;";
+                    div.innerHTML = `<span>${ad.modelo}</span> <strong>R$ ${ad.preco}</strong>`;
+                    mLista.appendChild(div);
+                });
+            }
         };
 
-        async function verificarVendedor(uid) {
-            if(confirm("Tornar este parceiro Verificado?")) {
+        // Ações de Escrita no Banco
+        async function realizarVerificacao(uid) {
+            if(confirm("Deseja marcar este vendedor como Verificado? Isso aparecerá para todos os compradores.")) {
                 await updateDoc(doc(db, "vendedores", uid), { status: "verificado" });
-                alert("Vendedor verificado com sucesso!");
+                alert("Status atualizado!");
                 fecharModal();
             }
         }
 
-        window.fecharModal = () => { document.getElementById('modalVendedor').style.display = 'none'; };
-
-        window.mudarStatus = async (id, status) => {
-            await updateDoc(doc(db, "anuncios", id), { status: status });
+        window.mudarStatus = async (id, novoStatus) => {
+            await updateDoc(doc(db, "anuncios", id), { status: novoStatus });
         };
 
         window.deletarAd = async (id) => {
-            if(confirm("Apagar permanentemente?")) await deleteDoc(doc(db, "anuncios", id));
+            if(confirm("Deseja apagar este anúncio permanentemente do sistema?")) {
+                await deleteDoc(doc(db, "anuncios", id));
+            }
         };
 
+        window.fecharModal = () => { document.getElementById('modalVendedor').style.display = 'none'; };
         window.logout = () => { signOut(auth).then(() => window.location.href = "vendedor-login.html"); };
+
     </script>
 </body>
 </html>
