@@ -16,13 +16,16 @@
         .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
         h1 { font-size: 26px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
-        .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 15px; display: block; }
+        
+        /* Estilos para as novas informações */
+        .seller-name { font-size: 16px; font-weight: 700; color: var(--dark); display: block; margin-top: 5px; }
+        .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 5px; margin-bottom: 15px; display: block; }
+        
         .price { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 25px; display: block; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
         .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
         .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 4px; }
         .info-box span { font-size: 14px; font-weight: 700; color: var(--dark); }
-        .info-box.highlight { border-color: var(--green); background: #f0fdf4; }
         .desc-box { padding-top: 20px; border-top: 1px solid #f1f5f9; }
         .desc-box h4 { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
         .desc-box p { font-size: 14px; color: #475569; line-height: 1.6; }
@@ -42,20 +45,19 @@
         </div>
         
         <h1 id="pModeloHeader">---</h1>
+        <span id="pNomeVendedor" class="seller-name">Vendedor: ---</span>
         <span id="pLocal" class="location-tag">📍 ---</span>
         <span class="price" id="pPreco">R$ ---</span>
 
         <div class="info-grid">
             <div class="info-box"><small>Marca</small><span id="pMarca">--</span></div>
             <div class="info-box"><small>Modelo</small><span id="pModeloGrid">--</span></div>
-            
-            <div class="info-box highlight"><small>Vendedor</small><span id="pNomeVendedor">--</span></div>
-            <div class="info-box highlight"><small>Distância</small><span id="pDistancia">Calculando...</span></div>
-            
             <div class="info-box"><small>Cor</small><span id="pCor">--</span></div>
             <div class="info-box"><small>Capacidade</small><span id="pCapacidade">--</span></div>
             <div class="info-box"><small>Condição</small><span id="pCondicao">--</span></div>
+            <div class="info-box"><small>Estado</small><span id="pEstado">--</span></div>
             <div class="info-box"><small>Bateria</small><span id="pBateria">--</span>%</div>
+            <div class="info-box"><small>Garantia</small><span id="pGarantia">--</span></div>
         </div>
 
         <div class="desc-box">
@@ -83,15 +85,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         const idAnuncio = urlParams.get('id');
 
-        // Função para calcular distância entre dois pontos (Haversine)
-        function calcularDistancia(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Raio da Terra em km
+        // Função para calcular distância entre coordenadas
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return (R * c).toFixed(1);
+            return R * c;
         }
 
         async function carregarAnuncio() {
@@ -104,44 +106,37 @@
                 if (snap.exists()) {
                     const ad = snap.data();
 
-                    // Preenchimento Básico
-                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
-                    document.getElementById('pModeloHeader').innerText = ad.modelo;
-                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}`;
-                    document.getElementById('pLocal').innerText = `📍 ${ad.cidade}`;
+                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : 'https://via.placeholder.com/400';
+                    document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
+                    document.getElementById('pNomeVendedor').innerText = `Vendedor: ${ad.vendedorNome || 'Particular'}`;
+                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
                     
-                    // Preenchimento Grid
+                    // Lógica de Localização e KM
+                    const localElement = document.getElementById('pLocal');
+                    if (ad.lat && ad.lng) {
+                        navigator.geolocation.getCurrentPosition((pos) => {
+                            const dist = getDistance(pos.coords.latitude, pos.coords.longitude, ad.lat, ad.lng);
+                            localElement.innerText = `📍 ${ad.cidade} (a ${dist.toFixed(1)} km de você)`;
+                        }, () => {
+                            localElement.innerText = `📍 ${ad.cidade}`;
+                        });
+                    } else {
+                        localElement.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+                    }
+
                     document.getElementById('pMarca').innerText = ad.marca || '--';
                     document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
-                    document.getElementById('pNomeVendedor').innerText = ad.vendedorNome || 'Particular';
                     document.getElementById('pCor').innerText = ad.cor || '--';
                     document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
                     document.getElementById('pCondicao').innerText = ad.condicao || '--';
+                    document.getElementById('pEstado').innerText = ad.estado || '--';
                     document.getElementById('pBateria').innerText = ad.bateria || '--';
-                    document.getElementById('pDesc').innerText = ad.descricao || '';
+                    document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
+                    document.getElementById('pDesc').innerText = ad.descricao || 'O vendedor não forneceu detalhes.';
 
-                    // Tipo de Vendedor
                     const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
                     document.getElementById('pVendedorTipo').innerText = tipoTxt;
 
-                    // Lógica de Distância
-                    if (ad.lat && ad.lng) {
-                        navigator.geolocation.getCurrentPosition((position) => {
-                            const d = calcularDistancia(
-                                position.coords.latitude, 
-                                position.coords.longitude, 
-                                ad.lat, 
-                                ad.lng
-                            );
-                            document.getElementById('pDistancia').innerText = `a ${d} km de você`;
-                        }, () => {
-                            document.getElementById('pDistancia').innerText = "Localização negada";
-                        });
-                    } else {
-                        document.getElementById('pDistancia').innerText = "--";
-                    }
-
-                    // Botão WhatsApp
                     const linkAnuncio = window.location.href;
                     const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.marca} ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${linkAnuncio}\n\nAinda está disponível?`);
                     document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
@@ -152,7 +147,6 @@
                 console.error("Erro:", error);
             }
         }
-
         carregarAnuncio();
     </script>
 </body>
