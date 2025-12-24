@@ -112,7 +112,10 @@
             <label>Garantia</label>
             <input type="text" id="garantia" placeholder="Ex: 6 meses">
         </div>
-
+<div class="form-group">
+    <label>Seu WhatsApp (com DDD)</label>
+    <input type="number" id="whatsapp" placeholder="Ex: 11999999999">
+</div>
         <button class="btn-save" id="btnSubmit" onclick="salvarAnuncio()">PUBLICAR NO RADAR</button>
     </div>
 
@@ -193,6 +196,7 @@
                     fotos: [urlFinal],
                     status: "aprovado",
                     tipoVendedor: "particular", // Pode ser ajustado conforme o perfil
+                    whatsapp: document.getElementById('whatsapp').value,
                     dataCriacao: new Date()
                 });
 
