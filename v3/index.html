@@ -201,7 +201,6 @@
                 card.className = 'card';
                 card.innerHTML = `
                     <a href="anuncio.html?id=${ad.id}" style="text-decoration:none; color:inherit;">
-                        <div class="badge-tipo">${ad.tipoVendedor || 'Particular'}</div>
                         <div class="img-container"><img src="${ad.fotos ? ad.fotos[0] : ''}"></div>
                         <div class="info-top">${ad.marca}</div>
                         <h3>${ad.modelo}</h3>
