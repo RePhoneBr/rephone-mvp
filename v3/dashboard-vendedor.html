@@ -95,55 +95,76 @@
     </nav>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, query, where, onSnapshot, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", messagingSenderId: "431497247030", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
+        authDomain: "rephone-a0a80.firebaseapp.com", 
+        projectId: "rephone-a0a80", 
+        storageBucket: "rephone-a0a80.firebasestorage.app", 
+        messagingSenderId: "431497247030", 
+        appId: "1:431497247030:web:a943715e4acc04b8995b97" 
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) { window.location.href = "vendedor-login.html"; return; }
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = "vendedor-login.html"; return; }
+        
+        // Buscar nome do vendedor para o cabeçalho
+        const vSnap = await getDoc(doc(db, "vendedores", user.uid));
+        if(vSnap.exists()) {
+            document.getElementById('vendedorNome').innerText = "Vendedor: " + vSnap.data().nome;
+        }
+
+        // --- CORREÇÃO AQUI: Alterado de "uid" para "vendedorId" ---
+        const q = query(collection(db, "anuncios"), where("vendedorId", "==", user.uid));
+        
+        onSnapshot(q, (snap) => {
+            const container = document.getElementById('listaAnuncios');
             
-            // Buscar nome do vendedor
-            const vSnap = await getDoc(doc(db, "vendedores", user.uid));
-            if(vSnap.exists()) document.getElementById('vendedorNome').innerText = "Vendedor: " + vSnap.data().nome;
-
-            // Escutar anúncios do usuário
-            const q = query(collection(db, "anuncios"), where("uid", "==", user.uid));
-            onSnapshot(q, (snap) => {
-                const container = document.getElementById('listaAnuncios');
-                if (snap.empty) {
-                    container.innerHTML = '<div class="empty-state">Você ainda não tem anúncios ativos.</div>';
-                    return;
-                }
+            if (snap.empty) {
+                container.innerHTML = '<div class="empty-state">Você ainda não tem anúncios ativos.</div>';
+                return;
+            }
+            
+            container.innerHTML = "";
+            snap.forEach(d => {
+                const ad = d.data();
+                const item = document.createElement('div');
+                item.className = 'ad-item';
                 
-                container.innerHTML = "";
-                snap.forEach(d => {
-                    const ad = d.data();
-                    const item = document.createElement('div');
-                    item.className = 'ad-item';
-                    item.innerHTML = `
-                        <img src="${ad.fotos ? ad.fotos[0] : ''}">
-                        <div class="ad-info">
-                            <h3>${ad.modelo}</h3>
-                            <p>${ad.capacidade} • Bateria ${ad.bateria}%</p>
-                            <span class="price">R$ ${ad.preco}</span>
-                        </div>
-                        <button class="btn-delete" onclick="deletar('${d.id}')">🗑️</button>
-                    `;
-                    container.appendChild(item);
-                });
+                // Formatando o preço para exibir bonito
+                const precoFormatado = parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2});
+
+                item.innerHTML = `
+                    <img src="${ad.fotos && ad.fotos[0] ? ad.fotos[0] : 'https://via.placeholder.com/60'}">
+                    <div class="ad-info">
+                        <h3>${ad.modelo}</h3>
+                        <p>${ad.capacidade || '--'} • Bateria ${ad.bateria || '--'}%</p>
+                        <span class="price">R$ ${precoFormatado}</span>
+                    </div>
+                    <button class="btn-delete" onclick="window.deletarAnuncio('${d.id}')">🗑️</button>
+                `;
+                container.appendChild(item);
             });
         });
+    });
 
-        window.deletar = async (id) => {
-            if (confirm("Deseja remover este anúncio do Radar?")) {
+    // Função de deletar atualizada e global
+    window.deletarAnuncio = async (id) => {
+        if (confirm("Deseja remover este anúncio do Radar?")) {
+            try {
                 await deleteDoc(doc(db, "anuncios", id));
+                alert("Anúncio removido!");
+            } catch (error) {
+                alert("Erro ao deletar: " + error.message);
             }
-        };
-    </script>
+        }
+    };
+</script>
 </body>
 </html>
