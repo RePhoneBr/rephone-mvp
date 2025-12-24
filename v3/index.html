@@ -10,7 +10,7 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
         body { background: var(--bg); color: var(--dark); padding-bottom: 50px; }
 
-        /* HEADER E MENU */
+        /* HEADER E NAVEGAÇÃO */
         .main-header { 
             background: var(--dark); padding: 20px; 
             display: flex; justify-content: space-between; align-items: center;
@@ -19,37 +19,39 @@
         .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; }
         .logo span { color: var(--green); }
         
-        .menu-trigger {
+        .btn-menu-icon {
             background: none; border: none; color: white;
-            font-size: 24px; cursor: pointer; padding: 5px;
+            font-size: 28px; cursor: pointer; padding: 5px;
         }
 
+        /* MENU DESLIZANTE (CORTINA) */
         #mobileMenu {
             position: fixed; top: -100%; left: 0; width: 100%; height: auto;
-            background: var(--dark); padding: 80px 30px 40px;
-            z-index: 999; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 0 0 30px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: var(--dark); padding: 80px 25px 30px;
+            z-index: 2000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 0 0 30px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 12px;
         }
         #mobileMenu.active { top: 0; }
         #menuOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: none; z-index: 998;
+            background: rgba(0,0,0,0.6); display: none; z-index: 1900;
         }
-        .menu-content { display: flex; flex-direction: column; gap: 15px; }
-        .menu-item {
-            padding: 18px; border-radius: 15px; text-decoration: none;
-            font-weight: 800; font-size: 14px; text-align: center;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .m-reg { background: #d4af37; color: white; }
-        .m-vend { background: var(--green); color: white; }
-        .m-perfil { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .m-sair { color: #ef4444; font-size: 12px; margin-top: 10px; border: none; background: none; font-weight: 800; cursor: pointer; }
 
-        /* CONTEÚDO ORIGINAL */
+        .menu-link {
+            padding: 18px; border-radius: 15px; text-decoration: none;
+            font-weight: 800; font-size: 13px; text-align: center;
+            text-transform: uppercase; color: white; background: rgba(255,255,255,0.05);
+            letter-spacing: 0.5px;
+        }
+        .menu-link.destaque { background: var(--green); }
+        .btn-logout-menu { color: #ef4444; background: none; border: none; font-weight: 800; margin-top: 10px; cursor: pointer; font-size: 12px; }
+
+        /* SEÇÕES ORIGINAIS */
         .hero { padding: 40px 20px; text-align: center; background: var(--dark); color: white; border-radius: 0 0 40px 40px; margin-bottom: 30px; }
         .hero h1 { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 10px; }
-        
+        .hero p { color: #94a3b8; font-size: 14px; margin-top: 10px; }
+
         .section-title { padding: 0 20px; margin-bottom: 15px; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
         
         .radar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
@@ -58,39 +60,34 @@
         .card h3 { font-size: 14px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; }
         .card .price { color: var(--green); font-weight: 900; font-size: 16px; display: block; }
         .card .loc { font-size: 10px; color: var(--muted); font-weight: 700; margin-top: 5px; display: block; }
-        
-        /* Adicione aqui qualquer outro estilo original que você tenha */
     </style>
 </head>
 <body>
 
     <header class="main-header">
         <a href="index.html" class="logo">Re<span>Phone</span></a>
-        <button class="menu-trigger" onclick="toggleMenu()">☰</button>
+        <button class="btn-menu-icon" onclick="toggleMenu()">☰</button>
     </header>
 
     <div id="menuOverlay" onclick="toggleMenu()"></div>
-
     <nav id="mobileMenu">
-        <div class="menu-content">
-            <div id="userGreeting" style="color:white; font-size:12px; font-weight:800; margin-bottom:10px; text-align:center;"></div>
-            
-            <div id="guestLinks" style="display:none; flex-direction:column; gap:15px;">
-                <a href="registro-vendedor.html" class="menu-item m-reg">Criar Conta Vendedor</a>
-                <a href="vendedor-login.html" class="menu-item m-vend">Entrar para Vender</a>
-            </div>
+        <div id="greeting" style="color:#94a3b8; font-size:11px; font-weight:800; text-align:center; margin-bottom:10px;">MENU REPHONE</div>
+        
+        <div id="menuGuest" style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="vendedor-login.html" class="menu-link destaque">Entrar / Vender</a>
+            <a href="registro-vendedor.html" class="menu-link">Criar Conta Vendedor</a>
+        </div>
 
-            <div id="userLinks" style="display:none; flex-direction:column; gap:15px;">
-                <a href="vendedor-anuncio.html" class="menu-item m-vend">+ Novo Anúncio</a>
-                <a href="vendedor-perfil.html" class="menu-item m-perfil">Meus Anúncios</a>
-                <button class="m-sair" onclick="fazerLogout()">Sair da Conta</button>
-            </div>
+        <div id="menuLogged" style="display: none; flex-direction: column; gap: 12px;">
+            <a href="vendedor-anuncio.html" class="menu-link destaque">+ Novo Anúncio</a>
+            <a href="vendedor-perfil.html" class="menu-link">Meus Anúncios</a>
+            <button class="btn-logout-menu" onclick="fazerLogout()">SAIR DA CONTA</button>
         </div>
     </nav>
 
     <section class="hero">
         <h1>O melhor preço,<br>bem perto de você.</h1>
-        <p style="color: #94a3b8; font-size: 14px; margin-top: 10px;">Encontre iPhones e Androids em Aracruz e região.</p>
+        <p>Encontre iPhones e Androids em Aracruz e região.</p>
     </section>
 
     <div class="section-title">
@@ -105,6 +102,7 @@
         import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
+        // Sua Configuração Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
             authDomain: "rephone-a0a80.firebaseapp.com", 
@@ -116,7 +114,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // FUNÇÃO TOGGLE MENU
+        // --- LÓGICA DO MENU ---
         window.toggleMenu = () => {
             const menu = document.getElementById('mobileMenu');
             const overlay = document.getElementById('menuOverlay');
@@ -124,23 +122,27 @@
             overlay.style.display = menu.classList.contains('active') ? 'block' : 'none';
         };
 
-        // CONTROLE DE LOGIN NO MENU
         onAuthStateChanged(auth, async (user) => {
-            const guestLinks = document.getElementById('guestLinks');
-            const userLinks = document.getElementById('userLinks');
-            const greeting = document.getElementById('userGreeting');
+            const guest = document.getElementById('menuGuest');
+            const logged = document.getElementById('menuLogged');
+            const greet = document.getElementById('greeting');
 
             if (user) {
-                guestLinks.style.display = 'none';
-                userLinks.style.display = 'flex';
-                const vDoc = await getDoc(doc(db, "vendedores", user.uid));
-                if(vDoc.exists()) {
-                    greeting.innerText = "OLÁ, " + vDoc.data().nome.toUpperCase();
-                }
+                guest.style.display = 'none';
+                logged.style.display = 'flex';
+                // Tenta buscar o nome do vendedor para personalizar a saudação
+                try {
+                    const vDoc = await getDoc(doc(db, "vendedores", user.uid));
+                    if(vDoc.exists()) {
+                        greet.innerText = "OLÁ, " + vDoc.data().nome.toUpperCase();
+                    } else {
+                        greet.innerText = "OLÁ, VENDEDOR";
+                    }
+                } catch(e) { greet.innerText = "MINHA CONTA"; }
             } else {
-                guestLinks.style.display = 'flex';
-                userLinks.style.display = 'none';
-                greeting.innerText = "BEM-VINDO(A)";
+                guest.style.display = 'flex';
+                logged.style.display = 'none';
+                greet.innerText = "MENU REPHONE";
             }
         });
 
@@ -148,25 +150,29 @@
             signOut(auth).then(() => window.location.reload());
         };
 
-        // CARREGAR RADAR (SUA LÓGICA ORIGINAL)
+        // --- CARREGAR RADAR (SUA LÓGICA ORIGINAL INTACTA) ---
         async function carregarRadar() {
             const radarDiv = document.getElementById('radar');
-            const q = query(collection(db, "anuncios"), orderBy("dataCriacao", "desc"));
-            const snap = await getDocs(q);
-            
-            radarDiv.innerHTML = "";
-            snap.forEach(doc => {
-                const ad = doc.data();
-                const card = `
-                    <a href="anuncio.html?id=${doc.id}" class="card">
-                        <img src="${ad.fotos[0]}" alt="${ad.modelo}">
-                        <h3>${ad.modelo}</h3>
-                        <span class="price">R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}</span>
-                        <span class="loc">📍 ${ad.cidade}</span>
-                    </a>
-                `;
-                radarDiv.innerHTML += card;
-            });
+            try {
+                const q = query(collection(db, "anuncios"), orderBy("dataCriacao", "desc"));
+                const snap = await getDocs(q);
+                
+                radarDiv.innerHTML = "";
+                snap.forEach(docSnap => {
+                    const ad = docSnap.data();
+                    const card = `
+                        <a href="anuncio.html?id=${docSnap.id}" class="card">
+                            <img src="${ad.fotos[0]}" alt="${ad.modelo}">
+                            <h3>${ad.modelo}</h3>
+                            <span class="price">R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}</span>
+                            <span class="loc">📍 ${ad.cidade}</span>
+                        </a>
+                    `;
+                    radarDiv.innerHTML += card;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar radar:", error);
+            }
         }
 
         carregarRadar();
