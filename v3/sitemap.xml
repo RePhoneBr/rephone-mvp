@@ -1,0 +1,18 @@
+(async () => {
+    // Importando as ferramentas necessárias do Firebase que você já usa
+    const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js");
+    const db = getFirestore();
+    const querySnapshot = await getDocs(collection(db, "anuncios"));
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    xml += `  <url><loc>https://www.rephone.com.br/</loc><priority>1.0</priority></url>\n`;
+
+    querySnapshot.forEach((doc) => {
+        xml += `  <url>\n    <loc>https://www.rephone.com.br/anuncio.html?id=${doc.id}</loc>\n    <priority>0.8</priority>\n  </url>\n`;
+    });
+
+    xml += "</urlset>";
+    console.log(xml);
+    copy(xml); // Isso já copia o texto automaticamente para o seu teclado!
+    alert("Sitemap gerado e copiado para a área de transferência!");
+})();
