@@ -1,125 +1,95 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cadastro RePhone | Vendedor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Criar Conta | RePhone</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --green: #16a34a; --gold: #d4af37; --bg: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--bg); padding: 20px; color: var(--dark); }
-        .reg-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
-        h2 { font-weight: 900; margin-bottom: 5px; }
-        label { display: block; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; font-size: 14px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .gps-box { background: #f0fdf4; padding: 15px; border-radius: 15px; border: 1px solid var(--green); margin-top: 20px; text-align: center; }
-        .btn-reg { width: 100%; background: var(--dark); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; margin-top: 25px; cursor: pointer; }
-        .btn-reg:disabled { background: #cbd5e1; cursor: not-allowed; }
+        :root { --dark: #0f172a; --green: #16a34a; --bg: #f8fafc; --muted: #64748b; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg); height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .reg-card { background: white; width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; }
+        h2 { font-weight: 900; font-size: 22px; margin-bottom: 10px; }
+        p { color: var(--muted); font-size: 14px; margin-bottom: 25px; }
+        label { display: block; text-align: left; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; margin-left: 5px; }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 15px; outline: none; font-size: 15px; }
+        .btn-reg { width: 100%; background: var(--green); color: white; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .footer-links { margin-top: 25px; font-size: 13px; color: var(--muted); }
+        .footer-links a { color: var(--dark); font-weight: 700; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="reg-card">
-        <a href="index.html" style="text-decoration:none; color:var(--dark); font-size:12px; font-weight:bold;">← Voltar</a>
-        <h2 style="margin-top:15px;">Criar Conta RePhone</h2>
+        <h2>Comece a Vender</h2>
+        <p>Crie sua conta para publicar no Radar.</p>
         
-        <form id="formRegistro">
-            <label>E-mail de Acesso</label>
-            <input type="email" id="rEmail" placeholder="seu@email.com" required>
-            
-            <label>Criar Senha</label>
-            <input type="password" id="rSenha" placeholder="Mínimo 6 caracteres" required>
-
-            <hr style="margin-top:20px; border: 0; border-top: 1px solid #eee;">
-
-            <label>Tipo de Perfil</label>
-            <select id="rTipo"><option value="Particular">👤 Particular</option><option value="Lojista">🏪 Lojista / Revenda</option></select>
-
-            <label>Nome Completo ou Loja</label>
-            <input type="text" id="rNome" required>
-
-            <label>WhatsApp (DDD + Número)</label>
-            <input type="tel" id="rZap" placeholder="Ex: 27999998888" required>
-
-            <div class="grid-2">
-                <div><label>Cidade</label><input type="text" id="rCidade" required></div>
-                <div><label>Estado</label><input type="text" id="rEstado" placeholder="Ex: ES" required></div>
-            </div>
-
-            <div class="gps-box">
-                <p style="font-size:11px; font-weight:700; color:var(--green);">LOCALIZAÇÃO DE SEGURANÇA</p>
-                <button type="button" onclick="pegarGPS()" id="btnGps" style="background:var(--green); color:white; border:none; padding:10px; border-radius:8px; margin-top:5px; font-weight:700; width:100%;">Validar meu GPS</button>
-                <input type="hidden" id="rCoords" required>
-                <p id="gpsStatus" style="font-size:10px; margin-top:5px; font-weight:bold;"></p>
-            </div>
-
-            <button type="submit" id="btnFinalizar" class="btn-reg" disabled>CRIAR CONTA E FINALIZAR</button>
-        </form>
+        <label>E-mail</label>
+        <input type="email" id="email" placeholder="seu@email.com">
+        
+        <label>WhatsApp (com DDD)</label>
+        <input type="number" id="whatsapp" placeholder="Ex: 11999999999">
+        
+        <label>Senha</label>
+        <input type="password" id="pass" placeholder="Mínimo 6 caracteres">
+        
+        <button class="btn-reg" id="btnReg" onclick="registrar()">CRIAR MINHA CONTA</button>
+        
+        <div class="footer-links">
+            Já tem conta? <a href="vendedor-login.html">Fazer Login</a>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
             authDomain: "rephone-a0a80.firebaseapp.com", 
             projectId: "rephone-a0a80", 
             storageBucket: "rephone-a0a80.firebasestorage.app", 
-            messagingSenderId: "431497247030", 
             appId: "1:431497247030:web:a943715e4acc04b8995b97" 
         };
-
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        window.pegarGPS = () => {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                document.getElementById('rCoords').value = `${pos.coords.latitude},${pos.coords.longitude}`;
-                document.getElementById('gpsStatus').innerText = "✅ GPS Capturado!";
-                document.getElementById('gpsStatus').style.color = "var(--green)";
-                document.getElementById('btnFinalizar').disabled = false;
-            }, () => { 
-                alert("A geolocalização é obrigatória para segurança."); 
-            });
-        };
+        window.registrar = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            const zap = document.getElementById('whatsapp').value;
+            const btn = document.getElementById('btnReg');
 
-        document.getElementById('formRegistro').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnFinalizar');
-            btn.innerText = "CRIANDO...";
+            if(!email || !pass || !zap) return alert("Preencha todos os campos.");
+            if(pass.length < 6) return alert("A senha deve ter pelo menos 6 caracteres.");
+            if(zap.length < 10) return alert("Digite um WhatsApp válido com DDD.");
+
             btn.disabled = true;
+            btn.innerText = "CRIANDO CONTA...";
 
             try {
                 // 1. Cria o usuário no Auth
-                const userCred = await createUserWithEmailAndPassword(auth, document.getElementById('rEmail').value, document.getElementById('rSenha').value);
-                const user = userCred.user;
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
 
-                // 2. CORREÇÃO: Usa setDoc com o ID do documento sendo o UID do usuário
+                // 2. Salva o perfil do vendedor no Firestore vinculando o UID
                 await setDoc(doc(db, "vendedores", user.uid), {
-                    uid: user.uid,
-                    email: user.email,
-                    nome: document.getElementById('rNome').value,
-                    tipo: document.getElementById('rTipo').value,
-                    zap: document.getElementById('rZap').value,
-                    cidade: document.getElementById('rCidade').value,
-                    estado: document.getElementById('rEstado').value,
-                    coords: document.getElementById('rCoords').value,
-                    role: "vendedor", // Usuário comum por padrão
-                    status: "pendente",
-                    dataCadastro: new Date()
+                    email: email,
+                    whatsapp: zap,
+                    tipo: "particular",
+                    dataRegistro: new Date()
                 });
 
-                alert("Conta criada! Faça login para continuar.");
-                window.location.href = "vendedor-login.html";
+                alert("Conta criada com sucesso!");
+                window.location.href = 'vendedor-anuncio.html';
 
-            } catch (error) {
-                alert("Erro: " + error.message);
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao criar conta. Verifique se o e-mail já está em uso.");
                 btn.disabled = false;
-                btn.innerText = "CRIAR CONTA E FINALIZAR";
+                btn.innerText = "CRIAR MINHA CONTA";
             }
         };
     </script>
