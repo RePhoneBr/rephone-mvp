@@ -154,9 +154,11 @@
                 
                 // Buscar WhatsApp do perfil do vendedor
                 try {
-                    const userDoc = await getDoc(doc(db, "vendedores", user.uid));
-                    if (userDoc.exists()) {
-                        document.getElementById('whatsapp').value = userDoc.data().whatsapp;
+             const userDoc = await getDoc(doc(db, "vendedores", user.uid));
+if (userDoc.exists()) {
+    // Aqui estava o erro: trocamos .whatsapp por .zap que é como está no seu print
+    const numeroZap = userDoc.data().zap; 
+    document.getElementById('whatsapp').value = numeroZap || "Não cadastrado";
                     }
                 } catch (e) { console.error("Erro ao buscar perfil", e); }
 
