@@ -22,6 +22,7 @@
         .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
         .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 4px; }
         .info-box span { font-size: 14px; font-weight: 700; color: var(--dark); }
+        .info-box.highlight { border-color: var(--green); background: #f0fdf4; }
         .desc-box { padding-top: 20px; border-top: 1px solid #f1f5f9; }
         .desc-box h4 { font-size: 11px; font-weight: 900; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
         .desc-box p { font-size: 14px; color: #475569; line-height: 1.6; }
@@ -47,12 +48,14 @@
         <div class="info-grid">
             <div class="info-box"><small>Marca</small><span id="pMarca">--</span></div>
             <div class="info-box"><small>Modelo</small><span id="pModeloGrid">--</span></div>
+            
+            <div class="info-box highlight"><small>Vendedor</small><span id="pNomeVendedor">--</span></div>
+            <div class="info-box highlight"><small>Distância</small><span id="pDistancia">Calculando...</span></div>
+            
             <div class="info-box"><small>Cor</small><span id="pCor">--</span></div>
             <div class="info-box"><small>Capacidade</small><span id="pCapacidade">--</span></div>
             <div class="info-box"><small>Condição</small><span id="pCondicao">--</span></div>
-            <div class="info-box"><small>Estado</small><span id="pEstado">--</span></div>
             <div class="info-box"><small>Bateria</small><span id="pBateria">--</span>%</div>
-            <div class="info-box"><small>Garantia</small><span id="pGarantia">--</span></div>
         </div>
 
         <div class="desc-box">
@@ -77,16 +80,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // PEGAR ID DA URL
         const urlParams = new URLSearchParams(window.location.search);
         const idAnuncio = urlParams.get('id');
-        console.log("ID do Anúncio detectado:", idAnuncio);
+
+        // Função para calcular distância entre dois pontos (Haversine)
+        function calcularDistancia(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Raio da Terra em km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return (R * c).toFixed(1);
+        }
 
         async function carregarAnuncio() {
-            if (!idAnuncio) {
-                console.error("Nenhum ID encontrado na URL");
-                return;
-            }
+            if (!idAnuncio) return;
 
             try {
                 const docRef = doc(db, "anuncios", idAnuncio);
@@ -94,46 +103,53 @@
 
                 if (snap.exists()) {
                     const ad = snap.data();
-                    console.log("Dados do anúncio recuperados:", ad);
 
-                    // Preencher campos
-                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : 'https://via.placeholder.com/400';
-                    document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
-                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-                    document.getElementById('pLocal').innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+                    // Preenchimento Básico
+                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
+                    document.getElementById('pModeloHeader').innerText = ad.modelo;
+                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}`;
+                    document.getElementById('pLocal').innerText = `📍 ${ad.cidade}`;
                     
+                    // Preenchimento Grid
                     document.getElementById('pMarca').innerText = ad.marca || '--';
                     document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
+                    document.getElementById('pNomeVendedor').innerText = ad.vendedorNome || 'Particular';
                     document.getElementById('pCor').innerText = ad.cor || '--';
                     document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
                     document.getElementById('pCondicao').innerText = ad.condicao || '--';
-                    document.getElementById('pEstado').innerText = ad.estado || '--';
                     document.getElementById('pBateria').innerText = ad.bateria || '--';
-                    document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
-                    document.getElementById('pDesc').innerText = ad.descricao || 'O vendedor não forneceu detalhes.';
+                    document.getElementById('pDesc').innerText = ad.descricao || '';
 
+                    // Tipo de Vendedor
                     const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
                     document.getElementById('pVendedorTipo').innerText = tipoTxt;
 
-                    // Captura o link da página atual onde o usuário está vendo o anúncio
-const linkAnuncio = window.location.href;
+                    // Lógica de Distância
+                    if (ad.lat && ad.lng) {
+                        navigator.geolocation.getCurrentPosition((position) => {
+                            const d = calcularDistancia(
+                                position.coords.latitude, 
+                                position.coords.longitude, 
+                                ad.lat, 
+                                ad.lng
+                            );
+                            document.getElementById('pDistancia').innerText = `a ${d} km de você`;
+                        }, () => {
+                            document.getElementById('pDistancia').innerText = "Localização negada";
+                        });
+                    } else {
+                        document.getElementById('pDistancia').innerText = "--";
+                    }
 
-// Monta a mensagem incluindo o modelo, preço e o link direto
-const msg = encodeURIComponent(
-    `Olá! Vi seu anúncio do ${ad.marca} ${ad.modelo} ${ad.cor} no RePhone por R$ ${ad.preco}.\n\n` +
-    `Link do anúncio: ${linkAnuncio}\n\n` +
-    `Ainda está disponível?`
-);
-
-// Aplica o link ao botão de WhatsApp
-document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
+                    // Botão WhatsApp
+                    const linkAnuncio = window.location.href;
+                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.marca} ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${linkAnuncio}\n\nAinda está disponível?`);
+                    document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
 
                     document.getElementById('mainPanel').style.display = 'block';
-                } else {
-                    alert("Anúncio não encontrado!");
                 }
             } catch (error) {
-                console.error("Erro ao buscar no Firebase:", error);
+                console.error("Erro:", error);
             }
         }
 
