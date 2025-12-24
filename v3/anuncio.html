@@ -15,13 +15,13 @@
         .panel { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        /* Ordem das informações */
         h1 { font-size: 26px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
-        
-        /* Estilos para as novas informações */
         .seller-name { font-size: 16px; font-weight: 700; color: var(--dark); display: block; margin-top: 5px; }
-        .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 5px; margin-bottom: 15px; display: block; }
+        .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 5px; display: block; }
+        .price { font-size: 32px; font-weight: 900; color: var(--green); margin-top: 15px; margin-bottom: 25px; display: block; }
         
-        .price { font-size: 32px; font-weight: 900; color: var(--green); margin-bottom: 25px; display: block; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
         .info-box { background: #f8fafc; padding: 15px; border-radius: 18px; border: 1px solid #e2e8f0; }
         .info-box small { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 4px; }
@@ -85,15 +85,15 @@
         const urlParams = new URLSearchParams(window.location.search);
         const idAnuncio = urlParams.get('id');
 
-        // Função para calcular distância entre coordenadas
-        function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371;
+        // Função de Haversine para calcular KM
+        function calcularKM(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+            return R * c; 
         }
 
         async function carregarAnuncio() {
@@ -106,24 +106,32 @@
                 if (snap.exists()) {
                     const ad = snap.data();
 
-                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : 'https://via.placeholder.com/400';
+                    // Preenchimento de dados
+                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
                     document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
+                    
+                    // Mostra o nome real do vendedor salvo no anúncio
                     document.getElementById('pNomeVendedor').innerText = `Vendedor: ${ad.vendedorNome || 'Particular'}`;
+                    
                     document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
                     
-                    // Lógica de Localização e KM
-                    const localElement = document.getElementById('pLocal');
+                    // Localização com Raio de Segurança
+                    const localTxt = document.getElementById('pLocal');
                     if (ad.lat && ad.lng) {
                         navigator.geolocation.getCurrentPosition((pos) => {
-                            const dist = getDistance(pos.coords.latitude, pos.coords.longitude, ad.lat, ad.lng);
-                            localElement.innerText = `📍 ${ad.cidade} (a ${dist.toFixed(1)} km de você)`;
+                            const km = calcularKM(pos.coords.latitude, pos.coords.longitude, ad.lat, ad.lng);
+                            
+                            // RAIO DE SEGURANÇA: Menos de 0.5km não mostra a distância exata
+                            let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
+                            localTxt.innerText = `📍 ${ad.cidade} (${distanciaFinal})`;
                         }, () => {
-                            localElement.innerText = `📍 ${ad.cidade}`;
+                            localTxt.innerText = `📍 ${ad.cidade}`;
                         });
                     } else {
-                        localElement.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+                        localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
                     }
 
+                    // Detalhes Técnicos
                     document.getElementById('pMarca').innerText = ad.marca || '--';
                     document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
                     document.getElementById('pCor').innerText = ad.cor || '--';
@@ -132,20 +140,18 @@
                     document.getElementById('pEstado').innerText = ad.estado || '--';
                     document.getElementById('pBateria').innerText = ad.bateria || '--';
                     document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
-                    document.getElementById('pDesc').innerText = ad.descricao || 'O vendedor não forneceu detalhes.';
+                    document.getElementById('pDesc').innerText = ad.descricao || '';
 
                     const tipoTxt = ad.tipoVendedor === 'lojista' ? '🏢 LOJISTA VERIFICADO' : '👤 VENDEDOR PARTICULAR';
                     document.getElementById('pVendedorTipo').innerText = tipoTxt;
 
-                    const linkAnuncio = window.location.href;
-                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.marca} ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${linkAnuncio}\n\nAinda está disponível?`);
+                    // WhatsApp com link do anúncio
+                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}\n\nAinda está disponível?`);
                     document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
 
                     document.getElementById('mainPanel').style.display = 'block';
                 }
-            } catch (error) {
-                console.error("Erro:", error);
-            }
+            } catch (error) { console.error(error); }
         }
         carregarAnuncio();
     </script>
