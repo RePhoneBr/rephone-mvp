@@ -134,16 +134,38 @@
                     document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
                     document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
                     
-                    const localTxt = document.getElementById('pLocal');
-                    if (ad.lat && ad.lng) {
-                        navigator.geolocation.getCurrentPosition((pos) => {
-                            const km = calcularKM(pos.coords.latitude, pos.coords.longitude, ad.lat, ad.lng);
-                            let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
-                            localTxt.innerText = `📍 ${ad.cidade} (${distanciaFinal})`;
-                        }, () => {
-                            localTxt.innerText = `📍 ${ad.cidade}`;
-                        });
-                    }
+                    // ... dentro do carregarAnuncio() onde você recebe o "ad" ...
+
+const localTxt = document.getElementById('pLocal');
+
+// Verifica se o campo 'coords' existe (formato: "lat,lng")
+if (ad.coords) {
+    // Separa a string pela vírgula e converte para números
+    const partes = ad.coords.split(',');
+    const adLat = parseFloat(partes[0]);
+    const adLng = parseFloat(partes[1]);
+
+    if (!isNaN(adLat) && !isNaN(adLng)) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const userLat = pos.coords.latitude;
+            const userLng = pos.coords.longitude;
+            
+            const km = calcularKM(userLat, userLng, adLat, adLng);
+            
+            // Regra do Raio de Segurança
+            let distanciaFinal = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
+            localTxt.innerText = `📍 ${ad.cidade} (${distanciaFinal})`;
+        }, () => {
+            // Caso o usuário negue o GPS
+            localTxt.innerText = `📍 ${ad.cidade}`;
+        });
+    } else {
+        localTxt.innerText = `📍 ${ad.cidade}`;
+    }
+} else {
+    // Se não houver o campo 'coords'
+    localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+}
 
                     document.getElementById('pMarca').innerText = ad.marca || '--';
                     document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
