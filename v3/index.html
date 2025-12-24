@@ -6,8 +6,6 @@
 <title>RePhone | Match Inteligente</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-<style>
 :root {
   --dark:#0f172a;
   --green:#16a34a;
@@ -57,7 +55,6 @@ body {
   margin-top:3px;
 }
 
-/* MENU */
 .btn-menu-icon{
   background:none;
   border:none;
@@ -66,6 +63,7 @@ body {
   cursor:pointer;
 }
 
+/* MENU */
 #mobileMenu{
   position:fixed;
   top:-100%;
@@ -78,7 +76,6 @@ body {
   border-radius:0 0 30px 30px;
   backdrop-filter:blur(16px);
 }
-
 #mobileMenu.active{top:0;}
 
 #menuOverlay{
@@ -142,9 +139,7 @@ body {
   background:#cbd5e1;
 }
 
-.searching{
-  animation:pulse 1s infinite;
-}
+.searching{animation:pulse 1s infinite;}
 @keyframes pulse{
   0%,100%{opacity:1}
   50%{opacity:.4}
@@ -185,17 +180,10 @@ input:focus{
   font-size:15px;
   cursor:pointer;
   box-shadow:0 12px 30px rgba(22,163,74,.4);
-  transition:.15s;
 }
 .btn-match:active{transform:scale(.97);}
 
-/* LISTAGEM */
-.section-title{
-  padding:10px 20px;
-  font-size:22px;
-  font-weight:900;
-}
-
+/* GRID */
 .feed{
   padding:0 16px 120px;
   display:grid;
@@ -208,74 +196,11 @@ input:focus{
   border-radius:26px;
   padding:14px;
   border:1px solid #e5e7eb;
-  display:flex;
-  flex-direction:column;
   transition:.25s;
 }
 .card:hover{
   transform:translateY(-4px);
   box-shadow:0 25px 50px rgba(0,0,0,.1);
-}
-
-.img-container{
-  aspect-ratio:1/1;
-  background:#f1f5f9;
-  border-radius:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:10px;
-}
-
-.card img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-}
-
-.info-top{
-  font-size:9px;
-  font-weight:700;
-  color:var(--text-muted);
-  text-transform:uppercase;
-}
-
-.card h3{
-  font-size:14px;
-  font-weight:700;
-  margin:4px 0;
-  min-height:32px;
-}
-
-.status-row{
-  display:flex;
-  gap:4px;
-  flex-wrap:wrap;
-}
-
-.badge-condicao,
-.badge-cor{
-  font-size:8px;
-  font-weight:800;
-  padding:4px 6px;
-  border-radius:6px;
-  text-transform:uppercase;
-}
-
-.badge-condicao{background:#eff6ff;color:#1e40af;}
-.badge-cor{background:#f1f5f9;color:var(--text-muted);}
-
-.details{
-  font-size:10px;
-  color:var(--text-muted);
-  font-weight:600;
-}
-
-.location{
-  font-size:10px;
-  color:var(--green);
-  font-weight:700;
-  margin-top:4px;
 }
 
 .price{
@@ -301,64 +226,9 @@ input:focus{
   border-radius:32px 32px 0 0;
   z-index:3000;
   transition:.6s cubic-bezier(.175,.885,.32,1.275);
-  box-shadow:0 -20px 50px rgba(22,163,74,.4);
 }
 #matchPopup.active{bottom:0;}
 
-.match-label{
-  font-size:26px;
-  font-weight:900;
-  text-align:center;
-  letter-spacing:2px;
-  animation:glow 1.5s infinite alternate;
-}
-@keyframes glow{
-  from{text-shadow:0 0 10px var(--green);}
-  to{text-shadow:0 0 25px var(--green-light);}
-}
-
-.match-content{
-  display:flex;
-  gap:15px;
-  background:rgba(255,255,255,.06);
-  padding:16px;
-  border-radius:22px;
-  margin-top:16px;
-}
-
-.match-content img{
-  width:72px;
-  height:72px;
-  border-radius:14px;
-  background:#fff;
-}
-
-.match-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:20px;
-}
-
-.btn-view{
-  background:var(--green);
-  color:#fff;
-  padding:16px;
-  border-radius:14px;
-  text-decoration:none;
-  font-weight:800;
-  text-align:center;
-}
-
-.btn-close{
-  background:rgba(255,255,255,.12);
-  color:#fff;
-  padding:16px;
-  border-radius:14px;
-  border:none;
-  font-weight:700;
-}
-</style>
 </head>
 
 <body>
