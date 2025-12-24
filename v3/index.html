@@ -1,238 +1,283 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RePhone | Match Inteligente</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RePhone | Match Inteligente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --dark: #0f172a; --green: #16a34a; --green-light: #4ade80; --bg: #f8fafc; --text-muted: #64748b; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--dark); overflow-x: hidden; }
+        
+        /* HEADER MODERNA E ARREDONDADA */
+        .main-header { 
+            background: var(--dark); 
+            padding: 12px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            border-radius: 0 0 25px 25px; /* Bordas arredondadas embaixo */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .brand-container { display: flex; flex-direction: column; }
+        .logo { font-weight: 900; font-size: 22px; color: white; text-decoration: none; line-height: 1; }
+        .logo span { color: var(--green); }
+        .slogan { color: #94a3b8; font-size: 10px; font-weight: 600; margin-top: 4px; letter-spacing: 0.3px; }
+        
+        /* BOTÃO MENU */
+        .btn-menu-icon { background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 5px; }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-:root {
-  --dark:#0f172a;
-  --green:#16a34a;
-  --green-light:#4ade80;
-  --bg:#f8fafc;
-  --text-muted:#64748b;
-}
+        /* MENU DESLIZANTE */
+        #mobileMenu {
+            position: fixed; top: -100%; left: 0; width: 100%; height: auto;
+            background: var(--dark); padding: 80px 25px 30px;
+            z-index: 2000; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 0 0 30px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        #mobileMenu.active { top: 0; }
+        #menuOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; z-index: 1900; }
+        .menu-link { padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 800; font-size: 13px; text-align: center; text-transform: uppercase; color: white; background: rgba(255,255,255,0.05); }
+        .menu-link.destaque { background: var(--green); }
+        .btn-logout-menu { color: #ef4444; background: none; border: none; font-weight: 800; margin-top: 10px; cursor: pointer; font-size: 12px; }
 
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
-}
+        /* HERO & MATCH CARD */
+        .hero { padding: 30px 20px; max-width: 600px; margin: 0 auto; }
+        .match-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .match-status-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .status-circle { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; }
+        .searching { background: #94a3b8; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .match-card label { display: block; font-weight: 800; font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .match-card input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 15px; font-size: 15px; outline: none; }
+        .btn-match { width: 100%; background: var(--green); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
-body {
-  background:linear-gradient(180deg,#f8fafc,#eef2ff);
-  color:var(--dark);
-  overflow-x:hidden;
-}
+        /* RADAR GRID */
+        .section-title { padding: 20px; font-size: 24px; font-weight: 900; }
+        .feed { padding: 0 15px 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        /* CARD */
+        .card { background: white; border-radius: 25px; padding: 12px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; }
+        .badge-tipo { position: absolute; top: 18px; left: 18px; font-size: 8px; font-weight: 900; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; background: rgba(255,255,255,0.9); border: 1px solid #e2e8f0; z-index: 10; }
+        .img-container { width: 100%; aspect-ratio: 1/1; background: #f1f5f9; border-radius: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
+        .card img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .info-top { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .card h3 { font-size: 13px; font-weight: 800; margin: 4px 0; min-height: 32px; }
+        .status-row { display: flex; gap: 4px; margin-bottom: 6px; flex-wrap: wrap; }
+        .badge-condicao { font-size: 8px; font-weight: 800; padding: 3px 6px; border-radius: 4px; background: #eff6ff; color: #1e40af; text-transform: uppercase; }
+        .badge-cor { font-size: 8px; font-weight: 800; padding: 3px 6px; border-radius: 4px; background: #f1f5f9; color: var(--text-muted); text-transform: uppercase; }
+        
+        .details { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+        .location { font-size: 10px; color: var(--green); font-weight: 700; margin-top: 5px; }
+        .price { font-size: 17px; font-weight: 900; color: var(--green); margin-top: 8px; }
 
-/* HEADER */
-.main-header{
-  background:var(--dark);
-  padding:14px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  border-radius:0 0 26px 26px;
-  box-shadow:0 8px 30px rgba(0,0,0,.15);
-}
-
-.logo{
-  font-weight:900;
-  font-size:22px;
-  color:#fff;
-  text-decoration:none;
-}
-.logo span{color:var(--green);}
-.slogan{
-  font-size:10px;
-  font-weight:600;
-  color:#94a3b8;
-  margin-top:3px;
-}
-
-.btn-menu-icon{
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:28px;
-  cursor:pointer;
-}
-
-/* MENU */
-#mobileMenu{
-  position:fixed;
-  top:-100%;
-  left:0;
-  width:100%;
-  background:var(--dark);
-  padding:80px 25px 30px;
-  z-index:2000;
-  transition:.5s cubic-bezier(.175,.885,.32,1.275);
-  border-radius:0 0 30px 30px;
-  backdrop-filter:blur(16px);
-}
-#mobileMenu.active{top:0;}
-
-#menuOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  z-index:1900;
-}
-
-.menu-link{
-  padding:18px;
-  border-radius:16px;
-  text-decoration:none;
-  font-weight:800;
-  font-size:13px;
-  text-align:center;
-  color:#fff;
-  background:rgba(255,255,255,.08);
-  transition:.2s;
-}
-.menu-link:hover{background:rgba(255,255,255,.15);}
-.menu-link.destaque{background:var(--green);}
-
-.btn-logout-menu{
-  background:none;
-  border:none;
-  color:#ef4444;
-  font-weight:800;
-  font-size:12px;
-  cursor:pointer;
-}
-
-/* HERO */
-.hero{
-  padding:40px 20px;
-  max-width:600px;
-  margin:auto;
-}
-
-.match-card{
-  background:rgba(255,255,255,.85);
-  padding:28px;
-  border-radius:32px;
-  border:1px solid #e5e7eb;
-  box-shadow:0 30px 60px rgba(0,0,0,.08);
-  backdrop-filter:blur(12px);
-}
-
-.match-status-container{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:18px;
-}
-
-.status-circle{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#cbd5e1;
-}
-
-.searching{animation:pulse 1s infinite;}
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.4}
-}
-
-label{
-  font-size:11px;
-  font-weight:800;
-  color:var(--text-muted);
-  text-transform:uppercase;
-  margin-bottom:6px;
-  display:block;
-}
-
-input{
-  width:100%;
-  padding:16px;
-  border-radius:16px;
-  border:1px solid transparent;
-  background:linear-gradient(180deg,#f8fafc,#f1f5f9);
-  margin-bottom:18px;
-  font-size:15px;
-  outline:none;
-}
-input:focus{
-  border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(22,163,74,.2);
-}
-
-.btn-match{
-  width:100%;
-  background:var(--green);
-  color:#fff;
-  border:none;
-  padding:18px;
-  border-radius:16px;
-  font-weight:800;
-  font-size:15px;
-  cursor:pointer;
-  box-shadow:0 12px 30px rgba(22,163,74,.4);
-}
-.btn-match:active{transform:scale(.97);}
-
-/* GRID */
-.feed{
-  padding:0 16px 120px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-}
-
-.card{
-  background:rgba(255,255,255,.9);
-  border-radius:26px;
-  padding:14px;
-  border:1px solid #e5e7eb;
-  transition:.25s;
-}
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 25px 50px rgba(0,0,0,.1);
-}
-
-.price{
-  margin-top:8px;
-  font-size:17px;
-  font-weight:900;
-  color:var(--green);
-  background:rgba(22,163,74,.08);
-  padding:6px 10px;
-  border-radius:12px;
-  width:max-content;
-}
-
-/* MATCH POPUP */
-#matchPopup{
-  position:fixed;
-  bottom:-100%;
-  left:0;
-  width:100%;
-  background:var(--dark);
-  color:#fff;
-  padding:26px;
-  border-radius:32px 32px 0 0;
-  z-index:3000;
-  transition:.6s cubic-bezier(.175,.885,.32,1.275);
-}
-#matchPopup.active{bottom:0;}
-
+        /* MODAL DE MATCH INFERIOR */
+        #matchPopup { 
+            position: fixed; bottom: -100%; left: 0; width: 100%; 
+            background: var(--dark); color: white; padding: 25px; 
+            border-radius: 30px 30px 0 0; z-index: 2000;
+            transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 -10px 40px rgba(22, 163, 74, 0.4);
+        }
+        #matchPopup.active { bottom: 0; }
+        .match-label { font-size: 24px; font-weight: 900; letter-spacing: 2px; text-align: center; display: block; animation: colorShift 1.5s infinite alternate; }
+        @keyframes colorShift {
+            0% { color: var(--green); text-shadow: 0 0 5px var(--green); }
+            100% { color: var(--green-light); text-shadow: 0 0 20px var(--green-light); }
+        }
+        .match-content { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-top: 15px; }
+        .match-content img { width: 70px; height: 70px; border-radius: 12px; object-fit: contain; background: white; }
+        .match-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-view { background: var(--green); color: white; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: 800; text-align: center; }
+        .btn-close { background: rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: 700; }
+    </style>
 </head>
-
 <body>
-<!-- O BODY + SCRIPT permanecem exatamente iguais ao seu original -->
-<!-- Nenhuma função foi alterada -->
+
+    <header class="main-header">
+        <div class="brand-container">
+            <a href="index.html" class="logo">Re<span>Phone</span></a>
+            <span class="slogan">Faça Match no seu novo celular</span>
+        </div>
+        <button class="btn-menu-icon" onclick="toggleMenu()">☰</button>
+    </header>
+
+    <div id="menuOverlay" onclick="toggleMenu()"></div>
+    <nav id="mobileMenu">
+        <div id="greeting" style="color:#94a3b8; font-size:11px; font-weight:800; text-align:center; margin-bottom:10px;">MENU REPHONE</div>
+        
+        <div id="menuGuest" style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="vendedor-login.html" class="menu-link destaque">Entrar / Vender</a>
+            <a href="registro-vendedor.html" class="menu-link">Criar Conta Vendedor</a>
+        </div>
+
+        <div id="menuLogged" style="display: none; flex-direction: column; gap: 12px;">
+            <a href="vendedor-anuncio.html" class="menu-link destaque">+ Novo Anúncio</a>
+            <a href="dashboard-vendedor.html" class="menu-link">Meus Anúncios</a>
+            <button class="btn-logout-menu" onclick="fazerLogout()">SAIR DA CONTA</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="match-card">
+            <div class="match-status-container">
+                <div id="mCircle" class="status-circle"></div>
+                <div id="mText" style="font-size: 11px; font-weight: 800; color: #64748b;">MATCH? Faça uma pesquisa!!!...</div>
+            </div>
+            <label>Modelo desejado</label>
+            <input type="text" id="matchModelo" placeholder="Ex: iPhone 13 Pro">
+            <label>Preço Máximo</label>
+            <input type="text" id="matchPreco" placeholder="Ex: 4000">
+            <button class="btn-match" onclick="fazerMatch()">MATCH</button>
+        </div>
+    </section>
+
+    <h2 class="section-title">As melhores ofertas RePhone</h2>
+    <main id="radarGrid" class="feed"></main>
+
+    <div id="matchPopup">
+        <span class="match-label">MATCH!</span>
+        <div class="match-content" id="matchData"></div>
+        <div class="match-actions">
+            <button class="btn-close" onclick="closeMatch()">FECHAR</button>
+            <a href="#" id="matchLink" class="btn-view">VER AGORA</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", authDomain: "rephone-a0a80.firebaseapp.com", projectId: "rephone-a0a80", storageBucket: "rephone-a0a80.firebasestorage.app", appId: "1:431497247030:web:a943715e4acc04b8995b97" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.toggleMenu = () => {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('menuOverlay');
+            menu.classList.toggle('active');
+            overlay.style.display = menu.classList.contains('active') ? 'block' : 'none';
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            const guest = document.getElementById('menuGuest');
+            const logged = document.getElementById('menuLogged');
+            const greet = document.getElementById('greeting');
+            if (user) {
+                guest.style.display = 'none';
+                logged.style.display = 'flex';
+                try {
+                    const vDoc = await getDoc(doc(db, "vendedores", user.uid));
+                    if(vDoc.exists()) greet.innerText = "OLÁ, " + vDoc.data().nome.toUpperCase();
+                } catch(e) { greet.innerText = "MINHA CONTA"; }
+            } else {
+                guest.style.display = 'flex';
+                logged.style.display = 'none';
+                greet.innerText = "MENU REPHONE";
+            }
+        });
+
+        window.fazerLogout = () => { signOut(auth).then(() => window.location.reload()); };
+
+        let todosAnuncios = [];
+        onSnapshot(query(collection(db, "anuncios"), where("status", "==", "aprovado")), (snap) => {
+            todosAnuncios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderizar(todosAnuncios);
+        });
+
+        function renderizar(lista) {
+            const grid = document.getElementById('radarGrid');
+            grid.innerHTML = "";
+            lista.forEach(ad => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <a href="anuncio.html?id=${ad.id}" style="text-decoration:none; color:inherit;">
+                        <div class="img-container"><img src="${ad.fotos ? ad.fotos[0] : ''}"></div>
+                        <div class="info-top">${ad.marca}</div>
+                        <h3>${ad.modelo}</h3>
+                        <div class="status-row">
+                            <span class="badge-condicao">${ad.condicao}</span>
+                            <span class="badge-cor">${ad.cor}</span>
+                        </div>
+                        <div class="details">${ad.capacidade} • Bateria ${ad.bateria}%</div>
+                        <div class="location">📍 ${ad.cidade}</div>
+                        <span class="price">R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}</span>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.fazerMatch = () => {
+            const circle = document.getElementById('mCircle');
+            const mStatus = document.getElementById('mText');
+            const mod = document.getElementById('matchModelo').value.toLowerCase();
+            const pMax = parseFloat(document.getElementById('matchPreco').value.replace(/\D/g, '')) || Infinity;
+            if(!mod) return alert("Digite o modelo que deseja.");
+            circle.className = "status-circle searching";
+            mStatus.innerText = "CALCULANDO MELHOR VANTAGEM...";
+            setTimeout(() => {
+                let candidatos = todosAnuncios.filter(a => a.modelo.toLowerCase().includes(mod));
+                if (candidatos.length === 0) {
+                    circle.className = "status-circle";
+                    circle.style.background = "#ef4444";
+                    mStatus.innerText = "NENHUM MODELO ENCONTRADO.";
+                    return;
+                }
+                let dentroDoPreco = candidatos.filter(a => parseFloat(a.preco) <= pMax);
+                let listaParaProcessar;
+                let ehAlternativa = false;
+                if (dentroDoPreco.length > 0) {
+                    listaParaProcessar = dentroDoPreco;
+                    mStatus.innerText = "MATCH ENCONTRADO!";
+                } else {
+                    listaParaProcessar = candidatos;
+                    ehAlternativa = true;
+                    mStatus.innerText = "EXIBINDO MELHOR ALTERNATIVA...";
+                }
+                listaParaProcessar.forEach(ad => {
+                    let score = 0;
+                    if(ad.condicao === "Novo" || ad.condicao === "Lacrado") score += 1000;
+                    if(ad.estado === "Excelente") score += 500;
+                    if(ad.estado === "Ótimo") score += 300;
+                    const diffPreco = Math.abs(parseFloat(ad.preco) - pMax);
+                    score += (100000 - diffPreco) / 100;
+                    if(ad.tipoVendedor === "lojista") score += 200;
+                    ad.matchScore = score;
+                });
+                listaParaProcessar.sort((a, b) => b.matchScore - a.matchScore);
+                const vencedor = listaParaProcessar[0];
+                const labelPopup = document.querySelector('.match-label');
+                if(labelPopup) labelPopup.innerText = ehAlternativa ? "MELHOR OPÇÃO!" : "MATCH!";
+                showMatchPopup(vencedor);
+                circle.className = "status-circle"; 
+                circle.style.background = "#16a34a";
+            }, 1500);
+        };
+
+        function showMatchPopup(ad) {
+            const data = document.getElementById('matchData');
+            data.innerHTML = `
+                <img src="${ad.fotos[0]}">
+                <div style="flex:1">
+                    <h4 style="font-size:16px">${ad.modelo}</h4>
+                    <p style="font-size:11px; color:#94a3b8">${ad.cidade} • ${ad.condicao}</p>
+                    <div style="color:var(--green-light); font-weight:900; font-size:18px">R$ ${parseFloat(ad.preco).toLocaleString('pt-br')}</div>
+                </div>
+            `;
+            document.getElementById('matchLink').href = `anuncio.html?id=${ad.id}`;
+            document.getElementById('matchPopup').classList.add('active');
+        }
+        window.closeMatch = () => document.getElementById('matchPopup').classList.remove('active');
+    </script>
 </body>
 </html>
