@@ -110,143 +110,70 @@
                     const ad = snap.data();
                     const vendedorId = ad.vendedorId || ad.uid;
 
-                    // --- CORREÇÃO: BUSCAR DADOS REAIS DO VENDEDOR ---
-                    const vDoc = await getDoc(doc(db, "vendedores", vendedorId));
-                    if (vDoc.exists()) {
-                        const vData = vDoc.data();
-                        
-                        // Define o nome vindo do perfil do vendedor
-                        document.getElementById('pNomeVendedor').innerText = `Vendedor: ${vData.nome || 'Particular'}`;
-                        
-                        // Define o selo vindo do status do vendedor
-                        const selo = document.getElementById('pVendedorTipo');
-                        if (vData.status === 'verificado') {
-                            selo.innerText = '🏢 LOJISTA VERIFICADO';
-                            selo.className = 'badge-verificado status-lojista';
-                        } else {
-                            selo.innerText = '👤 VENDEDOR PARTICULAR';
-                            selo.className = 'badge-verificado status-particular';
-                        }
-                    }
-
-                    // Preenchimento do restante dos dados
-                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
-                    document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
-                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-                    
-                    // ... dentro do carregarAnuncio() onde você recebe o "ad" ...
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-    const firebaseConfig = { 
-        apiKey: "AIzaSyBiN8FqX8UZeyAh1cG2GHZtQWiQH0xPBV4", 
-        authDomain: "rephone-a0a80.firebaseapp.com", 
-        projectId: "rephone-a0a80", 
-        storageBucket: "rephone-a0a80.firebasestorage.app", 
-        appId: "1:431497247030:web:a943715e4acc04b8995b97" 
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const idAnuncio = urlParams.get('id');
-
-    // Função de Cálculo de KM
-    function calcularKM(lat1, lon1, lat2, lon2) {
-        const R = 6371; 
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c; 
-    }
-
-    async function carregarAnuncio() {
-        if (!idAnuncio) return;
-
-        try {
-            const docRef = doc(db, "anuncios", idAnuncio);
-            const snap = await getDoc(docRef);
-
-            if (snap.exists()) {
-                const ad = snap.data();
-                const vendedorId = ad.vendedorId || ad.uid;
-
-                // 1. BUSCAR DADOS DO VENDEDOR (Nome e Status Verificado)
-                try {
+                    // 1. BUSCAR VENDEDOR
                     const vDoc = await getDoc(doc(db, "vendedores", vendedorId));
                     if (vDoc.exists()) {
                         const vData = vDoc.data();
                         document.getElementById('pNomeVendedor').innerText = `Vendedor: ${vData.nome || 'Particular'}`;
-                        
                         const selo = document.getElementById('pVendedorTipo');
                         if (vData.status === 'verificado') {
                             selo.innerText = '🏢 LOJISTA VERIFICADO';
                             selo.className = 'badge-verificado status-lojista';
-                            selo.style.background = "#dbeafe"; // Azul claro
+                            selo.style.background = "#dbeafe";
                             selo.style.color = "#1e40af";
                         } else {
                             selo.innerText = '👤 VENDEDOR PARTICULAR';
                             selo.className = 'badge-verificado status-particular';
                         }
                     }
-                } catch (vError) {
-                    console.error("Erro ao carregar vendedor:", vError);
-                }
 
-                // 2. PREENCHER DADOS BÁSICOS DO ANÚNCIO
-                document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
-                document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
-                document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
-                
-                // 3. LOGICA DE LOCALIZAÇÃO (Tratando campo 'coords' do Firebase)
-                const localTxt = document.getElementById('pLocal');
-                if (ad.coords) {
-                    const partes = ad.coords.split(',');
-                    const adLat = parseFloat(partes[0]);
-                    const adLng = parseFloat(partes[1]);
+                    // 2. DADOS BÁSICOS
+                    document.getElementById('pImg').src = ad.fotos && ad.fotos[0] ? ad.fotos[0] : '';
+                    document.getElementById('pModeloHeader').innerText = ad.modelo || 'Não informado';
+                    document.getElementById('pPreco').innerText = `R$ ${parseFloat(ad.preco).toLocaleString('pt-br', {minimumFractionDigits: 2})}`;
+                    
+                    // 3. LOCALIZAÇÃO (CORRIGIDA)
+                    const localTxt = document.getElementById('pLocal');
+                    if (ad.coords) {
+                        const partes = ad.coords.split(',');
+                        const adLat = parseFloat(partes[0]);
+                        const adLng = parseFloat(partes[1]);
 
-                    if (!isNaN(adLat) && !isNaN(adLng)) {
-                        navigator.geolocation.getCurrentPosition((pos) => {
-                            const km = calcularKM(pos.coords.latitude, pos.coords.longitude, adLat, adLng);
-                            let distStr = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
-                            localTxt.innerText = `📍 ${ad.cidade} (${distStr})`;
-                        }, () => {
+                        if (!isNaN(adLat) && !isNaN(adLng)) {
+                            navigator.geolocation.getCurrentPosition((pos) => {
+                                const km = calcularKM(pos.coords.latitude, pos.coords.longitude, adLat, adLng);
+                                let distStr = km < 0.5 ? "Muito perto de você" : `a ${km.toFixed(1)} km de você`;
+                                localTxt.innerText = `📍 ${ad.cidade} (${distStr})`;
+                            }, () => {
+                                localTxt.innerText = `📍 ${ad.cidade}`;
+                            }, { enableHighAccuracy: true, timeout: 5000 });
+                        } else {
                             localTxt.innerText = `📍 ${ad.cidade}`;
-                        }, { enableHighAccuracy: true, timeout: 5000 });
+                        }
                     } else {
-                        localTxt.innerText = `📍 ${ad.cidade}`;
+                        localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
                     }
-                } else {
-                    localTxt.innerText = `📍 ${ad.cidade || 'Local não informado'}`;
+
+                    // 4. DETALHES TÉCNICOS
+                    document.getElementById('pMarca').innerText = ad.marca || '--';
+                    document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
+                    document.getElementById('pCor').innerText = ad.cor || '--';
+                    document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
+                    document.getElementById('pCondicao').innerText = ad.condicao || '--';
+                    document.getElementById('pEstado').innerText = ad.estado || '--';
+                    document.getElementById('pBateria').innerText = ad.bateria || '--';
+                    document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
+                    document.getElementById('pDesc').innerText = ad.descricao || '';
+
+                    // 5. BOTÃO WHATSAPP
+                    const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}`);
+                    document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
+
+                    document.getElementById('mainPanel').style.display = 'block';
                 }
-
-                // 4. DETALHES TÉCNICOS
-                document.getElementById('pMarca').innerText = ad.marca || '--';
-                document.getElementById('pModeloGrid').innerText = ad.modelo || '--';
-                document.getElementById('pCor').innerText = ad.cor || '--';
-                document.getElementById('pCapacidade').innerText = ad.capacidade || '--';
-                document.getElementById('pCondicao').innerText = ad.condicao || '--';
-                document.getElementById('pEstado').innerText = ad.estado || '--';
-                document.getElementById('pBateria').innerText = ad.bateria || '--';
-                document.getElementById('pGarantia').innerText = ad.garantia || 'Sem garantia';
-                document.getElementById('pDesc').innerText = ad.descricao || '';
-
-                // 5. BOTÃO WHATSAPP
-                const msg = encodeURIComponent(`Olá! Vi seu anúncio do ${ad.modelo} no RePhone por R$ ${ad.preco}.\n\nLink: ${window.location.href}`);
-                document.getElementById('pZap').href = `https://wa.me/55${ad.whatsapp}?text=${msg}`;
-
-                // MOSTRAR PAINEL
-                document.getElementById('mainPanel').style.display = 'block';
-            }
-        } catch (error) { 
-            console.error("Erro geral:", error); 
+            } catch (error) { console.error("Erro geral:", error); }
         }
-    }
-    carregarAnuncio();
+        carregarAnuncio();
     </script>
 </body>
 </html>
