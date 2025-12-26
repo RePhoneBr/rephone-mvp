@@ -38,7 +38,7 @@
         
         .gallery { width: 100%; background: #f1f5f9; border-radius: 22px; overflow: hidden; display: flex; align-items: center; justify-content: center; aspect-ratio: 1/1; border: 1px solid #e2e8f0; }
         .gallery img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
+        <
         h1 { font-size: 26px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
         .seller-name { font-size: 16px; font-weight: 700; color: var(--dark); display: block; margin-top: 5px; }
         .location-tag { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 5px; display: block; }
@@ -72,6 +72,132 @@
             flex: 1; background: white; color: var(--dark); border: 2px solid #e2e8f0;
             border-radius: 20px; font-weight: 800; font-size: 14px; cursor: pointer; max-width: 150px;
         }
+        /* =====================================================
+   DESKTOP – VISUAL PROFISSIONAL / MARKETPLACE
+   NÃO ALTERA MOBILE
+   ===================================================== */
+
+@media (min-width: 1024px) {
+
+  body {
+    padding: 30px 0 120px;
+    background: #f1f5f9;
+  }
+
+  .container {
+    max-width: 1200px;
+    padding: 0 20px;
+  }
+
+  /* HEADER */
+  .header-nav {
+    margin-bottom: 25px;
+  }
+
+  .btn-back {
+    font-size: 13px;
+  }
+
+  .badge-verificado {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+
+  /* GRID PRINCIPAL */
+  .main-grid {
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 40px;
+  }
+
+  /* GALERIA */
+  .gallery {
+    border-radius: 30px;
+    aspect-ratio: 1 / 1;
+  }
+
+  .gallery img {
+    max-width: 90%;
+    max-height: 90%;
+  }
+
+  /* PAINEL DE INFORMAÇÕES */
+  .panel {
+    padding: 30px;
+    border-radius: 35px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .seller-name {
+    font-size: 17px;
+  }
+
+  .location-tag {
+    font-size: 14px;
+  }
+
+  .price {
+    font-size: 36px;
+  }
+
+  /* GRID TÉCNICO */
+  .info-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .info-box span {
+    font-size: 15px;
+  }
+
+  /* DESCRIÇÃO */
+  .desc-box p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* FOOTER DE AÇÃO (DESKTOP) */
+  .footer-controls {
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .btn-zap {
+    max-width: 360px;
+    font-size: 17px;
+  }
+
+  .btn-share {
+    max-width: 180px;
+  }
+}
+
+/* TELAS GRANDES */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1350px;
+  }
+
+  .main-grid {
+    gap: 50px;
+  }
+}
+
+/* MICROINTERAÇÕES DESKTOP */
+@media (hover: hover) and (min-width: 1024px) {
+  .panel {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .panel:hover {
+    box-shadow: 0 35px 70px rgba(0,0,0,0.08);
+    transform: translateY(-4px);
+  }
+}
+
     </style>
 </head>
 <body>
