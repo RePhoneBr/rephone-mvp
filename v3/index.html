@@ -114,6 +114,53 @@
         .match-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .btn-view { background: var(--green); color: white; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: 800; text-align: center; }
         .btn-close { background: rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 12px; border: none; font-weight: 700; }
+    <style>
+  /* ========================= */
+  /* SEU CSS ATUAL (NÃO MEXE) */
+  /* ========================= */
+
+  .card {
+    background: white;
+    border-radius: 25px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* ========================= */
+  /* DESKTOP – VISUAL PROFISSIONAL */
+  /* ========================= */
+
+  @media (min-width: 1024px) {
+    body {
+      background: #f1f5f9;
+    }
+
+    .main-header {
+      padding: 18px 48px;
+      border-radius: 0 0 35px 35px;
+    }
+
+    .hero {
+      max-width: 1200px;
+      padding: 40px 0 50px;
+    }
+
+    .feed {
+      max-width: 1200px;
+      margin: 0 auto;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+  }
+
+  @media (min-width: 1440px) {
+    .feed {
+      max-width: 1400px;
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+</style>
+
     </style>
 </head>
 <body>
